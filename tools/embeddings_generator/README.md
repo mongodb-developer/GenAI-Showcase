@@ -90,6 +90,7 @@ Here's a sample console output from running the script:
 
 ```console
 $ python create_embeddings.py --path "/Users/apoorva.joshi/Downloads/data.csv" --type openai --field text --uri "mongodb+srv://username:password@cluster.net/?retryWrites=true&w=majority&appName=Cluster1"
+
 Enter your OpenAI API key.
 2024-03-05 16:09:24,331 INFO: HTTP Request: GET https://api.openai.com/v1/models "HTTP/1.1 200 OK"
 2024-03-05 16:09:24,337 INFO: Loading the dataset...
