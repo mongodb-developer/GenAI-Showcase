@@ -1,0 +1,6 @@
+cohere==4.52
+openai==1.13.3
+pandas==2.2.1
+pymongo==4.6.2
+sentence_transformers==2.4.0
+tqdm==4.66.2
