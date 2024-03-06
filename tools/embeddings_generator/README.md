@@ -59,6 +59,7 @@ Options:
   --db DB        Field in the csv to generate embeddings for.
   --coll COLL    Field in the csv to generate embeddings for.
 ```
+
 **NOTE:** This script only generates embeddings for a single field in the dataset. This is primarily because these embeddings are meant to be used for Vector Search and Vector Search indexes in MongoDB Atlas can only be created on a single embedding field. When picking the embedding field, choose the one that makes the most sense for semantic search-- usually the more descriptive the content, the better.
 
 ## Usage
