@@ -7,7 +7,6 @@ import openai
 import pandas as pd
 import pymongo
 from sentence_transformers import SentenceTransformer
-from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 

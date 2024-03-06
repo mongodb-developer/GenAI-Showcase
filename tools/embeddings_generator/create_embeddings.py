@@ -1,6 +1,7 @@
 import argparse
 import logging
 from datetime import datetime
+from tqdm import tqdm
 
 from utils import *
 
