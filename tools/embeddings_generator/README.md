@@ -9,7 +9,7 @@ The tool currently supports three embedding models:
 
 ## Pre-requisites
 
-* Have Python installed. Preferably version 3.10+. If you don't have it installed, download it from [here](https://www.python.org/downloads/)
+* Have Python installed. Preferably version 3.10+. If you don't have it installed, download it from [here](https://www.python.org/downloads/).
 
 * Have your data saved locally as a CSV file. Keep the absolute path to the file handy.
 
