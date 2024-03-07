@@ -13,7 +13,7 @@ The tool currently supports three embedding models:
 
 * Have your data saved locally as a CSV file. Keep the absolute path to the file handy.
 
-* Create a free MongoDB Atlas cluster. See setup instructions [here](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/?utm_campaign=devrel&utm_source=workshop&utm_medium=cta&utm_content=github&utm_term=apoorva.joshi).
+* [Create](https://www.mongodb.com/cloud/atlas/register/?utm_campaign=devrel&utm_source=workshop&utm_medium=cta&utm_content=github&utm_term=apoorva.joshi) a MongoDB Atlas account, and  [deploy](https://www.mongodb.com/docs/atlas/tutorial/deploy-free-tier-cluster/) a free MongoDB Atlas cluster.
 
 * Get the connection string for your database deployment on the free cluster. See instructions to do this [here](https://www.mongodb.com/docs/guides/atlas/connection-string/).
 
