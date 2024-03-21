@@ -11,6 +11,7 @@ Welcome to the Generative AI Use Cases Repository! This repository is dedicated 
 - [Notebooks](#notebooks)
   - [Evaluations](#evaluations)
   - [RAG](#rag)
+- [Tools](#tools)
 - [Frameworks and Models](#frameworks-and-models)
 - [Contributing](#contributing)
 - [License](#license)
@@ -39,6 +40,10 @@ Interactive Jupyter notebooks providing hands-on experience:
 - [Naive RAG Implementation Example](/notebooks/rag/naive_rag_implementation_llamaindex.ipynb)
 - [OpenAI Text Embedding Example](/notebooks/rag/openai_text_3_embedding.ipynb)
 - [RAG with Hugging Face and MongoDB Example](/notebooks/rag/rag_with_hugging_face_gemma_mongodb.ipynb)
+
+## Tools
+Useful tools and utilities for working with generative AI models:
+- [Embeddings Generator](/tools/embeddings_generator): A set of scripts for generating and manipulating embeddings.
 
 ## Frameworks and Models
 Explore the utilization of various AI models and frameworks across different notebooks provided.
