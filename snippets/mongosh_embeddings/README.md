@@ -6,20 +6,20 @@ To generate large volumes of synthetic data for development and testing, install
  ```bash
 npm install @ngneat/falso
 ```
+## Open AI Embeddings example
 
-
-## Connect to the MongoDB Shell
 Install Open AI Langchain JS dependency
 ```shell
 npm install @langchain/openai
 ```
+
+## Connect to the MongoDB Shell
 
 The mongoDB shell is an interactive JavaScript interface to MongoDB. You can use the MongoDB shell to quickly and easily create, query, and update data.
 ```
 mongosh <YOUR_ATLAS_URI>
 ```
 
-## Open AI Embeddings example
 Run this script in the shell to generate your data
 This script creates a dataset with 100 documents following the document pattern provided. Remember to replace the <OPENAI_API_KEY> with your OpenAI API key.
 ```js
