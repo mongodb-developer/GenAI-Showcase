@@ -2,20 +2,24 @@
 
 Install a random data generator package and LangChain to create embeddings
 To generate large volumes of synthetic data for development and testing, install a random data generator on the command line. In this example, we use Falso and LangchainJS
- .
+
  ```bash
 npm install @ngneat/falso
-npm install @langchain/openai
 ```
 
 
 ## Connect to the MongoDB Shell
+Install Open AI Langchain JS dependency
+```shell
+npm install @langchain/openai
+```
+
 The mongoDB shell is an interactive JavaScript interface to MongoDB. You can use the MongoDB shell to quickly and easily create, query, and update data.
 ```
 mongosh <YOUR_ATLAS_URI>
 ```
 
-
+## Open AI Embeddings example
 Run this script in the shell to generate your data
 This script creates a dataset with 100 documents following the document pattern provided. Remember to replace the <OPENAI_API_KEY> with your OpenAI API key.
 ```js
@@ -65,3 +69,28 @@ main().then(() => {
 ```
 
 Edit the Highlighted JSON document to modify the data you generate.
+
+## Cohere Embeddings example
+
+To use cohere or any other embedding provider supported by the LangChain JS framework just swap the embeddings code:
+
+### Install 
+```shell
+npm install cohere-ai @langchain/cohere
+```js
+import { CohereEmbeddings } from "@langchain/cohere";
+
+/* Embed queries */
+const embeddings = new CohereEmbeddings({
+  apiKey: "YOUR-API-KEY", // In Node.js defaults to process.env.COHERE_API_KEY
+  batchSize: 48, // Default value if omitted is 48. Max value is 96
+});
+
+...
+
+const plot_embedding = await embeddings.embedDocuments([doc.plot]);
+
+```
+
+To see the available providers list on  Langchain go [here](https://js.langchain.com/docs/integrations/text_embedding).
+
