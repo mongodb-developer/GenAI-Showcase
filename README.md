@@ -50,11 +50,11 @@ Below are various datasets with embeddings for use in LLM application POCs and d
 
 | Dataset Name                                      | Description | Link |
 | ------------------------------------------------- | ----------- | ---- |
-| MongoDB/cosmopedia-wikihow-chunked                | Chunked version of a subset of the data Cosmopedia dataset | [![View Dataset](https://img.shields.io/badge/View%20Dataset%20on%20🤗-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
-| MongoDB/embedded_movies                           | The dataset lists Western, Action, and Fantasy movies, including title, release year, cast, and OpenAI embeddings for vector search. | [![View Dataset](https://img.shields.io/badge/View%20Dataset%20on%20🤗-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
-| MongoDB/airbnb_embeddings                         | AirBnB listings dataset with property descriptions, reviews, metadata, text embeddings (1536D using OpenAI's text-embedding-3-small), and image embeddings (512D using OpenAI's clip-vit-base-patch32). | [![View Dataset](https://img.shields.io/badge/View%20Dataset%20on%20🤗-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
-| MongoDB/tech-news-embeddings                      | HackerNoon's dataset includes over 7 million tech news articles from 2022 and 2023 on valuable tech companies, enriched with OpenAI's small text embeddings for 1,576,528 data points. | [![View Dataset](https://img.shields.io/badge/View%20Dataset%20on%20🤗-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
-| MongoDB/whatscooking.restaurants                  | Restaurant dataset with location, cuisine, ratings, attributes for industry analysis, recommendations, geographical studies.  | [![View Dataset](https://img.shields.io/badge/View%20Dataset%20on%20🤗-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
+| Cosmopedia             | Chunked version of a subset of the data Cosmopedia dataset | [![View Dataset](https://img.shields.io/badge/View%20Dataset-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
+| Movies                           | Western, Action, and Fantasy movies, including title, release year, cast, and OpenAI embeddings for vector search. | [![View Dataset](https://img.shields.io/badge/View%20Dataset-8A2BE2)](https://huggingface.co/datasets/MongoDB/embedded_movies)  |
+| Airbnb                         | AirBnB listings dataset with property descriptions, reviews, metadata and embeddings. | [![View Dataset](https://img.shields.io/badge/View%20Dataset-8A2BE2)](https://huggingface.co/datasets/MongoDB/airbnb_embeddings)  |
+| Tech News                      | Tech news articles from 2022 and 2023 on valuable tech companies. | [![View Dataset](https://img.shields.io/badge/View%20Dataset-8A2BE2)](https://huggingface.co/datasets/MongoDB/tech-news-embeddings)  |
+| Restaurant                  | Restaurant dataset with location, cuisine, ratings, attributes for industry analysis, recommendations, geographical studies.  | [![View Dataset](https://img.shields.io/badge/View%20Dataset-8A2BE2)](https://huggingface.co/datasets/MongoDB/whatscooking.restaurants)  |
 
 
 
