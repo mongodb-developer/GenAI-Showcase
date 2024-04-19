@@ -17,17 +17,9 @@ Welcome to the Generative AI Use Cases Repository! This repository is dedicated 
 - [License](#license)
 - [Contact](#contact)
 
-## Getting Started
-Before diving into the use cases, ensure you have the necessary environment set up:
-1. Clone the repository: `git clone https://github.com/your-username/GenAI-Showcase.git`
-2. Install dependencies: `pip install -r requirements.txt`
-
 ## Use Cases
 ### RAG
 Details on Retrieval-Augmented Generation (RAG) and its applications.
-
-## Notebooks
-Interactive Jupyter notebooks providing hands-on experience:
 
 ### Evaluations
 - [Angle Embeddings Evaluation](/notebooks/evals/angle-embeddings-eval.ipynb)
@@ -56,7 +48,6 @@ Useful tools and utilities for working with generative AI models:
 Below are various datasets with embeddings for use in LLM application POCs and demos. All datasets can be accessed and downloaded from their respective Hugging Face pages.
 
 
-
 | Dataset Name                                      | Description | Link |
 | ------------------------------------------------- | ----------- | ---- |
 | MongoDB/cosmopedia-wikihow-chunked                | Chunked version of a subset of the data Cosmopedia dataset | [![View Dataset](https://img.shields.io/badge/View%20Dataset%20on%20🤗-8A2BE2)](https://huggingface.co/datasets/MongoDB/subset_arxiv_papers_with_embeddings)  |
@@ -79,7 +70,3 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact
 Feel free to reach out for any queries or suggestions:
 - Email: richmond.alake@mongodb.com
-
----
-
-*Last updated: [28th March 2024]*
