@@ -22,6 +22,7 @@ Welcome to the Generative AI Use Cases Repository! This repository is dedicated 
 (Coming soon)
 
 ## Evaluations
+- [Evaluating your LLM applications](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/evals/ragas-evaluation.ipynb)
 - [Angle Embeddings Evaluation](/notebooks/evals/angle-embeddings-eval.ipynb)
 - [OpenAI Embeddings Evaluation](/notebooks/evals/openai-embeddings-eval.ipynb)
 - [VoyageAI Embeddings Evaluation](/notebooks/evals/voyageai-embeddings-eval.ipynb)
