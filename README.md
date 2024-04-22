@@ -19,7 +19,12 @@ Welcome to the Generative AI Use Cases Repository! This repository is dedicated 
 - [Contact](#contact)
 
 ## Use Cases
-(Coming soon)
+
+This section contains examples of use cases that are commonly seen in industry-focused scenarios and generic applications. Each entry in the table includes a description and links to production-level examples and relevant code.
+
+| Use Case                       | Stack                  | Link                                              | Description |
+|--------------------------------|------------------------|---------------------------------------------------|-------------|
+| **Customer Support Chatbot**   | JavaScript, OpenAI, MongoDB | [View Repository](https://github.com/mongodb/chatbot) | The MongoDB Chatbot Framework provides libraries that enable the creation of sophisticated chatbot |
 
 ## Evaluations
 - [Evaluating your LLM applications](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/evals/ragas-evaluation.ipynb)
