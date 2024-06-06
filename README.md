@@ -51,7 +51,7 @@ An agent is an artificial computational entity with an awareness of its environm
 
 | Title                          | Stack                | Colab Link                                     | Article Link                                     |
 |--------------------------------|----------------------|------------------------------------------------|--------------------------------------------------|
-| AI Research Assistant   | FireWorks AI, MongoDB, LangChain      |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/agent_fireworks_ai_langchain_mongodb.ipynb) |      |
+| AI Research Assistant   | FireWorks AI, MongoDB, LangChain      |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/agent_fireworks_ai_langchain_mongodb.ipynb) |  [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/agent-fireworksai-mongodb-langchain/)    | 
 
 
 ## Tools
