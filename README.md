@@ -56,6 +56,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | Chat With PDF Example | Python, MongoDB, OpenAI, LangChain | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/chat_with_pdf_mongodb_openai_langchain_POLM_AI_Stack.ipynb) |
 | RAG Pipeline | Python, MongoDB, Gemma2, KeraNLP | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_pipeline_kerasnlp_mongodb_gemma2.ipynb) |
 | RAG Pipeline with Open Models| Python, MongoDB, Gemma2, Hugging Face | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_with_gemma2_mongodb_open_models.ipynb) |
+| MongoDB and Haystack cooking advisor| Python, Haystack , OpenAI | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/haystack_mongodb_cooking_advisor_pipeline.ipynb)| [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/haystack-ai-mongodb-atlas-vector-demo)|
 
 
 ## Agents
@@ -67,6 +68,7 @@ An agent is an artificial computational entity with an awareness of its environm
 AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/crewai-mdb-agg.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/mongodb/augment-llm-capabilities-with-mdb-aggregation/)
 | Agentic RAG: Recommmendation System | Claude 3.5, LlamaIndex, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/how_to_build_ai_agent_claude_3_5_sonnet_llamaindex_mongodb.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/claude_3_5_sonnet_rag/)|
 | Agentic HR Chatbot | Claude 3.5, LangGraph, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/hr_agentic_chatbot_with_langgraph_claude.ipynb) | Coming Soon|
+|AWS Bedrock Agent | Claude 3, AWS Bedrock, Python, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/mongodb_with_aws_bedrock_agent.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/mdb-aws-bedrock-agent-start/)
 
 ## Workshops
 Workshops are designed to take learners through the step-by-step process of developing LLM applications. These workshops include essential explanations, definitions, and resources provided within the notebooks and projects. Each workshop is structured to build foundational knowledge and progressively advance to more complex topics. Practical exercises and real-world examples ensure that learners can apply the concepts effectively, making it easier to understand the integration and deployment of generative AI applications.
@@ -74,6 +76,7 @@ Workshops are designed to take learners through the step-by-step process of deve
 | Title | Colab Link |
 |-------|------------|
 | Pragmatic LLM Application Development: From RAG Pipelines to AI Agent | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/workshops/Pragmatic_LLM_Application_Introduction_From_RAG_to_Agents_with_MongoDB.ipynb) |
+| Building chatbots with NextJS and Atlas Vector search | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://mongodb-developer.github.io/vector-search-workshop)
 
 
 ## Tools
