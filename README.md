@@ -58,6 +58,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | RAG Pipeline with Open Models| Python, MongoDB, Gemma2, Hugging Face | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_with_gemma2_mongodb_open_models.ipynb) |
 | MongoDB and Haystack cooking advisor| Python, Haystack , OpenAI | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/haystack_mongodb_cooking_advisor_pipeline.ipynb)| [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/haystack-ai-mongodb-atlas-vector-demo)|
 | MongoDB and Semantic Kernel Movie Recommendation Bot | C# Console App, MongoDB, Semantic Kernel, Azure OpenAI or OpenAI | [GitHub Repo](https://github.com/mongodb-developer/SemanticKernel_With_CSharp_And_Atlas) | Coming soon |
+| Build an Asset Manager RAG Chatbot | Cohere, MongoDB, Python | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_chatbot_with_cohere_and_mongodb.ipynb) | Coming soon |
 
 
 
