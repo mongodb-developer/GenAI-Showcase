@@ -87,7 +87,7 @@ Workshops are designed to take learners through the step-by-step process of deve
 ## Tools
 Useful tools and utilities for working with generative AI models:
 - [Embeddings Generator](/tools/embeddings_generator): A set of scripts for generating and manipulating embeddings.
-- [MongoDB as a Toolbox](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/tools/tools/function_calling_mongodb_as_a_toolbox.ipynb) for Agentic Systems
+- [MongoDB as a Toolbox](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/tools/function_calling_mongodb_as_a_toolbox.ipynb) for Agentic Systems
 
 ## Datasets
 Below are various datasets with embeddings for use in LLM application POCs and demos. All datasets can be accessed and downloaded from their respective Hugging Face pages.
