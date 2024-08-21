@@ -75,6 +75,21 @@ AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](htt
 |AWS Bedrock Agent | Claude 3, AWS Bedrock, Python, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/mongodb_with_aws_bedrock_agent.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/mdb-aws-bedrock-agent-start/)
 |Asset Manager Assistant | LangGraph, OpenAI, Anthropic, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/asset_management_analyst_assistant_agentic_chatbot_langgraph_mongodb.ipynb) | 
 
+
+## ML
+This folder will contain all traditional machine learning tutorials. They include important explanations, step-by-step instructions, and everything a reader needs in order to be successful following the tutorial from beginning to end. 
+
+| Title | Colab Link |
+|-------|------------|
+| Written in the Stars: Predict Your Future With Tensorflow and MongoDB Charts | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/ml/tensorflow_mongodbcharts_horoscopes.ipynb) |
+
+## MongoDB Specific
+These MongoDB specific tutorials are meant to showcase a specific MongoDB platform integrated with artificial intelligence or machine learning. These step-by-step tutorials will allow the reader to truly understand not only the platform, but also the AI use-case. 
+
+| Title | Colab Link |
+|-------|------------|
+| Aperol Spritz Summer With MongoDB Geospatial Queries & Vector Search | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/mongodb-specific/geospatialqueries_vectorsearch_spritzes.ipynb) |
+
 ## Workshops
 Workshops are designed to take learners through the step-by-step process of developing LLM applications. These workshops include essential explanations, definitions, and resources provided within the notebooks and projects. Each workshop is structured to build foundational knowledge and progressively advance to more complex topics. Practical exercises and real-world examples ensure that learners can apply the concepts effectively, making it easier to understand the integration and deployment of generative AI applications.
 
