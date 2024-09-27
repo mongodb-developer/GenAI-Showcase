@@ -93,6 +93,7 @@ These MongoDB specific tutorials are meant to showcase a specific MongoDB platfo
 | Title | Colab Link |
 |-------|------------|
 | Aperol Spritz Summer With MongoDB Geospatial Queries & Vector Search | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/mongodb-specific/geospatialqueries_vectorsearch_spritzes.ipynb) |
+| Sip, Swig, and Search With Playwright, OpenAI, and MongoDB Atlas Search | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/mongodb-specific/SwigMenu_Playwright_OpenAI_MongoDB.ipynb) |
 
 ## Workshops
 Workshops are designed to take learners through the step-by-step process of developing LLM applications. These workshops include essential explanations, definitions, and resources provided within the notebooks and projects. Each workshop is structured to build foundational knowledge and progressively advance to more complex topics. Practical exercises and real-world examples ensure that learners can apply the concepts effectively, making it easier to understand the integration and deployment of generative AI applications.
