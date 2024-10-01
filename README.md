@@ -35,6 +35,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 |--------------------------------|------------------------|---------------------------------------------------|-------------|
 | **Customer Support Chatbot**   | JavaScript, OpenAI, MongoDB | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb/chatbot) | The MongoDB Chatbot Framework provides libraries that enable the creation of sophisticated chatbot |
 | **HR Support Chatbot**   | LangGraph.JS, Anthropic, OpenAI, MongoDB | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/LangGraph.js-MongoDB-Example/)  | Create an AI-powered HR assistant using LangGraph.js and MongoDB |
+| **Trip Advisor - Laravel, OpenAI and Atlas** | PHP (Laravel), OpenAI, MongoDB |  [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/laravel-openai-vector-search)|Leverage PHP, Laravel and OpenAI to build suphisticated recommendation engines|
 | **MongoDB AI Framework** | Key AI Stack components|[![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-partners/maap-framework) | The MAAP framework is a set of libraries that you can use to build your RAG Application using MongoDB and Atlas Vector Search and associated MAAP partners |
 
 
