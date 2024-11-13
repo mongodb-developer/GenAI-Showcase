@@ -6,6 +6,10 @@ This guide demonstrates how to create an AI agent for handling rental booking wo
 
 The workflow above shows the BuildShip interface where a REST API endpoint (/bookingAgent) triggers a Claude AI Assistant that processes booking requests. The assistant is connected to MongoDB operations including an Aggregate Collection node that queries the sample_airbnb.listingsAndReviews collection, enabling the AI to search and filter available properties based on user criteria.
 
+### Youtube link to a live walkthrough
+
+[![AI Show Video](https://img.youtube.com/vi/tmdtMyVIb60/0.jpg)](https://www.youtube.com/watch?v=tmdtMyVIb60)
+
 ## Quick Start
 
 1. Access the pre-built workflow by visiting [this BuildShip remix link](https://buildship.app/remix/a9a9fcdf-4636-4640-bfd1-d149f6326728)
