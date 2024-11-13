@@ -37,6 +37,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | **HR Support Chatbot**   | LangGraph.JS, Anthropic, OpenAI, MongoDB | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/LangGraph.js-MongoDB-Example/)  | Create an AI-powered HR assistant using LangGraph.js and MongoDB |
 | **Trip Advisor - Laravel, OpenAI and Atlas** | PHP (Laravel), OpenAI, MongoDB |  [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/laravel-openai-vector-search)|Leverage PHP, Laravel and OpenAI to build suphisticated recommendation engines|
 | **MongoDB AI Framework** | Key AI Stack components|[![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-partners/maap-framework) | The MAAP framework is a set of libraries that you can use to build your RAG Application using MongoDB and Atlas Vector Search and associated MAAP partners |
+| **MongoDB and BuildShip Agents** | MongoDB Atlas, BuildShip low-code, Anthropic | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/snippets/low-code/BuildShip.md) | This guide demonstrates how to create an AI agent for handling rental booking workflows using BuildShip's no-code platform with MongoDB Aggregation and Insert integrations. |
 
 
 ## Evaluations
