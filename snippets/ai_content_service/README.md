@@ -18,6 +18,7 @@ For example, you can create a `permissions` collection with documents that look 
   "name": "app_name",
   "tags": ["public", "internal"]
 }
+```
 
 Each document contains:
 * `api_key`: An API key which is how applications will authenticate to our content service
