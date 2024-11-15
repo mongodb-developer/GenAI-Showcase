@@ -4,7 +4,7 @@ With multiple teams building GenAI applications, we are seeing several organizat
 
 While this centralized approach creates a single source of truth for all applications, it also increases the risk of data exposure if any of these applications get compromised. One way to mitigate this risk is to enforce the principle of least privilege (PoLP), giving applications only the minimum permissions required.
 
-Assuming you are using MongoDB as your central data store, let's explore how you can adopt PoLP in MongoDB using the document model itself.
+Assuming you are using MongoDB to create the central knowledge base for your content service, let's explore how you can adopt PoLP in MongoDB using the document model itself.
 
 ## Defining document-level access controls
 
