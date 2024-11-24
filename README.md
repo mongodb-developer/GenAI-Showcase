@@ -37,6 +37,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | **HR Support Chatbot**   | LangGraph.JS, Anthropic, OpenAI, MongoDB | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/LangGraph.js-MongoDB-Example/)  | Create an AI-powered HR assistant using LangGraph.js and MongoDB |
 | **Trip Advisor - Laravel, OpenAI and Atlas** | PHP (Laravel), OpenAI, MongoDB |  [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/laravel-openai-vector-search)|Leverage PHP, Laravel and OpenAI to build suphisticated recommendation engines|
 | **MongoDB AI Framework** | Key AI Stack components|[![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-partners/maap-framework) | The MAAP framework is a set of libraries that you can use to build your RAG Application using MongoDB and Atlas Vector Search and associated MAAP partners |
+| **MongoDB and BuildShip Agents** | MongoDB Atlas, BuildShip low-code, Anthropic | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/snippets/low-code/BuildShip.md) | This guide demonstrates how to create an AI agent for handling rental booking workflows using BuildShip's no-code platform with MongoDB Aggregation and Insert integrations. |
 
 
 ## Evaluations
@@ -64,6 +65,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | MongoDB and Semantic Kernel Movie Recommendation Bot | C# Console App, MongoDB, Semantic Kernel, Azure OpenAI or OpenAI | [GitHub Repo](https://github.com/mongodb-developer/SemanticKernel_With_CSharp_And_Atlas) | [View Article](https://www.mongodb.com/developer/languages/csharp/getting-started-with-semantic-kernel-dotnet/) |
 | Build an Asset Manager RAG Chatbot | Cohere, MongoDB, Python | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_chatbot_with_cohere_and_mongodb.ipynb) | Coming soon |
 | Asset Manager Chatbot with LLM Evals and Moderation | Gemma 2B, ShieldGemma, MongoDB, Python | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_with_gemma2_2b_mongodb_open_models.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/gemma2b_mongodb_rag/) |
+| Lyric Semantic Search with MongoDB and Spring AI | Java, Spring AI, OpenAI, MongoDB | [Github Repo](https://github.com/mongodb-developer/lyric-semantic-search) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/languages/java/spring-ai-mongodb-atlas/) |
 
 
 
@@ -79,6 +81,7 @@ AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](htt
 | Agentic HR Chatbot | Claude 3.5, LangGraph, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/hr_agentic_chatbot_with_langgraph_claude.ipynb) | Coming Soon|
 |AWS Bedrock Agent | Claude 3, AWS Bedrock, Python, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/mongodb_with_aws_bedrock_agent.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/mdb-aws-bedrock-agent-start/)
 |Asset Manager Assistant | LangGraph, OpenAI, Anthropic, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/asset_management_analyst_assistant_agentic_chatbot_langgraph_mongodb.ipynb) | 
+| Implementing Working Memory with Tavily and MongoDB | Python, Tavily, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/implementing_working_memory_with_tavily_and_mongodb.ipynb) |  |
 
 
 ## ML
@@ -95,6 +98,8 @@ These MongoDB specific tutorials are meant to showcase a specific MongoDB platfo
 |-------|------------|
 | Aperol Spritz Summer With MongoDB Geospatial Queries & Vector Search | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/mongodb-specific/geospatialqueries_vectorsearch_spritzes.ipynb) |
 | Sip, Swig, and Search With Playwright, OpenAI, and MongoDB Atlas Search | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/mongodb-specific/SwigMenu_Playwright_OpenAI_MongoDB.ipynb) |
+| Ingesting Quantized vectors with Cohere and MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/techniques/evaluating_information_retrival_techniques_mongondb_langchain.ipynb)
+| Evaluating quantized vectors vs Non-Quantized Vectors with MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/techniques/advanced_evaluation_of_quantized_vectors_using_cohere_mongodb_beir.ipynb)
 
 ## Workshops
 Workshops are designed to take learners through the step-by-step process of developing LLM applications. These workshops include essential explanations, definitions, and resources provided within the notebooks and projects. Each workshop is structured to build foundational knowledge and progressively advance to more complex topics. Practical exercises and real-world examples ensure that learners can apply the concepts effectively, making it easier to understand the integration and deployment of generative AI applications.
