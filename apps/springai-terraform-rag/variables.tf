@@ -38,5 +38,5 @@ variable "db_password" {
 variable "ip_address" {
   description = "IP address to whitelist"
   type        = string
-  default     = "196.000.0.000"  
+  default     = "196.000.0.000"
 }

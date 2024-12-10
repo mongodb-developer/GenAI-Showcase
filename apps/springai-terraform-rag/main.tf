@@ -53,7 +53,7 @@ resource "mongodbatlas_database_user" "db_user" {
 }
 
 resource "mongodbatlas_search_index" "vector_search" {
-  name   = "search-index"  
+  name   = "search-index"
   project_id = mongodbatlas_project.rag_project.id
   cluster_name = mongodbatlas_advanced_cluster.rag_cluster.name
   type = "vectorSearch"
