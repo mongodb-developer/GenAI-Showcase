@@ -15,7 +15,7 @@ Before starting this tutorial, you'll need to have the following:
 - Maven 3.9.6+ configured for your project.
 
 ## Application Configuration
-Configure your Spring application to set up the vector store and other necessary beans. 
+Configure your Spring application to set up the vector store and other necessary beans.
 
 In our application properties, we are going to configure our MongoDB database, as well as everything we need for semantically searching our data. We'll also add in information such as our OpenAI embedding model and api key.
 

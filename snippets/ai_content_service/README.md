@@ -62,7 +62,7 @@ def get_permissions(request: Request) -> Dict:
 
     if not api_key:
         raise HTTPException(
-            status_code=403, 
+            status_code=403,
             detail="API key missing"
         )
 
@@ -78,7 +78,7 @@ def get_permissions(request: Request) -> Dict:
     return app_permissions
 
 # Retrieve documents that the app has permissions for
-def get_documents_with_permissions( 
+def get_documents_with_permissions(
     app_permissions: Dict
 ) -> Dict:
     # Build query filter based on allowed tags

@@ -85,6 +85,6 @@ To run this project, you'll need:
 
 ## Technologies Used
 - **Spring Boot**: Java-based framework for building REST APIs.
-- **MongoDB Atlas**: An integrated suite of data services (including Atlas Vector Search) centered around a cloud database designed to accelerate and simplify how you build with data. Build faster and build smarter with a developer data platform that helps solve your data challenges. Click [here](https://www.mongodb.com/products/platform/atlas-database) to learn more. 
+- **MongoDB Atlas**: An integrated suite of data services (including Atlas Vector Search) centered around a cloud database designed to accelerate and simplify how you build with data. Build faster and build smarter with a developer data platform that helps solve your data challenges. Click [here](https://www.mongodb.com/products/platform/atlas-database) to learn more.
 - **OpenAI**: Generates embeddings for semantic searches.
 - **Terraform**: Automates infrastructure management for MongoDB Atlas.
