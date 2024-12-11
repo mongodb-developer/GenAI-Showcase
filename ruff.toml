@@ -1,4 +1,4 @@
-target-version = "py38"
+target-version = "py39"
 
 exclude = [".evergreen/csfle/bottle.py"]
 
@@ -23,6 +23,8 @@ ignore = [
    "RUF005",  # Consider iterable unpacking instead of concatenation"
    "RUF015",  # Prefer `next(iter(queries.items()))` over single element slice
    "F841",    # Local variable `full_text_search_result` is assigned to but never used"
+   "UP006",   # Use `list` instead of `List` for type annotation"
+   "UP035",   # `typing.List` is deprecated, use `list` instead"
 ]
 unfixable = ["F401"]
 
