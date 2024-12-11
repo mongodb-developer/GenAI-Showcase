@@ -33,7 +33,7 @@ def get_openai_client() -> openai.OpenAI:
     try:
         client.models.list()
         return client
-    except openai.AuthenticationError as e:
+    except openai.AuthenticationError:
         logging.error("OpenAI authentication failed.")
         raise ClientError("OpenAI authentication failed. Please check your API key.")
 
