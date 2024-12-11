@@ -1,0 +1,32 @@
+target-version = "py38"
+
+exclude = [".evergreen/csfle/bottle.py"]
+
+[lint]
+extend-select = [
+  "B",        # flake8-bugbear
+  "EXE",      # flake8-executable
+  "F",        # pyflakes
+  "FURB",     # refurb
+  "I",        # isort
+  "ICN",      # flake8-import-conventions
+  "PGH",      # pygrep-hooks
+  "PIE",      # flake8-pie
+  "RUF",      # Ruff-specific
+  "UP",       # pyupgrade
+  "YTT",      # flake8-2020
+]
+ignore = [
+   "F811",    # Redefinition of unused,
+   "B007",    # Loop control variable `index` not used within loop body
+   "B904",    # Within an `except` clause, raise exceptions with `raise ... from err`"
+   "RUF005",  # Consider iterable unpacking instead of concatenation"
+   "RUF015",  # Prefer `next(iter(queries.items()))` over single element slice
+   "F841",    # Local variable `full_text_search_result` is assigned to but never used"
+]
+unfixable = ["F401"]
+
+[lint.per-file-ignores]
+".evergreen/ocsp/mock_ocsp_responder.py" = ["PLW"]
+".evergreen/csfle/kms_*.py" = ["PLW"]
+".evergreen/csfle/gcpkms/mock_server.py" = ["PLW"]
