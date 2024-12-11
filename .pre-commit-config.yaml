@@ -16,7 +16,7 @@ repos:
   # Ruff version.
   rev: v0.8.2
   hooks:
-    - id: ruff
-      args: ["--fix", "--show-fixes"]
     - id: ruff-format
       exclude: notebooks/techniques/evaluating_information_retrival_techniques_mongondb_langchain.ipynb
+    - id: ruff
+      args: ["--fix", "--show-fixes"]
