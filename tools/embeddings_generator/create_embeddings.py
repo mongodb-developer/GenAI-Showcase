@@ -1,9 +1,13 @@
 import argparse
 import logging
 from datetime import datetime
-from tqdm import tqdm
+from typing import List, Union
 
-from utils import *
+import cohere
+import openai
+import pandas as pd
+import utils
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s: %(message)s")
 
@@ -68,7 +72,7 @@ def get_embeddings(
         emb_fn = func_map.get("cohere")
     else:
         emb_fn = func_map.get("huggingface")
-        model = SentenceTransformer("thenlper/gte-small")
+        model = utils.SentenceTransformer("thenlper/gte-small")
 
     embeddings = []
     for i in tqdm(range(0, len(texts), 128)):
@@ -98,21 +102,21 @@ def get_data(path: str, field: str) -> pd.DataFrame:
         return data
     except Exception as e:
         logging.error("Error reading the CSV file.")
-        raise DataError(e)
+        raise utils.DataError(e)
 
 
 # Mapping provider names to their respective embedding functions
 func_map = {
-    "openai": get_openai_embeddings,
-    "cohere": get_cohere_embeddings,
-    "huggingface": get_hf_embeddings,
+    "openai": utils.get_openai_embeddings,
+    "cohere": utils.get_cohere_embeddings,
+    "huggingface": utils.get_hf_embeddings,
 }
 
 
 def main():
     """Main function"""
     provider = args.type
-    client = get_client(provider)
+    client = utils.get_client(provider)
 
     path = args.path
     field = args.field
@@ -125,8 +129,8 @@ def main():
     data["embeddings"] = get_embeddings(provider, client, texts)
 
     logging.info("Ingesting data into MongoDB...")
-    mongo_client = get_mongo_client(args.uri)
-    ingest_data(mongo_client, data, args.db, args.coll)
+    mongo_client = utils.get_mongo_client(args.uri)
+    utils.ingest_data(mongo_client, data, args.db, args.coll)
     logging.info(f"Inserted {len(data)} documents into MongoDB.")
 
 

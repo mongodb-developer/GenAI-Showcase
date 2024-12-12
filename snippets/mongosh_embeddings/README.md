@@ -74,7 +74,7 @@ Edit the Highlighted JSON document to modify the data you generate.
 
 To use cohere or any other embedding provider supported by the LangChain JS framework just swap the embeddings code:
 
-### Install 
+### Install
 ```shell
 npm install cohere-ai @langchain/cohere
 ```js
@@ -93,4 +93,3 @@ const plot_embedding = await embeddings.embedDocuments([doc.plot]);
 ```
 
 To see the available providers list on  Langchain go [here](https://js.langchain.com/docs/integrations/text_embedding).
-
