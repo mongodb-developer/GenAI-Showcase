@@ -18,6 +18,9 @@ extend-select = [
 ]
 ignore = [
    "F811",    # Redefinition of unused,
+   "F402",    # Import shadowing,
+   "B006",    # Do not use mutable data structures for argument defaults,
+   "B023",    # Function definition does not bind loop variable `ax`
    "B007",    # Loop control variable `index` not used within loop body
    "B904",    # Within an `except` clause, raise exceptions with `raise ... from err`"
    "RUF005",  # Consider iterable unpacking instead of concatenation"
