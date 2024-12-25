@@ -85,6 +85,7 @@ AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](htt
 |Asset Manager Assistant | LangGraph, OpenAI, Anthropic, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/asset_management_analyst_assistant_agentic_chatbot_langgraph_mongodb.ipynb) |
 | Implementing Working Memory with Tavily and MongoDB | Python, Tavily, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/implementing_working_memory_with_tavily_and_mongodb.ipynb) |
 |AI Food Assistant | Semantic Kernel, C#, OpenAI, MongoDB | [GitHub Repo](https://github.com/mongodb-developer/foodagent-dotnet) |[![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/languages/csharp/ai-agents-dotnet-with-semantic-kernel/) | |
+|Google Gemini2.0 Multimodal agent |  Google Gemini 2.0, Google embeddings, Langchain, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/Gemini2_0_multi_modality_with_mongodb_atlas_vector_store.ipynb) | |
 
 
 ## ML
