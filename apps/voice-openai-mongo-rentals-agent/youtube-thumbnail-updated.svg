@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#1a1a1a"/>
+  
+  <!-- Gradient overlay -->
+  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" style="stop-color:#47A248;stop-opacity:0.2"/>
+    <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.2"/>
+  </linearGradient>
+  <rect width="1280" height="720" fill="url(#grad)"/>
+
+  <!-- MongoDB Logo suggestion (stylized) -->
+  <circle cx="200" cy="360" r="80" fill="#47A248" opacity="0.9"/>
+
+  <!-- OpenAI Logo suggestion (stylized) -->
+  <circle cx="1080" cy="360" r="80" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Central sound wave visualization -->
+  <g transform="translate(640,360)" fill="#47A248">
+    <rect x="-200" y="-60" width="20" height="120" rx="10" opacity="0.8">
+      <animate attributeName="height" values="120;40;120" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-60;-20;-60" dur="2s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="-150" y="-80" width="20" height="160" rx="10" opacity="0.8">
+      <animate attributeName="height" values="160;60;160" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-80;-30;-80" dur="1.5s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="-100" y="-100" width="20" height="200" rx="10" opacity="0.9">
+      <animate attributeName="height" values="200;100;200" dur="1.8s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-100;-50;-100" dur="1.8s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="-50" y="-70" width="20" height="140" rx="10" opacity="0.8">
+      <animate attributeName="height" values="140;50;140" dur="1.6s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-70;-25;-70" dur="1.6s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="0" y="-90" width="20" height="180" rx="10" opacity="1">
+      <animate attributeName="height" values="180;80;180" dur="1.7s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-90;-40;-90" dur="1.7s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="50" y="-70" width="20" height="140" rx="10" opacity="0.8">
+      <animate attributeName="height" values="140;50;140" dur="1.6s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-70;-25;-70" dur="1.6s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="100" y="-100" width="20" height="200" rx="10" opacity="0.9">
+      <animate attributeName="height" values="200;100;200" dur="1.8s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-100;-50;-100" dur="1.8s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="150" y="-80" width="20" height="160" rx="10" opacity="0.8">
+      <animate attributeName="height" values="160;60;160" dur="1.5s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-80;-30;-80" dur="1.5s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="200" y="-60" width="20" height="120" rx="10" opacity="0.8">
+      <animate attributeName="height" values="120;40;120" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="-60;-20;-60" dur="2s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <text x="640" y="580" 
+        font-family="Arial" 
+        font-size="48" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle">
+    Voice Chat Agent with MongoDB and OpenAI
+  </text>
+</svg>
