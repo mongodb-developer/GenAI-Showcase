@@ -1,0 +1,11 @@
+langchain
+langchain-core
+langchain-openai
+langchain-mongodb
+openai
+fastapi
+uvicorn
+python-dotenv
+pymongo
+websockets
+uv
