@@ -39,6 +39,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | **MongoDB AI Framework** | Key AI Stack components|[![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-partners/maap-framework) | The MAAP framework is a set of libraries that you can use to build your RAG Application using MongoDB and Atlas Vector Search and associated MAAP partners |
 | **MongoDB and BuildShip Agents** | MongoDB Atlas, BuildShip low-code, Anthropic | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/snippets/low-code/BuildShip.md) | This guide demonstrates how to create an AI agent for handling rental booking workflows using BuildShip's no-code platform with MongoDB Aggregation and Insert integrations. |
 | **Realtime Voice OpenAI API and Atlas Vector Search Rental Agent** |  OpenAI, Atlas , Python , React | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/Pash10g/voice-openai-mongo-rentals-agent)|Sample application that use OpenAI Realtime API and MongoDB Atlas vector/CRUD as tools for a full voice based rental assistant. |
+| **MongoDB and n8n.io  AI template** | n8n AI automation, MongoDB, JS | [template](https://n8n.io/workflows/2554-mongodb-ai-agent-intelligent-movie-recommendations/)| A sample workflow to start of when building AI context aware flows with [n8n platform](https://n8n.io)|
 
 
 ## Evaluations
