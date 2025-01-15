@@ -69,7 +69,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | Asset Manager Chatbot with LLM Evals and Moderation | Gemma 2B, ShieldGemma, MongoDB, Python | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_with_gemma2_2b_mongodb_open_models.ipynb) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/atlas/gemma2b_mongodb_rag/) |
 | Lyric Semantic Search with MongoDB and Spring AI | Java, Spring AI, OpenAI, MongoDB | [Github Repo](https://github.com/mongodb-developer/lyric-semantic-search) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/languages/java/spring-ai-mongodb-atlas/) |
 | Terraforming AI Workflows: RAG With MongoDB Atlas and Spring AI | Java, Spring AI, OpenAI, MongoDB, Terraform | [Github Repo](https://github.com/mongodb-developer/springai-terraform) | [![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/languages/java/terraform-springai-rag/) |
-
+| RAG with local MongoDB Atlas | Docker, MongoDB, Python | [Github Repo](https://github.com/ranfysvalle02/local-atlas-RAG) |  |
 
 
 ## Agents
@@ -89,6 +89,8 @@ AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](htt
 |Google Gemini2.0 Multimodal agent |  Google Gemini 2.0, Google embeddings, Langchain, MongoDB | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/Gemini2_0_multi_modality_with_mongodb_atlas_vector_store.ipynb) | |
 |Smolagents MongoDB tools integration  | Smolagents by HF, MongoDB, OpenAI | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/smolagents_hf_with_mongodb.ipynb) | |
 |Multi-Agent Order Management System | Smolagents by HF, MongoDB, DeepSeek | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/smolagents_multi-agent_micro_agents.ipynb) | |
+|Beyond Vectors: Augment LLM Capabilities with MongoDB Aggregation Framework and CrewAI | CrewAI, Python, OpenAI, MongoDB | [GitHub Repo](https://github.com/ranfysvalle02/mdb-agg-crewai) |[![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/mongodb/augment-llm-capabilities-with-mdb-aggregation/) | |
+
 
 ## ML
 This folder will contain all traditional machine learning tutorials. They include important explanations, step-by-step instructions, and everything a reader needs in order to be successful following the tutorial from beginning to end.
