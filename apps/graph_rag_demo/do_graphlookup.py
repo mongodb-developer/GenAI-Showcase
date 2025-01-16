@@ -9,7 +9,7 @@ def graph_lookup(node_name,max_depth):
     graph_lookup_docs = []
     try:
         uri = os.getenv("ATLAS_CONNECTION_STRING")
-        client = MongoClient(uri)
+        client = MongoClient(uri, appname="devrel.showcase.apps.graph_rag_demo")
         database = client["langchain_db"]
         collection = database["nodes_relationships"]
         pipeline = [
