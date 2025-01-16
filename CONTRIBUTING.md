@@ -12,6 +12,8 @@ Here are some things to keep in mind for contributions:
     * If you would like comments or feedback, please open an issue or discussion and tag a maintainer.
 * In the pull request description, link to any issues that the PR aims to resolve, and clearly specify the intent of the PR.
 * Keep scope as isolated as possible.
+* PRs should ideally be merged by PR authors. If for some reason you need to merge someone else's PR, please first check with the author.
+* Merge your PR only after you have received atleast 1 approval from a code owner.
 
 ## Linting and Formatting
 
@@ -26,3 +28,7 @@ pre-commit install
 ```
 
 To run `pre-commit` manually, run `pre-commit run --all-files`.
+
+## Questions?
+
+Reach out to the maintainers: [Richmond Alake](https://github.com/RichmondAlake), [Apoorva Joshi](https://github.com/ajosh0504), [Pavel Duchovny](https://github.com/Pash10g), [Jesse Hall](https://github.com/codeSTACKr), [Anaiya Raisinghani](https://github.com/anaiyaraisin)
