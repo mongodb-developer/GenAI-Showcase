@@ -6,7 +6,7 @@ import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import dotenv from "dotenv";
 dotenv.config();
 
-const client = new MongoClient(process.env.ATLAS_CONNECTION_STRING);
+const client = new MongoClient(process.env.ATLAS_CONNECTION_STRING, appname="devrel.showcase.apps.graph_rag_demo");
 process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY1;
 
 async function run() {
