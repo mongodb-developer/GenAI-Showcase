@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 async function findAllDocuments(dbName, collectionName1, collectionName2) {
-    const client = new MongoClient(process.env.ATLAS_CONNECTION_STRING);
+    const client = new MongoClient(process.env.ATLAS_CONNECTION_STRING, appname="devrel.showcase.apps.graph_rag_demo");
     try {
         await client.connect();
         console.log('Connected to MongoDB');
