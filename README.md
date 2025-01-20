@@ -90,6 +90,7 @@ AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](htt
 |Smolagents MongoDB tools integration  | Smolagents by HF, MongoDB, OpenAI | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/smolagents_hf_with_mongodb.ipynb) | |
 |Multi-Agent Order Management System | Smolagents by HF, MongoDB, DeepSeek | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/smolagents_multi-agent_micro_agents.ipynb) | |
 |Beyond Vectors: Augment LLM Capabilities with MongoDB Aggregation Framework and CrewAI | CrewAI, Python, OpenAI, MongoDB | [GitHub Repo](https://github.com/ranfysvalle02/mdb-agg-crewai) |[![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/mongodb/augment-llm-capabilities-with-mdb-aggregation/) | |
+|Self-Reflecting Gift Agent with Haystack and MongoDB Atlas | Haystack, Python, OpenAI, MongoDB |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/self_reflecting_gift_agent_haystack.ipynb) | |
 
 
 ## ML
