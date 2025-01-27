@@ -4,6 +4,7 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+![MognoMP](./mongomp-ui.png)
 MongoMP is a cutting-edge music streaming platform that leverages the power of MongoDB and Next.js to provide a personalized and immersive listening experience.
 
 ## Features
