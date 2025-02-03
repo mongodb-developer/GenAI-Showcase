@@ -1,5 +1,6 @@
 # Voice Grocery Assistant
 
+![Voice RT UI](./voice-assistant-ui.png)
 ## Summary
 
 The Voice Grocery Assistant is an innovative demo application that showcases the power of voice-controlled e-commerce. It allows users to shop for groceries using natural language voice commands, providing a hands-free and intuitive shopping experience.
