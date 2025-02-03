@@ -40,7 +40,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | **MongoDB and BuildShip Agents** | MongoDB Atlas, BuildShip low-code, Anthropic | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/snippets/low-code/BuildShip.md) | This guide demonstrates how to create an AI agent for handling rental booking workflows using BuildShip's no-code platform with MongoDB Aggregation and Insert integrations. |
 | **Realtime Voice OpenAI API and Atlas Vector Search Rental Agent** |  OpenAI, Atlas , Python , React | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/Pash10g/voice-openai-mongo-rentals-agent)|Sample application that use OpenAI Realtime API and MongoDB Atlas vector/CRUD as tools for a full voice based rental assistant. |
 | **MongoDB and n8n.io  AI template** | n8n AI automation, MongoDB, JS | [template](https://n8n.io/workflows/2554-mongodb-ai-agent-intelligent-movie-recommendations/)| A sample workflow to start of when building AI context aware flows with [n8n platform](https://n8n.io)|
-
+| **MongoMP - Music Platform** | Next.js 14, MongoDB Atlas, JWT | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](apps/mongo-mp)| A music streaming platform with AI-powered recommendations using MongoDB's vector search capabilities|
 
 ## Evaluations
 - [Evaluating your LLM applications](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/evals/ragas-evaluation.ipynb)
@@ -90,6 +90,7 @@ AI Investment Researcher | MongoDB, CrewAI and LangChain | [![Open In Colab](htt
 |Smolagents MongoDB tools integration  | Smolagents by HF, MongoDB, OpenAI | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/smolagents_hf_with_mongodb.ipynb) | |
 |Multi-Agent Order Management System | Smolagents by HF, MongoDB, DeepSeek | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/smolagents_multi-agent_micro_agents.ipynb) | |
 |Beyond Vectors: Augment LLM Capabilities with MongoDB Aggregation Framework and CrewAI | CrewAI, Python, OpenAI, MongoDB | [GitHub Repo](https://github.com/ranfysvalle02/mdb-agg-crewai) |[![View Article](https://img.shields.io/badge/View%20Article-blue)](https://www.mongodb.com/developer/products/mongodb/augment-llm-capabilities-with-mdb-aggregation/) | |
+|Self-Reflecting Gift Agent with Haystack and MongoDB Atlas | Haystack, Python, OpenAI, MongoDB |[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/mongodb-developer/GenAI-Showcase/blob/main/notebooks/agents/self_reflecting_gift_agent_haystack.ipynb) | |
 
 
 ## ML

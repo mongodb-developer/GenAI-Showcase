@@ -1,0 +1,5 @@
+llm_model: "deepseek-r1:8b"
+embedding_model: "nomic-embed-text"
+mongo_connection_str: "mongodb://localhost:27017/?directConnection=true"
+database_name: "knowledge_base"
+collection_name: "documents"
