@@ -24,8 +24,8 @@ async function run() {
         // Ensure that the collection is empty
         await collection.deleteMany({});
         const pdfArray = [
-            './PDF_KG/Diet, Stress and Mental Healt.pdf', 
-            './PDF_KG/Effect of Stress Management Interventions on Job Stress among nurses working in critical care units.pdf', 
+            './PDF_KG/Diet, Stress and Mental Healt.pdf',
+            './PDF_KG/Effect of Stress Management Interventions on Job Stress among nurses working in critical care units.pdf',
             './PDF_KG/Factors contributing to stress among parents of children with autism.pdf',
             './PDF_KG/Level of physical activity, well-being, stress and self rated health in persons with migraine and co existing tension-type headache and neck pain.pdf',
             './PDF_KG/Stress and Blood Pr ess and Blood Pressure During Pr e During Pregnancy Racial Diff egnancy Racial Differences.pdf',
@@ -52,5 +52,3 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
-

@@ -85,4 +85,3 @@ export async function GET() {
     return NextResponse.json({ error: "An error occurred" }, { status: 500 })
   }
 }
-

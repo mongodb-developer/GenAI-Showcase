@@ -123,7 +123,7 @@ export function PlayingSongPopup({ song, isPlaying, onTogglePlay, onClose, onSel
         </div>
         <RetroEqualizer bpm={120} isPlaying={isPlaying} />
         <audio ref={audioRef} src={song.url} />
-        
+
         <Slider
           value={[currentTime]}
           max={song.duration}
@@ -146,7 +146,7 @@ export function PlayingSongPopup({ song, isPlaying, onTogglePlay, onClose, onSel
             <SkipForward className="h-4 w-4" />
           </Button>
         </div>
-        
+
         <div className="mt-4">
           <Button
             variant="ghost"
@@ -154,7 +154,7 @@ export function PlayingSongPopup({ song, isPlaying, onTogglePlay, onClose, onSel
             onClick={() => setShowSimilarSongs(!showSimilarSongs)}
           >
             Same Vibes
-            <InfoTooltip 
+            <InfoTooltip
               content="Find similar songs using MongoDB's vector search capabilities. Songs are matched based on their musical characteristics encoded as high-dimensional vectors."
               query={`db.songs.aggregate([
   {
@@ -211,4 +211,3 @@ export function PlayingSongPopup({ song, isPlaying, onTogglePlay, onClose, onSel
     </Card>
   )
 }
-

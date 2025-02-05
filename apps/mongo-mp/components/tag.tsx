@@ -11,4 +11,3 @@ export function Tag({ name }: TagProps) {
     </Badge>
   )
 }
-

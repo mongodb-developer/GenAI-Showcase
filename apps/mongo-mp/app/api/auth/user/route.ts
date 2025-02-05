@@ -20,19 +20,19 @@ export async function GET() {
 
     // Verify and decode the token
     const decoded = verify(token.value, process.env.JWT_SECRET) as { userId: string };
-    
+
     const client = await clientPromise;
     const db = client.db("mongomp");
 
     // Find user with proper projection (only include what we need)
     const user = await db.collection("users").findOne(
       { _id: new ObjectId(decoded.userId) },
-      { 
-        projection: { 
+      {
+        projection: {
           name: 1,
           email: 1,
           _id: 1
-        } 
+        }
       }
     );
 
@@ -56,4 +56,3 @@ export async function GET() {
     return NextResponse.json({ error: 'An error occurred' }, { status: 500 });
   }
 }
-

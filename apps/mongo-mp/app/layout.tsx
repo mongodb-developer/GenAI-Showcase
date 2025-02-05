@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={inter.className}>
         <UserProvider>
-          <div 
+          <div
             className="min-h-screen bg-black pb-16 sm:pb-0"
             style={{
               backgroundImage: `
@@ -39,4 +39,3 @@ export default function RootLayout({
     </html>
   )
 }
-

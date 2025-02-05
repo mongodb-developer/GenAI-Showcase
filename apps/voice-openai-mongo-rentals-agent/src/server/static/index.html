@@ -59,7 +59,7 @@
                     this.playbackNode.port.postMessage(null);
                 }
             }
-        }   
+        }
 
         class Recorder {
             constructor(onDataAvailable) {
@@ -128,7 +128,7 @@
 
                 // Get the hostname (domain + port)
                 const hostname = window.location.host;
-                
+
                 // Create dynamic WebSocket URL
                 const ws = new WebSocket(`${wsProtocol}//${hostname}/ws`);
 
@@ -176,7 +176,7 @@
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
                 await audioRecorder.start(stream);
-                
+
 
             } catch (error) {
                 console.error('Error accessing the microphone', error);

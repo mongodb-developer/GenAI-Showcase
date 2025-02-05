@@ -25,7 +25,7 @@ export async function DELETE(
 
     const client = await clientPromise
     const db = client.db("mongomp")
-    
+
     const result = await db.collection("playlists").deleteOne({
       _id: new ObjectId(params.id),
       user_id: new ObjectId(decoded.userId)
@@ -41,4 +41,3 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete playlist' }, { status: 500 })
   }
 }
-

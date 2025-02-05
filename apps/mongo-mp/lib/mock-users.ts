@@ -37,4 +37,3 @@ export const mockUsers: User[] = [
     lastLogin: '2023-06-19T16:20:00Z',
   },
 ];
-

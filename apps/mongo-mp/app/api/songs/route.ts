@@ -9,16 +9,16 @@ export async function GET(request: Request) {
   try {
     const client = await clientPromise
     const db = client.db("mongomp")
-    
+
     let songs
     if (query) {
       // Using the actual schema fields for text search
       songs = await db.collection("songs").aggregate([
         {
           '$search': {
-            'index': 'default', 
+            'index': 'default',
             'text': {
-              'query': query, 
+              'query': query,
               'path': ['title', 'artist', 'genre', 'tags']
             }
           }
@@ -65,4 +65,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to fetch songs' }, { status: 500 })
   }
 }
-

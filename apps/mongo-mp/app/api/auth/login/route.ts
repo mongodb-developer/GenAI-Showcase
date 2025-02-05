@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     // Find user by email
     const user = await db.collection("users").findOne(
       { email },
-      { 
+      {
         projection: {
           _id: 1,
           name: 1,
@@ -48,17 +48,17 @@ export async function POST(request: Request) {
 
     // Generate JWT token
     const token = sign(
-      { 
+      {
         userId: user._id.toString(),
-        email: user.email 
+        email: user.email
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
     // Create response with user data
-    const response = NextResponse.json({ 
-      message: 'Login successful', 
+    const response = NextResponse.json({
+      message: 'Login successful',
       user: {
         id: user._id.toString(),
         name: user.name,
@@ -84,4 +84,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'An error occurred during login' }, { status: 500 });
   }
 }
-

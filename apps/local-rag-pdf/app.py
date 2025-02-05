@@ -1,7 +1,8 @@
 import os
+import re
 import tempfile
 import time
-import re
+
 import streamlit as st
 from rag_module import ChatPDF
 
@@ -17,9 +18,11 @@ def display_messages():
                 # Process the content to hide <think>...</think> blocks
                 content = message["content"]
                 # Use regex to find all <think>...</think> blocks
-                think_blocks = re.findall(r'<think>(.*?)</think>', content, re.DOTALL)
+                think_blocks = re.findall(r"<think>(.*?)</think>", content, re.DOTALL)
                 # Remove all <think>...</think> blocks from the visible content
-                visible_content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL).strip()
+                visible_content = re.sub(
+                    r"<think>.*?</think>", "", content, flags=re.DOTALL
+                ).strip()
 
                 # Display the visible content
                 st.markdown(visible_content)
@@ -45,7 +48,9 @@ def process_query():
 
         # Prepare conversation history for context (excluding system messages if any)
         conversation_history = [
-            msg["content"] for msg in st.session_state["messages"] if msg["role"] != "system"
+            msg["content"]
+            for msg in st.session_state["messages"]
+            if msg["role"] != "system"
         ]
 
         # Display assistant response
@@ -65,7 +70,9 @@ def process_query():
             st.markdown(agent_text)
 
         # Add assistant response to chat history
-        st.session_state["messages"].append({"role": "assistant", "content": agent_text})
+        st.session_state["messages"].append(
+            {"role": "assistant", "content": agent_text}
+        )
 
         # Clear the input box
         st.session_state["user_input"] = ""
@@ -82,13 +89,19 @@ def upload_and_index_file():
             tf.write(file.getbuffer())
             file_path = tf.name
 
-        with st.session_state["ingestion_spinner"], st.spinner(f"Uploading and indexing {file.name}..."):
+        with (
+            st.session_state["ingestion_spinner"],
+            st.spinner(f"Uploading and indexing {file.name}..."),
+        ):
             t0 = time.time()
             st.session_state["assistant"].upload_and_index_pdf(file_path)
             t1 = time.time()
 
         st.session_state["messages"].append(
-            {"role": "system", "content": f"Uploaded and indexed {file.name} in {t1 - t0:.2f} seconds"}
+            {
+                "role": "system",
+                "content": f"Uploaded and indexed {file.name} in {t1 - t0:.2f} seconds",
+            }
         )
         os.remove(file_path)
 

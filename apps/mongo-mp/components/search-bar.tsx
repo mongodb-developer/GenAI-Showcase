@@ -32,4 +32,3 @@ export function SearchBar({ onSearch }: SearchBarProps) {
     </form>
   )
 }
-
