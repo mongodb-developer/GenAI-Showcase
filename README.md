@@ -34,4 +34,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 As you work through these examples, if you encounter any problems, please [open a new issue](https://github.com/mongodb-developer/GenAI-Showcase/issues/new).
 
-For general GenAI-related questions, reach us in our [GenAI community forum](https://www.mongodb.com/community/forums/c/generative-ai/162).
+## Additional Resources
+
+* [AI Content Hub](https://www.mongodb.com/resources/use-cases/artificial-intelligence)
+* [GenAI Community Forum](https://www.mongodb.com/community/forums/c/generative-ai/162).
