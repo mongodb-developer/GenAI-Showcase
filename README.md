@@ -1,6 +1,10 @@
 ## MongoDB's GenAI Showcase
 
-Welcome to MongoDB's Generative AI Showcase Repository! Whether you are just starting out on your Generative AI journey, or looking to build advanced GenAI applications, we've got you covered. This repository has an exhaustive list of examples and sample applications that cover Retrieval-Augmented Generation (RAG), AI Agents, and industry-specific use cases. Discover how MongoDB integrates into RAG pipelines and AI Agents, serving as a vector database, operational database, and memory provider.
+Welcome to MongoDB's Generative AI Showcase Repository!
+
+Whether you are just starting out on your Generative AI journey, or looking to build advanced GenAI applications, we've got you covered. This repository has an exhaustive list of examples and sample applications that cover Retrieval-Augmented Generation (RAG), AI Agents, and industry-specific use cases.
+
+Discover how MongoDB integrates into RAG pipelines and AI Agents, serving as a vector database, operational database, and memory provider.
 
 ## Contents
 
@@ -30,4 +34,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 As you work through these examples, if you encounter any problems, please [open a new issue](https://github.com/mongodb-developer/GenAI-Showcase/issues/new).
 
-You can also reach us in our [GenAI community forum](https://www.mongodb.com/community/forums/c/generative-ai/162).
+For general GenAI-related questions, reach us in our [GenAI community forum](https://www.mongodb.com/community/forums/c/generative-ai/162).
