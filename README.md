@@ -41,6 +41,7 @@ This section contains examples of use cases that are commonly seen in industry-f
 | **Realtime Voice OpenAI API and Atlas Vector Search Rental Agent** |  OpenAI, Atlas , Python , React | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/Pash10g/voice-openai-mongo-rentals-agent)|Sample application that use OpenAI Realtime API and MongoDB Atlas vector/CRUD as tools for a full voice based rental assistant. |
 | **MongoDB and n8n.io  AI template** | n8n AI automation, MongoDB, JS | [template](https://n8n.io/workflows/2554-mongodb-ai-agent-intelligent-movie-recommendations/)| A sample workflow to start of when building AI context aware flows with [n8n platform](https://n8n.io)|
 | **MongoMP - Music Platform** | Next.js 14, MongoDB Atlas, JWT | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](apps/mongo-mp)| A music streaming platform with AI-powered recommendations using MongoDB's vector search capabilities|
+| **MongoDB and OpenAI RAG** | Next.js 14, MongoDB Atlas, OpenAI, Vercel | [![GitHub](https://img.shields.io/badge/GitHub-View_on_GitHub-blue?logo=GitHub)](https://github.com/mongodb-partners/MongoDB-RAG-Vercel)| A starter RAG application for developers to learn and start building. Comes with one-click deployment.|
 
 ## Evaluations
 - [Evaluating your LLM applications](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/evals/ragas-evaluation.ipynb)
