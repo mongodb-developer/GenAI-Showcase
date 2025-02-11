@@ -38,4 +38,3 @@ export async function GET() {
     return NextResponse.json({ error: "An error occurred while fetching sentiment distribution." }, { status: 500 })
   }
 }
-

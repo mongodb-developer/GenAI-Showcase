@@ -3,7 +3,7 @@ import { generateObject } from "ai"
 import { z } from "zod"
 
 const sentimentAnalysisSchema = z.object({
-  sentiment: 
+  sentiment:
     z.object({
       name: z.string(),
       sentiment: z.enum(["positive", "negative", "neutral"]),
@@ -97,4 +97,3 @@ export async function analyzeProductReview(
     throw error
   }
 }
-

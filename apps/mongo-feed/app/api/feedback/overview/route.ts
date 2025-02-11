@@ -88,4 +88,3 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch feedback overview" }, { status: 500 })
   }
 }
-

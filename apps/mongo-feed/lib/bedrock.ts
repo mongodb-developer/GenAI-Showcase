@@ -8,4 +8,3 @@ export const bedrock = createAmazonBedrock({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
-

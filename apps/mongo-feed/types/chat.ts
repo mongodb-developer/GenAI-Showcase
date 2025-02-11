@@ -27,4 +27,3 @@ export interface ChatAnalysis {
   category: string
   agentName: string | null
 }
-

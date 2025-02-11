@@ -24,4 +24,3 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json({ error: "An error occurred while fetching processing logs." }, { status: 500 })
   }
 }
-

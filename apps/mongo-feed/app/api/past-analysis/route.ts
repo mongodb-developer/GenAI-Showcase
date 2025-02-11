@@ -42,4 +42,3 @@ function calculateDuration(start: Date, end: Date): string {
   const seconds = Math.floor((durationMs % 60000) / 1000)
   return `${minutes}m ${seconds}s`
 }
-

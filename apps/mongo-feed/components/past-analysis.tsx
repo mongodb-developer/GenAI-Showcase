@@ -92,4 +92,3 @@ export function PastAnalysis() {
     </div>
   )
 }
-

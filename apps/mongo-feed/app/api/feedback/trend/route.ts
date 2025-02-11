@@ -69,4 +69,3 @@ export async function GET() {
     return NextResponse.json({ error: "An error occurred while fetching feedback trend." }, { status: 500 })
   }
 }
-

@@ -32,4 +32,3 @@ export function FeedbackChart({ data }: FeedbackChartProps) {
     </ResponsiveContainer>
   )
 }
-

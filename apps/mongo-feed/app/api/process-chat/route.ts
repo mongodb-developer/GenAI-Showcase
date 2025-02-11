@@ -24,7 +24,7 @@ const chatAnalysisSchema = z.object({
   ),
 })
 
-const systemPrompt = `You are an AI assistant that analyzes customer service chat conversations for MongoFeed, a feedback analysis platform. 
+const systemPrompt = `You are an AI assistant that analyzes customer service chat conversations for MongoFeed, a feedback analysis platform.
 Your task is to analyze the provided chat messages and return a structured analysis including:
 - summary: A brief summary of the conversation (max 3 sentences)
 - overallSentiment: The overall sentiment of the conversation (positive, negative, or neutral)
@@ -141,4 +141,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "An error occurred while processing the chat." }, { status: 500 })
   }
 }
-

@@ -57,4 +57,3 @@ export async function GET() {
     return NextResponse.json({ error: "An error occurred while fetching top issues." }, { status: 500 })
   }
 }
-

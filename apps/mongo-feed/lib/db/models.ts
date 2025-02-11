@@ -28,4 +28,3 @@ export async function getChatsCollection() {
   cachedChats = chats
   return chats
 }
-

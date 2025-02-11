@@ -113,4 +113,3 @@ async function processChatAnalysis(db, chatId: ObjectId, messages) {
     await db.collection("chat_queue").updateOne({ _id: chatId }, { $set: { status: "error", updatedAt: new Date() } })
   }
 }
-

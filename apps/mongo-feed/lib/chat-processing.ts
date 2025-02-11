@@ -11,7 +11,7 @@ const chatAnalysisSchema = z.object({
 
 type ChatAnalysis = z.infer<typeof chatAnalysisSchema>
 
-const systemPrompt = `You are an AI assistant that analyzes customer service chat conversations. 
+const systemPrompt = `You are an AI assistant that analyzes customer service chat conversations.
 Your task is to analyze the entire chat conversation provided and return a structured analysis including:
 - overallSentiment: The overall sentiment of the entire conversation (positive, negative, or neutral)
 - mainTopics: An array of main topics discussed throughout the conversation (max 5 topics)
@@ -42,4 +42,3 @@ export async function analyzeEntireChat(messages: { role: string; content: strin
     }
   }
 }
-

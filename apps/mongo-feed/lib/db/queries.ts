@@ -87,4 +87,3 @@ export async function getDailyFeedbackTrend(days = 30) {
     ])
     .toArray()
 }
-

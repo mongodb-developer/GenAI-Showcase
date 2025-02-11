@@ -51,14 +51,14 @@ export function Navigation() {
     </ScrollArea>
   )
 
-  const NavItem = ({ 
-    href, 
-    icon: Icon, 
-    children 
-  }: { 
+  const NavItem = ({
+    href,
+    icon: Icon,
+    children
+  }: {
     href: string
     icon: React.ComponentType<{ className?: string }>
-    children: React.ReactNode 
+    children: React.ReactNode
   }) => {
     const isActive = pathname === href
     return (
@@ -111,4 +111,3 @@ export function Navigation() {
     </>
   )
 }
-
