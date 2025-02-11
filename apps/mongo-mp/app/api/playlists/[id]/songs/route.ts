@@ -25,7 +25,7 @@ export async function GET(
 
     const client = await clientPromise
     const db = client.db("mongomp")
-    
+
     const playlist = await db.collection("playlists").findOne(
       { _id: new ObjectId(params.id), user_id: new ObjectId(decoded.userId) }
     )
@@ -46,4 +46,3 @@ export async function GET(
     return NextResponse.json({ error: 'Failed to fetch playlist songs' }, { status: 500 })
   }
 }
-

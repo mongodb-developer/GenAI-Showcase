@@ -28,6 +28,7 @@ ignore = [
    "F841",    # Local variable `full_text_search_result` is assigned to but never used"
    "UP006",   # Use `list` instead of `List` for type annotation"
    "UP035",   # `typing.List` is deprecated, use `list` instead"
+   "E731",    # Do not assign a `lambda` expression, use a `def`
 ]
 unfixable = ["F401"]
 

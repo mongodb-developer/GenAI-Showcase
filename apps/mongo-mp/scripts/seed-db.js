@@ -8,16 +8,16 @@ async function seed() {
   try {
     const client = await MongoClient.connect(process.env.MONGODB_URI);
     const db = client.db("mongomp");
-    
+
     // Load songs from JSON
-    let songs = JSON.parse(await import('fs/promises').then(fs => 
+    let songs = JSON.parse(await import('fs/promises').then(fs =>
       fs.readFile(new URL('../app/data/mongomp.songs-pop.json', import.meta.url), 'utf8')
     ));
-     
+
     await db.collection("songs").deleteMany({});
     await db.collection("songs").insertMany(songs);
     console.log(`Successfully inserted ${songs.length} songs`);
-    songs = JSON.parse(await import('fs/promises').then(fs => 
+    songs = JSON.parse(await import('fs/promises').then(fs =>
       fs.readFile(new URL('../app/data/mongomp.songs-comedy.json', import.meta.url), 'utf8')
     ));
     await db.collection("songs").insertMany(songs);
@@ -43,7 +43,7 @@ async function seedUsers() {
 
     // Load users from JSON
 
-    let users = JSON.parse(await import('fs/promises').then(fs => 
+    let users = JSON.parse(await import('fs/promises').then(fs =>
       fs.readFile(new URL('../app/data/users.json', import.meta.url), 'utf8')
     ));
 
@@ -64,7 +64,7 @@ async function seedUsers() {
 async function createSearchIndex(client) {
   try {
     const db = client.db("mongomp");
-    
+
     await db.collection("songs").dropIndexes();
     await db.command({
       createSearchIndexes: "songs",
@@ -77,7 +77,7 @@ async function createSearchIndex(client) {
         }
       }]
     });
-    
+
     console.log("Successfully created Atlas Search index");
   } catch (e) {
     console.error('Failed to create search index:', e);

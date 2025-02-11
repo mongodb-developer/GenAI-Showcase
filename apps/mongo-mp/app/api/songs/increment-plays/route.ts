@@ -13,11 +13,11 @@ export async function POST(request: Request) {
 
     const client = await clientPromise;
     const db = client.db("mongomp");
-    
+
     // Update play count and last_played timestamp
     const result = await db.collection("songs").updateOne(
       { _id: new ObjectId(songId) },
-      { 
+      {
         $inc: { play_count: 1 },
         $set: { last_played: new Date().toISOString() }
       }
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       { _id: new ObjectId(songId) }
     );
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Play count incremented successfully',
       song: {
         ...updatedSong,
@@ -44,4 +44,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to increment play count' }, { status: 500 });
   }
 }
-

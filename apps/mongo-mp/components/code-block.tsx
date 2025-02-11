@@ -14,4 +14,3 @@ export function CodeBlock({ code, language = 'javascript' }: CodeBlockProps) {
     </pre>
   );
 }
-

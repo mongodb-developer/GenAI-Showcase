@@ -79,7 +79,7 @@ export default function ProfilePage() {
             <div>
               <CardTitle className="text-2xl">
                 {user.name}
-                <InfoTooltip 
+                <InfoTooltip
                   content="User's name stored in MongoDB"
                   query={`db.users.findOne({ _id: ObjectId("${user._id}") }, { name: 1 })`}
                   side="right"
@@ -87,7 +87,7 @@ export default function ProfilePage() {
               </CardTitle>
               <CardDescription>
                 {user.email}
-                <InfoTooltip 
+                <InfoTooltip
                   content="User's email stored in MongoDB"
                   query={`db.users.findOne({ _id: ObjectId("${user._id}") }, { email: 1 })`}
                   side="right"
@@ -119,12 +119,12 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">
                   Liked Songs
-                  <InfoTooltip 
+                  <InfoTooltip
                     content="User's liked songs stored in MongoDB"
                     query={`db.users.findOne(
   { _id: ObjectId("${user._id}") },
   { likes: 1 }
-).likes.map(songId => 
+).likes.map(songId =>
   db.songs.findOne({ _id: songId })
 )`}
                     side="right"
@@ -151,4 +151,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-

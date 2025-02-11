@@ -234,9 +234,9 @@ export default function HomeContent() {
             query={`db.songs.aggregate([
   {
     '$search': {
-      'index': 'default', 
+      'index': 'default',
       'text': {
-        'query': 'searchQuery', 
+        'query': 'searchQuery',
         'path': ['title', 'artist', 'genre', 'tags']
       }
     }
@@ -359,4 +359,3 @@ db.artists.find({}).sort({ followers: -1 }).limit(6).toArray()`}
     </main>
   )
 }
-

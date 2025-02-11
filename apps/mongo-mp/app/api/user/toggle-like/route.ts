@@ -29,8 +29,8 @@ export async function POST(request: Request) {
     const db = client.db("mongomp");
 
     // First check if the song exists
-    const song = await db.collection("songs").findOne({ 
-      _id: new ObjectId(songId) 
+    const song = await db.collection("songs").findOne({
+      _id: new ObjectId(songId)
     });
 
     if (!song) {
@@ -38,8 +38,8 @@ export async function POST(request: Request) {
     }
 
     // Get user's current likes
-    const user = await db.collection("users").findOne({ 
-      _id: new ObjectId(decoded.userId) 
+    const user = await db.collection("users").findOne({
+      _id: new ObjectId(decoded.userId)
     });
 
     if (!user) {
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
       _id: { $in: updatedUser?.likes || [] }
     }).toArray();
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message,
       likes: likedSongs.map(song => ({
         ...song,
@@ -96,4 +96,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'An error occurred' }, { status: 500 });
   }
 }
-

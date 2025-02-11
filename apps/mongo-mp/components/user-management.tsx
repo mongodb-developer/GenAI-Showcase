@@ -29,8 +29,8 @@ export function UserManagement() {
         <Tabs defaultValue={users[0]._id} className="w-full">
           <TabsList className="grid grid-cols-2 mb-4">
             {users.map(user => (
-              <TabsTrigger 
-                key={user._id} 
+              <TabsTrigger
+                key={user._id}
                 value={user._id}
                 onClick={() => setSelectedUser(user)}
               >
@@ -54,18 +54,18 @@ export function UserManagement() {
                 <div className="grid gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="name">Name</Label>
-                    <Input 
-                      id="name" 
-                      value={selectedUser.name} 
+                    <Input
+                      id="name"
+                      value={selectedUser.name}
                       onChange={(e) => handleUpdateUser('name', e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      value={selectedUser.email} 
+                    <Input
+                      id="email"
+                      type="email"
+                      value={selectedUser.email}
                       onChange={(e) => handleUpdateUser('email', e.target.value)}
                     />
                   </div>
@@ -117,4 +117,3 @@ export function UserManagement() {
     </Card>
   )
 }
-

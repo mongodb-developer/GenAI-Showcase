@@ -16,4 +16,3 @@ node_modules
 #Ignore PDF Files
 PDF_KG
 .sass-cache
-

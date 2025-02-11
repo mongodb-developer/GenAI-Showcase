@@ -32,7 +32,9 @@ EVENTS_TO_IGNORE = {
 
 
 @asynccontextmanager
-async def connect(*, api_key: str, model: str, url: str) -> AsyncGenerator[
+async def connect(
+    *, api_key: str, model: str, url: str
+) -> AsyncGenerator[
     tuple[
         Callable[[dict[str, Any] | str], Coroutine[Any, Any, None]],
         AsyncIterator[dict[str, Any]],
@@ -242,7 +244,6 @@ class OpenAIVoiceReactAgent(BaseModel):
                     await model_send(data)
                     await model_send({"type": "response.create", "response": {}})
                 elif stream_key == "output_speaker":
-
                     t = data["type"]
                     if t == "response.audio.delta":
                         await send_output_chunk(json.dumps(data))
