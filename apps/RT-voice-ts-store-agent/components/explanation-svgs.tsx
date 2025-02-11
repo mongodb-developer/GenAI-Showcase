@@ -52,4 +52,3 @@ export const ConversationSVG = () => (
     <line x1="9" y1="14" x2="15" y2="14"></line>
   </svg>
 )
-

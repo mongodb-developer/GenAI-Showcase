@@ -70,7 +70,7 @@ To get started with the Voice Grocery Assistant:
 3. Run the following script to seed the database with products and its vectorized embeddings for semantic search/full text search.
    ```
    npm run seed
-   ``` 
+   ```
 3. Build and run the application:
    ```bash
    npm run dev

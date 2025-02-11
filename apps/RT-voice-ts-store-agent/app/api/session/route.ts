@@ -35,4 +35,3 @@ export async function POST() {
     return NextResponse.json({ error: "Failed to fetch session data" }, { status: 500 })
   }
 }
-

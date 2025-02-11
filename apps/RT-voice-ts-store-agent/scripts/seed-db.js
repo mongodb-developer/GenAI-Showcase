@@ -3,8 +3,8 @@
 /**
  * Seed Script for AI Shop Products and Index Creation
  *
- * This script loads product data from a JSON file, computes embeddings for each document 
- * using the Vercel AI SDK, seeds (upserts) each document into the "products" collection in the 
+ * This script loads product data from a JSON file, computes embeddings for each document
+ * using the Vercel AI SDK, seeds (upserts) each document into the "products" collection in the
  * "ai_shop" database, and then creates both an Atlas Search index and a vector search index.
  *
  * It uses a dedicated MongoDB client instance created with custom appName settings.

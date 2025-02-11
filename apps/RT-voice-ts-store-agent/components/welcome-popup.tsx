@@ -35,4 +35,3 @@ export const WelcomePopup: React.FC<WelcomePopupProps> = ({ isOpen, onClose }) =
     </Dialog>
   )
 }
-

@@ -3,8 +3,8 @@
 /**
  * MongoDB Seed Script for AI Shop Products
  *
- * This script loads product data from a JSON file, computes embeddings for each document 
- * using the title and description with the Vercel AI SDK, and then upserts each document 
+ * This script loads product data from a JSON file, computes embeddings for each document
+ * using the title and description with the Vercel AI SDK, and then upserts each document
  * into the MongoDB collection.
  *
  * It uses the MongoDB client from the project's lib/mongodb.ts file.
