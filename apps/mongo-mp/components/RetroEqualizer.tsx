@@ -18,7 +18,7 @@ const RetroEqualizer: React.FC<RetroEqualizerProps> = ({ bpm, isPlaying }) => {
     <div className="bg-[#222] rounded-lg p-4">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" className="w-full max-w-xl">
         <rect width="400" height="200" fill="#2C2C2C"/>
-        
+
         <g transform="translate(20, 180)">
           {barHeights.map((height, index) => (
             <rect
@@ -40,7 +40,7 @@ const RetroEqualizer: React.FC<RetroEqualizerProps> = ({ bpm, isPlaying }) => {
             </rect>
           ))}
         </g>
-        
+
         <rect width="400" height="100" fill="url(#gloss)" opacity="0.1"/>
         <defs>
           <linearGradient id="gloss" x1="0" x2="0" y1="0" y2="1">
@@ -54,4 +54,3 @@ const RetroEqualizer: React.FC<RetroEqualizerProps> = ({ bpm, isPlaying }) => {
 };
 
 export default RetroEqualizer;
-

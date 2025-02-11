@@ -8,7 +8,7 @@ export async function GET(
   try {
     const client = await clientPromise
     const db = client.db("mongomp")
-    
+
     const songs = await db.collection("songs")
       .find({ genre: params.genre })
       .toArray()
@@ -19,4 +19,3 @@ export async function GET(
     return NextResponse.json({ error: 'Failed to fetch songs' }, { status: 500 })
   }
 }
-

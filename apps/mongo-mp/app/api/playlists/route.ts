@@ -22,7 +22,7 @@ export async function GET() {
 
     const client = await clientPromise
     const db = client.db("mongomp")
-    
+
     // Get all playlists for the user
     const playlists = await db.collection("playlists")
       .find({ user_id: new ObjectId(decoded.userId) })
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
 
     const client = await clientPromise
     const db = client.db("mongomp")
-    
+
     const result = await db.collection("playlists").insertOne({
       name,
       user_id: new ObjectId(decoded.userId),
@@ -97,4 +97,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create playlist' }, { status: 500 })
   }
 }
-

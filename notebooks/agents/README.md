@@ -1,0 +1,21 @@
+Jupyter Notebooks demonstrating how to build AI agents using various frameworks and MongoDB Atlas as the vector store and memory provider.
+
+| Title | Stack | Notebook |
+|-------|-------|----------|
+| Self-Reflecting Gift Agent | MongoDB Atlas, Haystack | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/self_reflecting_gift_agent_haystack.ipynb) |
+| Building AI Agent with Claude | MongoDB Atlas, Claude, LlamaIndex | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/how_to_build_ai_agent_claude_3_5_sonnet_llamaindex_mongodb.ipynb) |
+| Building AI Agent with OpenAI | MongoDB Atlas, OpenAI, LlamaIndex | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/how_to_build_ai_agent_openai_llamaindex_mongodb.ipynb) |
+| Self-Reflecting Cooking Agent | MongoDB Atlas, Haystack | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/MongoDB_Haystack_self_reflecting_Cooking_agent.ipynb) |
+| Multi-Agent Micro Agents | MongoDB Atlas, SmoLAgents | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/smolagents_multi-agent_micro_agents.ipynb) |
+| SmoLAgents with MongoDB | MongoDB Atlas, SmoLAgents, Hugging Face | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/smolagents_hf_with_mongodb.ipynb) |
+| AI Agent with PydanticAI | MongoDB Atlas, PydanticAI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/ai_agent_with_pydanticai_and_mongodb.ipynb) |
+| Gemini 2.0 Multi-Modality | MongoDB Atlas, Gemini 2.0 | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/Gemini2_0_multi_modality_with_mongodb_atlas_vector_store.ipynb) |
+| AWS Bedrock Agent | MongoDB Atlas, AWS Bedrock | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/mongodb_with_aws_bedrock_agent.ipynb) |
+| Working Memory with Tavily | MongoDB Atlas, Tavily | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/implementing_working_memory_with_tavily_and_mongodb.ipynb) |
+| HR Agentic Chatbot | MongoDB Atlas, LangGraph, Claude | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/hr_agentic_chatbot_with_langgraph_claude.ipynb) |
+| CrewAI with MongoDB | MongoDB Atlas, CrewAI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/crewai-mdb-agg.ipynb) |
+| Asset Management Assistant | MongoDB Atlas, LangGraph | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/asset_management_analyst_assistant_agentic_chatbot_langgraph_mongodb.ipynb) |
+| Airbnb Agent | MongoDB Atlas, OpenAI, LlamaIndex | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/airbnb_agent_openai_llamaindex_mongodb.ipynb) |
+| Factory Safety Assistant | MongoDB Atlas, LangGraph, LangChain | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/agentic_rag_factory_safety_assistant_with_langgraph_langchain_mongodb.ipynb) |
+| Fireworks AI Agent | MongoDB Atlas, Fireworks AI, LangChain | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/agent_fireworks_ai_langchain_mongodb.ipynb) |
+| RetrieveChat Agent | MongoDB Atlas, AgentChat | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/agents/agentchat_RetrieveChat_mongodb.ipynb) |

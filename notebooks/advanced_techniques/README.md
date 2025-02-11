@@ -1,0 +1,13 @@
+Jupyter Notebooks that cover advanced techniques such as vector quantization, parent document retrieval, hybrid search etc. that can help improve and/or optimize LLM applications.
+
+| Title | Stack | Notebook |
+|-------|-------|----------|
+| Advanced Evaluation of Quantized Vectors | MongoDB Atlas, Cohere, BEIR | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/advanced_evaluation_of_quantized_vectors_using_cohere_mongodb_beir.ipynb) |
+| Automatic Quantization of Nomic Embeddings | MongoDB Atlas, Nomic AI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/automatic_quantization_of_nomic_emebddings_with_mongodb.ipynb) |
+| Function Calling with MongoDB | MongoDB Atlas, OpenAI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/function_calling_mongodb_as_a_toolbox.ipynb) |
+| Evaluating Information Retrieval Techniques | MongoDB Atlas, LangChain | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/evaluating_information_retrival_techniques_mongondb_langchain.ipynb) |
+| Geospatial Queries with Vector Search | MongoDB Atlas, Spritzes | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/geospatialqueries_vectorsearch_spritzes.ipynb) |
+| Parent Document Retrieval | LangChain, MongoDB Atlas | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/langchain_parent_document_retrieval.ipynb) |
+| Quantized Vector Ingestion | MongoDB Atlas, Cohere | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/quantized_vector_ingestion_with_cohere_and_mongodb.ipynb) |
+| Retrieval Strategies with LlamaIndex | MongoDB Atlas, LlamaIndex | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/retrieval_strategies_mongodb_llamaindex.ipynb) |
+| Retrieval Strategies with Together AI | MongoDB Atlas, LlamaIndex, Together AI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/advanced_techniques/retrieval_strategies_mongodb_llamaindex_togetherai.ipynb) |

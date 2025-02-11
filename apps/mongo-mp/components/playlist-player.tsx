@@ -126,9 +126,9 @@ export function PlaylistPlayer({ playlistId, onClose }: PlaylistPlayerProps) {
           <h3 className="font-semibold text-lg">{currentSong.title}</h3>
           <p className="text-sm text-zinc-400">{currentSong.artist}</p>
         </div>
-        
-        <audio 
-          ref={audioRef} 
+
+        <audio
+          ref={audioRef}
           src={currentSong.url}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
@@ -178,12 +178,12 @@ export function PlaylistPlayer({ playlistId, onClose }: PlaylistPlayerProps) {
           <ScrollArea className="h-32">
             <ul className="space-y-1">
               {songs.map((song, index) => (
-                <li 
-                  key={song._id} 
+                <li
+                  key={song._id}
                   className={cn(
                     "text-sm p-2 rounded cursor-pointer flex items-center",
-                    index === currentSongIndex 
-                      ? "bg-emerald-500/20 text-emerald-500" 
+                    index === currentSongIndex
+                      ? "bg-emerald-500/20 text-emerald-500"
                       : "hover:bg-zinc-800 text-zinc-300"
                   )}
                   onClick={() => {
@@ -209,4 +209,3 @@ export function PlaylistPlayer({ playlistId, onClose }: PlaylistPlayerProps) {
     </Card>
   )
 }
-

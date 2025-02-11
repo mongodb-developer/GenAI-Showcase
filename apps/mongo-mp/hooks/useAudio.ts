@@ -31,4 +31,3 @@ export function useAudio(url: string) {
 
   return { playing, toggle, duration, currentTime, audio };
 }
-

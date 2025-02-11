@@ -8,7 +8,7 @@ Inspired by [Voice React Agent by LangChain](https://github.com/langchain-ai/rea
 
 > Create by [Pavel Duchovny](https://www.linkedin.com/in/pavel-duchovny-60573275/) with ❤️
 
-## Demo 
+## Demo
 [![Voice Chat Agent with MongoDB Vector Search & OpenAI Realtime API](https://img.youtube.com/vi/USmcc8biu6M/maxresdefault.jpg)](https://youtu.be/USmcc8biu6M)
 
 
@@ -56,7 +56,7 @@ collection = db['rentals']
 
 db.create_collection("rentals")
 
-# create index 
+# create index
 search_index_model = SearchIndexModel(
   definition={
     "fields": [

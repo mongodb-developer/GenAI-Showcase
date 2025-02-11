@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { Play, Pause, Heart, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -31,16 +31,16 @@ interface SongCardProps {
   playlists: Playlist[]
 }
 
-export function SongCard({ 
-  id, 
-  title, 
-  artist, 
-  duration, 
-  plays, 
-  tags, 
-  isPlaying, 
-  isLiked, 
-  onTogglePlay, 
+export function SongCard({
+  id,
+  title,
+  artist,
+  duration,
+  plays,
+  tags,
+  isPlaying,
+  isLiked,
+  onTogglePlay,
   onToggleLike,
   onAddToPlaylist,
   playlists
@@ -84,7 +84,7 @@ export function SongCard({
   }, [])
 
   return (
-    <Card 
+    <Card
       className="group relative overflow-hidden border-0 bg-card transition-colors hover:bg-accent w-[250px] sm:w-[200px]"
     >
       <CardContent className="p-0">
@@ -123,12 +123,12 @@ export function SongCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {playlists.map((playlist) => (
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   key={playlist._id}
                   onClick={() => onAddToPlaylist(id, playlist._id)}
                 >
                   Add to {playlist.name}
-                  <InfoTooltip 
+                  <InfoTooltip
                     content="MongoDB uses $addToSet to efficiently add songs to playlists without duplicates."
                     query={`db.playlists.updateOne(
   { _id: ObjectId("${playlist._id}") },
@@ -158,4 +158,3 @@ export function SongCard({
     </Card>
   )
 }
-
