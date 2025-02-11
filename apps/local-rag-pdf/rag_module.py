@@ -1,16 +1,17 @@
-from langchain_core.globals import set_verbose, set_debug
-from langchain_ollama import ChatOllama, OllamaEmbeddings
-from langchain.schema.output_parser import StrOutputParser
-from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
-from pymongo import MongoClient
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema.runnable import RunnablePassthrough
-from langchain_community.vectorstores.utils import filter_complex_metadata
-from langchain_core.prompts import ChatPromptTemplate
 import logging
-import yaml
+from typing import Optional
 
+import yaml
+from langchain.schema.output_parser import StrOutputParser
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores.utils import filter_complex_metadata
+from langchain_core.globals import set_debug, set_verbose
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from pymongo import MongoClient
 
 # Enable verbose debugging
 set_debug(True)
@@ -20,10 +21,12 @@ set_verbose(True)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def load_config(config_file: str = "config.yaml"):
     """Load configuration from a YAML file."""
-    with open(config_file, "r") as file:
+    with open(config_file) as file:
         return yaml.safe_load(file)
+
 
 class ChatPDF:
     """A class designed for PDF ingestion and question answering using RAG with detailed debugging logs."""
@@ -40,29 +43,33 @@ class ChatPDF:
         mongo_connection_str = config["mongo_connection_str"]
         database_name = config["database_name"]
         collection_name = config["collection_name"]
-        
+
         self.model = ChatOllama(model=llm_model)
         self.embeddings = OllamaEmbeddings(model=embedding_model)
-        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1024, chunk_overlap=100
+        )
         self.prompt = ChatPromptTemplate.from_template(
             """
             You are a helpful assistant answering questions based on the uploaded document and the conversation.
-            
+
             Conversation History:
             {conversation_history}
-            
+
             Context from Documents:
             {context}
-            
+
             Question:
             {question}
-            
+
             Provide a concise, accurate answer (preferably within three sentences), ensuring it directly addresses the question.
             """
         )
-        
+
         # Setup MongoDB connection
-        self.client = MongoClient(mongo_connection_str)
+        self.client = MongoClient(
+            mongo_connection_str, appname="devrel.showcase.local_rag_pdf_app"
+        )
         self.collection = self.client[database_name][collection_name]
 
         # Verbose connection check
@@ -74,7 +81,7 @@ class ChatPDF:
             collection=self.collection,
             embedding=self.embeddings,
             index_name="vector_index",
-            relevance_score_fn="cosine"
+            relevance_score_fn="cosine",
         )
 
         # Create vector search index on the collection
@@ -107,7 +114,13 @@ class ChatPDF:
         self.vector_store.add_documents(documents=chunks)
         logger.info("Document embeddings stored successfully in MongoDB Atlas.")
 
-    def query_with_context(self, query: str, conversation_history: list = None, k: int = 5, score_threshold: float = 0.2):
+    def query_with_context(
+        self,
+        query: str,
+        conversation_history: Optional[list] = None,
+        k: int = 5,
+        score_threshold: float = 0.2,
+    ):
         """
         Answer a query using the RAG pipeline with verbose debugging and conversation history.
 
@@ -132,7 +145,9 @@ class ChatPDF:
         # Generate and log query embeddings
         query_embedding = self.embeddings.embed_query(query)
         logger.info(f"User Query: {query}")
-        logger.debug(f"Query Embedding (sample values): {query_embedding[:10]}... [Total Length: {len(query_embedding)}]")
+        logger.debug(
+            f"Query Embedding (sample values): {query_embedding[:10]}... [Total Length: {len(query_embedding)}]"
+        )
 
         logger.info(f"Retrieving context for query: {query}")
         retrieved_docs = self.retriever.invoke(query)
@@ -147,7 +162,9 @@ class ChatPDF:
 
         # Format the input for the LLM, including conversation history
         formatted_input = {
-            "conversation_history": "\n".join(conversation_history) if conversation_history else "",
+            "conversation_history": (
+                "\n".join(conversation_history) if conversation_history else ""
+            ),
             "context": "\n\n".join(doc.page_content for doc in retrieved_docs),
             "question": query,
         }
@@ -155,9 +172,9 @@ class ChatPDF:
         # Build the RAG chain
         chain = (
             RunnablePassthrough()  # Passes the input as-is
-            | self.prompt           # Formats the input for the LLM
-            | self.model            # Queries the LLM
-            | StrOutputParser()     # Parses the LLM's output
+            | self.prompt  # Formats the input for the LLM
+            | self.model  # Queries the LLM
+            | StrOutputParser()  # Parses the LLM's output
         )
 
         logger.info("Generating response using the LLM.")

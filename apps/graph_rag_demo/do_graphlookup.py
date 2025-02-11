@@ -1,11 +1,13 @@
-from pymongo import MongoClient
-from pprint import pprint
 import os
+from pprint import pprint
+
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
-def graph_lookup(node_name,max_depth):
 
+
+def graph_lookup(node_name, max_depth):
     graph_lookup_docs = []
     try:
         uri = os.getenv("ATLAS_CONNECTION_STRING")
@@ -13,22 +15,19 @@ def graph_lookup(node_name,max_depth):
         database = client["langchain_db"]
         collection = database["nodes_relationships"]
         pipeline = [
-        {
-            '$match': {
-                '_id': node_name
-            }
-        }, {
-            '$graphLookup': {
-                'from': 'nodes_relationships', 
-                'startWith': '$_id', 
-                'connectFromField': 'relationships', 
-                'connectToField': '_id', 
-                'as': 'relates_to', 
-                'maxDepth': max_depth, 
-                'depthField': 'distance', 
-                'restrictSearchWithMatch': {}
-            }
-        }
+            {"$match": {"_id": node_name}},
+            {
+                "$graphLookup": {
+                    "from": "nodes_relationships",
+                    "startWith": "$_id",
+                    "connectFromField": "relationships",
+                    "connectToField": "_id",
+                    "as": "relates_to",
+                    "maxDepth": max_depth,
+                    "depthField": "distance",
+                    "restrictSearchWithMatch": {},
+                }
+            },
         ]
         cursor = collection.aggregate(pipeline)
         for doc in cursor:

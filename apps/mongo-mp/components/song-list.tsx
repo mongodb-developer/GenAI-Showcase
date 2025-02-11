@@ -21,13 +21,13 @@ interface SongListProps {
   playlists: Playlist[]
 }
 
-export function SongList({ 
-  genre, 
-  songs, 
-  currentSong, 
-  isPlaying, 
-  onTogglePlay, 
-  onToggleLike, 
+export function SongList({
+  genre,
+  songs,
+  currentSong,
+  isPlaying,
+  onTogglePlay,
+  onToggleLike,
   onAddToPlaylist,
   userLikes,
   playlists
@@ -66,19 +66,19 @@ export function SongList({
       </div>
       <h2 className="text-3xl font-bold tracking-tight text-primary mb-4 flex items-center">
         {genre}
-        <InfoTooltip 
+        <InfoTooltip
           content={`Songs in the ${genre} genre. MongoDB's flexible schema allows for easy categorization and retrieval of songs by genre.`}
           query={`db.collection("songs").find({ genre: "${genre}" }).toArray()`}
           side="right"
         />
       </h2>
       <ScrollArea className="w-full whitespace-nowrap rounded-md bg-background/30 backdrop-blur-sm relative">
-        <div 
+        <div
           ref={scrollAreaRef}
           className="flex w-max space-x-6 p-6"
         >
           {songs.map((song) => (
-            <SongCard 
+            <SongCard
               key={song._id}
               id={song._id}
               title={song.title}
@@ -96,7 +96,7 @@ export function SongList({
           ))}
         </div>
         <ScrollBar orientation="horizontal" />
-        <div 
+        <div
           className={cn(
             "absolute left-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-background to-transparent p-2 transition-opacity duration-300 sm:hidden",
             canScrollLeft ? "opacity-100" : "opacity-0"
@@ -108,4 +108,3 @@ export function SongList({
     </div>
   )
 }
-

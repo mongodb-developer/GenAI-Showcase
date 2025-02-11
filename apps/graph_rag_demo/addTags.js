@@ -47,8 +47,8 @@ async function findAllDocuments(dbName, collectionName1, collectionName2) {
                     },
                     {
                       $merge: {
-                        into: collectionName2, 
-                        whenMatched: "merge", 
+                        into: collectionName2,
+                        whenMatched: "merge",
                         whenNotMatched: "discard"
                       }
                     }

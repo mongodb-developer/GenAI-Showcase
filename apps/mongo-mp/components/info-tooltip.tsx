@@ -23,7 +23,7 @@ export function InfoTooltip({ content, query, side = 'right', align = 'center' }
         <TooltipTrigger asChild>
           <Info className="h-4 w-4 text-muted-foreground cursor-help inline-block ml-1" />
         </TooltipTrigger>
-        <TooltipContent 
+        <TooltipContent
           side={side}
           align={align}
           className="bg-popover text-popover-foreground p-4 rounded-md shadow-md max-w-md border"
@@ -37,4 +37,3 @@ export function InfoTooltip({ content, query, side = 'right', align = 'center' }
     </TooltipProvider>
   )
 }
-

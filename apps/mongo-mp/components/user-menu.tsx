@@ -41,9 +41,9 @@ export function UserMenu({ user }: UserMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`} 
-              alt={user.name} 
+            <AvatarImage
+              src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`}
+              alt={user.name}
             />
             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
@@ -73,4 +73,3 @@ export function UserMenu({ user }: UserMenuProps) {
     </DropdownMenu>
   )
 }
-

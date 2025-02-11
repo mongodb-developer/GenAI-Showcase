@@ -49,8 +49,8 @@ export default function RegisterPage() {
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Name</Label>
-                <Input 
-                  id="name" 
+                <Input
+                  id="name"
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -59,9 +59,9 @@ export default function RegisterPage() {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
+                <Input
+                  id="email"
+                  type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -70,8 +70,8 @@ export default function RegisterPage() {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="password">Password</Label>
-                <Input 
-                  id="password" 
+                <Input
+                  id="password"
                   type="password"
                   placeholder="Create a password"
                   value={password}
@@ -93,4 +93,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-

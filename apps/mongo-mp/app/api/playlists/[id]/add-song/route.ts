@@ -30,7 +30,7 @@ export async function POST(
 
     const client = await clientPromise;
     const db = client.db("mongomp");
-    
+
     const result = await db.collection("playlists").updateOne(
       { _id: new ObjectId(params.id), user_id: new ObjectId(decoded.userId) },
       { $addToSet: { songs: new ObjectId(songId) } }
@@ -46,4 +46,3 @@ export async function POST(
     return NextResponse.json({ error: 'Failed to add song to playlist' }, { status: 500 });
   }
 }
-

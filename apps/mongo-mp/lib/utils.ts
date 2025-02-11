@@ -10,4 +10,3 @@ export function formatDuration(seconds: number): string {
   const remainingSeconds = Math.floor(seconds % 60);
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
-

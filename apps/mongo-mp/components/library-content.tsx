@@ -132,7 +132,7 @@ export function LibraryContent() {
             <DialogFooter>
               <Button onClick={handleCreatePlaylist}>
                 Create Playlist
-                <InfoTooltip 
+                <InfoTooltip
                   content="MongoDB creates a new document in the playlists collection with a unique _id."
                   query={`db.playlists.insertOne({
   name: "${newPlaylistName}",
@@ -152,8 +152,8 @@ export function LibraryContent() {
         {playlists.map((playlist) => {
           const genres = getUniqueGenres(playlist.songs);
           return (
-            <Card 
-              key={playlist._id} 
+            <Card
+              key={playlist._id}
               className="relative bg-zinc-900 text-white overflow-hidden hover:bg-zinc-800 transition-colors"
             >
               <CardContent className="p-6">
@@ -162,8 +162,8 @@ export function LibraryContent() {
                   <p className="text-zinc-400 mb-4">{playlist.songs.length} songs</p>
                   <div className="flex flex-wrap gap-2">
                     {genres.map((genre) => (
-                      <Badge 
-                        key={genre} 
+                      <Badge
+                        key={genre}
                         variant="secondary"
                         className="bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500/30"
                       >
@@ -176,8 +176,8 @@ export function LibraryContent() {
                   {playlist.songs.length > 0 ? (
                     <ul className="space-y-2">
                       {playlist.songs.map((song, idx) => (
-                        <li 
-                          key={song._id} 
+                        <li
+                          key={song._id}
                           className="flex items-center text-sm text-zinc-300 p-2 rounded hover:bg-zinc-700"
                         >
                           <span className="w-6 text-zinc-500">{idx + 1}</span>
@@ -193,25 +193,25 @@ export function LibraryContent() {
                   )}
                 </ScrollArea>
                 <div className="flex items-center justify-between gap-4">
-                  <Button 
-                    variant="destructive" 
+                  <Button
+                    variant="destructive"
                     className="flex-1"
                     onClick={() => handleDeletePlaylist(playlist._id)}
                   >
                     <Trash2 className="mr-2 h-4 w-4" /> Delete
-                    <InfoTooltip 
+                    <InfoTooltip
                       content="MongoDB removes the playlist document from the collection."
                       query={`db.playlists.deleteOne({ _id: ObjectId("${playlist._id}") })`}
                       side="top"
                     />
                   </Button>
-                  <Button 
-                    variant="secondary" 
+                  <Button
+                    variant="secondary"
                     className="flex-1"
                     onClick={() => router.push(`/?playlist=${playlist._id}`)}
                   >
                     <Play className="mr-2 h-4 w-4" /> Play
-                    <InfoTooltip 
+                    <InfoTooltip
                       content="MongoDB retrieves the playlist's songs for playback."
                       query={`db.playlists.aggregate([
   { $match: { _id: ObjectId("${playlist._id}") } },
@@ -226,12 +226,12 @@ export function LibraryContent() {
                       side="top"
                     />
                   </Button>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="icon"
                     className="ml-2"
                   >
-                    <InfoTooltip 
+                    <InfoTooltip
                       content={`Created on ${new Date(playlist.created_at).toLocaleDateString()}`}
                       side="left"
                     >
@@ -247,4 +247,3 @@ export function LibraryContent() {
     </div>
   )
 }
-

@@ -11,4 +11,3 @@ export interface Song {
   url: string;
   music_embeddings?: number[];
 }
-

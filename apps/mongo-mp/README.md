@@ -52,11 +52,11 @@ exports = async function(changeEvent) {
   const db = context.services.get(serviceName).db("mongomp");
   const usersCollection = db.collection("users");
   const songsCollection = db.collection("songs");
-  
+
   try {
     // Get the updated user document
     const userDoc = changeEvent.fullDocument;
-    
+
     if (!userDoc.likes || userDoc.likes.length === 0) {
       console.log("No likes found for user:", docId);
       return;
@@ -101,7 +101,7 @@ exports = async function(changeEvent) {
     ];
 
     const aggregationResult = await songsCollection.aggregate(pipeline).toArray();
-    
+
     if (!aggregationResult || aggregationResult.length === 0) {
       console.log("No embeddings calculated");
       return;
@@ -205,7 +205,7 @@ The resulting centroid vector becomes the user's musical taste profile, stored i
    ```
    npm run build
    ```
-  
+
 
 2. Start the production server:
    ```
@@ -296,4 +296,3 @@ mongo-mp/
 ```
 
 This structure shows the main directories and files in the MongoMP project. The `app/` directory contains the Next.js 14 App Router structure, with API routes and page components. The `components/` directory holds reusable React components, and `lib/` contains utility functions and database connection logic.
-
