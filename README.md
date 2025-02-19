@@ -38,3 +38,4 @@ As you work through these examples, if you encounter any problems, please [open 
 
 * [AI Learning Hub](https://www.mongodb.com/resources/use-cases/artificial-intelligence)
 * [GenAI Community Forum](https://www.mongodb.com/community/forums/c/generative-ai/162)
+* [Tutorials and code examples from our official docs](https://github.com/mongodb/docs-notebooks)

@@ -4,5 +4,5 @@ Jupyter Notebooks comparing MongoDB Atlas Vector Search with other vector databa
 
 | Title | Stack | Notebook |
 |-------|-------|----------|
-| MongoDB vs PostgreSQL Comparison | MongoDB Atlas, PostgreSQL, pgvector | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/benchmarks/vector_database_comparison_mongodb_postgreSQL.ipynb) |
-| MongoDB vs Elasticsearch Comparison | MongoDB Atlas, Elasticsearch | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](notebooks/benchmarks/vector_database_comparison_mongodb_elastic.ipynb) |
+| MongoDB vs PostgreSQL Comparison | MongoDB Atlas, PostgreSQL, pgvector | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/benchmarks/vector_database_comparison_mongodb_postgreSQL.ipynb) |
+| MongoDB vs Elasticsearch Comparison | MongoDB Atlas, Elasticsearch | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/benchmarks/vector_database_comparison_mongodb_elastic.ipynb) |
