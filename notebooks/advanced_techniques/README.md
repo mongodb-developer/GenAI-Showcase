@@ -2,6 +2,7 @@ Jupyter Notebooks that cover advanced techniques such as vector quantization, pa
 
 | Title | Stack | Notebook |
 |-------|-------|----------|
+| Efficient Vector Search in MongoDB Atlas with Automatic Quantization and Voyage AI Embeddings | MongoDB Atlas, Voyage AI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/advanced_techniques/evaluation_of_representation_capacity_retention_with_mongodb_voyageai.ipynb) |
 | Advanced Evaluation of Quantized Vectors | MongoDB Atlas, Cohere, BEIR | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/advanced_techniques/advanced_evaluation_of_quantized_vectors_using_cohere_mongodb_beir.ipynb) |
 | Automatic Quantization of Nomic Embeddings | MongoDB Atlas, Nomic AI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/advanced_techniques/automatic_quantization_of_nomic_emebddings_with_mongodb.ipynb) |
 | Function Calling with MongoDB | MongoDB Atlas, OpenAI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/advanced_techniques/function_calling_mongodb_as_a_toolbox.ipynb) |
