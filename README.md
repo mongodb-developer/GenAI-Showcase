@@ -36,6 +36,6 @@ As you work through these examples, if you encounter any problems, please [open 
 
 ## Additional Resources
 
-* [AI Learning Hub](https://www.mongodb.com/resources/use-cases/artificial-intelligence](https://www.mongodb.com/resources/use-cases/artificial-intelligence?utm_campaign=ai_learning_hub&utm_source=github&utm_medium=referral)
+* [AI Learning Hub](https://www.mongodb.com/resources/use-cases/artificial-intelligence?utm_campaign=ai_learning_hub&utm_source=github&utm_medium=referral)
 * [GenAI Community Forum](https://www.mongodb.com/community/forums/c/generative-ai/162)
 * [Tutorials and code examples from our official docs](https://github.com/mongodb/docs-notebooks)
