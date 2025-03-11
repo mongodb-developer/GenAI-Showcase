@@ -4,6 +4,8 @@
 
 MongoStory is a cloud-native platform designed to empower content creators, editors, and publishers with AI-driven tools for content management and distribution. Built with Next.js 15 and MongoDB, the platform offers a comprehensive suite of features for content creation, analysis, translation, and optimization.
 
+![MongoStory](./mongostory.png)
+
 ## Core Features
 
 ### Content Management
