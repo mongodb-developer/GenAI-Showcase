@@ -38,4 +38,3 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     return NextResponse.json({ error: "Failed to update content status" }, { status: 500 })
   }
 }
-

@@ -85,7 +85,7 @@ db.content.findOne({
 // Update a specific translation
 db.content.updateOne(
   { _id: ObjectId("contentId") },
-  { 
+  {
     $set: {
       "translations.fr": {
         title: "Nouveau titre",
@@ -134,10 +134,10 @@ db.content.updateOne(
     example: `// Get page views over time
 db.pageViews.aggregate([
   { $group: {
-      _id: { 
-        $dateToString: { 
-          format: "%Y-%m-%d", 
-          date: "$timestamp" 
+      _id: {
+        $dateToString: {
+          format: "%Y-%m-%d",
+          date: "$timestamp"
         }
       },
       views: { $sum: 1 }
@@ -224,8 +224,8 @@ db.settings.findOne({}, {
 }`,
     example: `// Find users with specific permissions
 db.userRoles.find({
-  permissions: { 
-    $all: ["create", "publish"] 
+  permissions: {
+    $all: ["create", "publish"]
   }
 })`,
   },
@@ -340,4 +340,3 @@ export function MongoDBSchemaViewer() {
     </div>
   )
 }
-

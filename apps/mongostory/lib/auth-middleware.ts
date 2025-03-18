@@ -43,4 +43,3 @@ export async function withAuth(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 }
-

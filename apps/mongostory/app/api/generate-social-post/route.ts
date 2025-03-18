@@ -20,4 +20,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to generate social media post" }, { status: 500 })
   }
 }
-

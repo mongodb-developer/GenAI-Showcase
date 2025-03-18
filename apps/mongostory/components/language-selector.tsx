@@ -43,4 +43,3 @@ export function LanguageSelector({ currentLanguage, availableLanguages, onLangua
     </DropdownMenu>
   )
 }
-

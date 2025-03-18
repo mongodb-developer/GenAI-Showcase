@@ -29,4 +29,3 @@ export interface Analysis {
   }
   summary: string
 }
-

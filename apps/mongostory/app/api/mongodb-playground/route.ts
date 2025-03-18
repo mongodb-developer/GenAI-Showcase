@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const db = client.db("mongostory")
 
     // Execute the query in a safe sandbox environment
-    const result = await eval(`(async () => { 
+    const result = await eval(`(async () => {
       const db = client.db("mongostory")
       return ${query}
     })()`)
@@ -35,4 +35,3 @@ export async function POST(req: Request) {
     )
   }
 }
-

@@ -41,7 +41,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const { text: translatedTitle } = await generateText({
       model,
       prompt: `Translate the following title to ${SUPPORTED_LANGUAGES[targetLanguage]}:
-      
+
 Original: ${content.title}
 
 Provide ONLY the translated text, nothing else.`,
@@ -50,7 +50,7 @@ Provide ONLY the translated text, nothing else.`,
     // Translate content
     const { text: translatedContent } = await generateText({
       model,
-      prompt: `Translate the following content to ${SUPPORTED_LANGUAGES[targetLanguage]}. 
+      prompt: `Translate the following content to ${SUPPORTED_LANGUAGES[targetLanguage]}.
 Maintain all markdown formatting:
 
 Original:
@@ -89,4 +89,3 @@ Provide ONLY the translated text, nothing else.`,
     )
   }
 }
-

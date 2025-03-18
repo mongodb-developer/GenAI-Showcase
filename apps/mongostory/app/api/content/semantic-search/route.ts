@@ -48,4 +48,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to perform semantic search" }, { status: 500 })
   }
 }
-

@@ -41,4 +41,3 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Failed to get clusters" }, { status: 500 })
   }
 }
-

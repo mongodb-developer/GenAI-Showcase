@@ -52,4 +52,3 @@ export function SocialMediaOptionsBanner({ open, onOpenChange, onCreatePost }: S
     </div>
   )
 }
-

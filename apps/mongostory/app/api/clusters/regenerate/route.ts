@@ -135,7 +135,7 @@ async function generateClusterLabel(keywords: string[], contentSamples: string[]
     const { text } = await generateText({
       model,
       prompt: `Generate a concise, descriptive label (3-5 words) for a content cluster with these keywords: ${keywords.join(", ")}.
-      
+
 Sample content from this cluster:
 ${contentSample}
 
@@ -151,4 +151,3 @@ Return ONLY the label, nothing else.`,
     return `${label.charAt(0).toUpperCase() + label.slice(1)} Cluster`
   }
 }
-

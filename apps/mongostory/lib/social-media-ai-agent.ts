@@ -27,4 +27,3 @@ Generate an engaging post that captures the essence of the article${articleUrl ?
 
   return { content: text.trim() }
 }
-

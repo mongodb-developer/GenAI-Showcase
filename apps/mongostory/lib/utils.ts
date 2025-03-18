@@ -28,4 +28,3 @@ export function formatDuration(seconds: number): string {
     return `${hours}h ${minutes}m`
   }
 }
-

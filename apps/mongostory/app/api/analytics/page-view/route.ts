@@ -51,4 +51,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to record page view" }, { status: 500 })
   }
 }
-

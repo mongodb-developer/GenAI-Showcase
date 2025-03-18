@@ -32,4 +32,3 @@ export async function generateEmbeddings(texts: string[]) {
     throw error
   }
 }
-

@@ -199,4 +199,3 @@ function FeatureCard({ icon, title, description, onClick }) {
     </div>
   )
 }
-

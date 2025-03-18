@@ -496,4 +496,3 @@ export default function ContentIntelligencePage() {
     </div>
   )
 }
-

@@ -32,4 +32,3 @@ export function CodeBlock({ code, className }: CodeBlockProps) {
     </div>
   )
 }
-

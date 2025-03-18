@@ -84,4 +84,3 @@ db.collection('content').find({
     </Card>
   )
 }
-

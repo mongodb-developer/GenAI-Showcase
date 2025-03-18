@@ -79,7 +79,7 @@ export async function analyzeContent(content: string, title: string, selectedFea
     prompt: `Create an optimized title for this content. Keep it under 60 characters, make it engaging and SEO-friendly.
     Current title: ${title}
     Content excerpt: ${content.substring(0, 500)}...
-    
+
     Return ONLY the optimized title, nothing else.`,
   })
 
@@ -92,7 +92,7 @@ export async function analyzeContent(content: string, title: string, selectedFea
         prompt: `Analyze this content for SEO:
           Title: ${title}
           Content: ${content}
-          
+
           Provide specific, actionable suggestions for SEO improvement.`,
       }),
     )
@@ -106,7 +106,7 @@ export async function analyzeContent(content: string, title: string, selectedFea
         schema: ContentQualitySchema,
         prompt: `Evaluate the quality of this content:
           ${content}
-          
+
           Focus on readability, clarity, and structure. Provide specific suggestions for improvement.`,
       }),
     )
@@ -120,7 +120,7 @@ export async function analyzeContent(content: string, title: string, selectedFea
         schema: EmotionalImpactSchema,
         prompt: `Analyze the emotional impact of this content:
           ${content}
-          
+
           Provide specific suggestions for improving emotional engagement.`,
       }),
     )
@@ -134,7 +134,7 @@ export async function analyzeContent(content: string, title: string, selectedFea
         schema: TopicRelevanceSchema,
         prompt: `Analyze the topic relevance of this content:
           ${content}
-          
+
           Provide specific suggestions for improving topic coverage and relevance.`,
       }),
     )
@@ -162,9 +162,9 @@ export async function analyzeContent(content: string, title: string, selectedFea
     system: "You are a content strategist summarizing content analysis.",
     prompt: `Provide a concise summary of these content analyses with key recommendations:
     ${JSON.stringify(analyses, null, 2)}
-    
+
     Include specific, actionable suggestions for improvement.
-    
+
     Additional suggestions to incorporate:
     ${allSuggestions.join("\n")}`,
   })
@@ -175,4 +175,3 @@ export async function analyzeContent(content: string, title: string, selectedFea
     summary,
   }
 }
-

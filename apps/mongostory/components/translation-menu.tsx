@@ -136,4 +136,3 @@ export function TranslationMenu({ content, onTranslationComplete }: TranslationM
     </DropdownMenu>
   )
 }
-

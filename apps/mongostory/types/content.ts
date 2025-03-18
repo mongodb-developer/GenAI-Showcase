@@ -29,4 +29,3 @@ export interface ContentItem {
     [key: string]: Translation
   }
 }
-

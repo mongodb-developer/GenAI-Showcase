@@ -204,4 +204,3 @@ export function SocialMediaDialog({ open, onOpenChange, contentId, content }: So
     </Dialog>
   )
 }
-

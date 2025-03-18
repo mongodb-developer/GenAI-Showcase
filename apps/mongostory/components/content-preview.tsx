@@ -45,4 +45,3 @@ export function ContentPreview({ content, initialLanguage = "en" }: ContentPrevi
     </Card>
   )
 }
-

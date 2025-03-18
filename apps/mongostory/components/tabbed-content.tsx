@@ -41,4 +41,3 @@ export function TabbedContent({ tabs, defaultTab, className }: TabbedContentProp
     </Tabs>
   )
 }
-

@@ -82,4 +82,3 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: "Failed to delete content" }, { status: 500 })
   }
 }
-

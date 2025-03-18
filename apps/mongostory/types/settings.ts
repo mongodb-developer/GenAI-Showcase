@@ -35,4 +35,3 @@ export interface Settings {
     permissions: string[]
   }>
 }
-

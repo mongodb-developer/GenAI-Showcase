@@ -59,4 +59,3 @@ export function ViewTracker({ contentId, visitorId }: ViewTrackerProps) {
 
   return null
 }
-

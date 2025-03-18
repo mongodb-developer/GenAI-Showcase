@@ -76,7 +76,7 @@ MongoStory leverages MongoDB's document model for flexible content storage and i
 
 ### Installation
 1. Clone the repository
-2. Install dependencies with 
+2. Install dependencies with
 ```
 npm install
 ## npm install --force
@@ -88,7 +88,7 @@ npm install
 - `MONGODB_URI`: Connection string for MongoDB Atlas
 - `JWT_SECRET`: Secret for JWT authentication
 ```
-openssl rand -base64 32          
+openssl rand -base64 32
 ```
 - `XAI_API_KEY`: API key for AI services
 - `VOYAGE_API_KEY`: API key for vector embeddings
@@ -104,20 +104,20 @@ Create the following Atlas Trigger to be placed on insert for `mongostory.conten
 exports = async function(changeEvent) {
   // Get the full document that triggered the event
   const fullDocument = changeEvent.fullDocument;
-  
+
   // Extract the text field that needs to be embedded
   // Change 'text' to whatever field contains the content you want to embed
   const textToEmbed = fullDocument.analysis.summary;
-  
+
   if (!textToEmbed) {
     console.log("No text field found in the document");
     return;
   }
-  
+
   try {
     // Connect to your MongoDB cluster
     const collection = context.services.get("ILCluster").db("mongostory").collection("content");
-    
+
     // Call Voyage AI API to generate embeddings
     const response = await context.http.post({
       url: "https://api.voyageai.com/v1/embeddings",
@@ -132,27 +132,27 @@ exports = async function(changeEvent) {
         "input_type": "document", // Use "query" for search queries, "document" for content
       })
     });
-    
+
     // Parse the response
     const responseData = EJSON.parse(response.body.text());
-    
+
     // Get the embedding from the response
     const embedding = responseData.data[0].embedding;
-    
+
     // Update the document with the embedding
     await collection.updateOne(
       { _id: fullDocument._id},
       { $set: { embedding: embedding } }
     );
-    
+
     console.log(`Successfully added embedding to document ${fullDocument._id}`);
-    
+
     // Optional: Create a vector search index if it doesn't exist
     // Note: This should ideally be done once, not in every trigger execution
     // This is just for demonstration purposes
-    
+
     return { status: "success" };
-    
+
   } catch (error) {
     console.error("Error in Voyage AI embedding trigger:", error);
     return { status: "error", message: error.message };

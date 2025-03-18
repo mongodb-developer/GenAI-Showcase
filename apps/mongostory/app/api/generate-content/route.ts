@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     // Generate title with a specific prompt for concise titles
     const { text: titleResponse } = await generateText({
       model,
-      prompt: `Create a concise, engaging title (maximum 60 characters) for an article about ${topic}. 
+      prompt: `Create a concise, engaging title (maximum 60 characters) for an article about ${topic}.
 The title should be appropriate for ${expertiseLevel} level readers.
 Return ONLY the title, nothing else.
 
@@ -63,14 +63,14 @@ Generate title:`,
       model,
       prompt: `Write a comprehensive article in markdown format about ${topic}.
       ${expertiseLevelPrompts[expertiseLevel as ExpertiseLevel]}
-      
+
       Include the following sections:
       - Introduction
       - Main concepts
       - Practical examples
       - Best practices
       - Conclusion
-      
+
       Make sure to use proper markdown formatting with headings, lists, code blocks where appropriate, and emphasis.`,
     })
 
@@ -87,4 +87,3 @@ Generate title:`,
     return NextResponse.json({ error: "Failed to generate content" }, { status: 500 })
   }
 }
-

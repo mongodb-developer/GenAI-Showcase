@@ -42,4 +42,3 @@ export function InfoTooltip({ content, query, side = "right", align = "center" }
     </TooltipProvider>
   )
 }
-

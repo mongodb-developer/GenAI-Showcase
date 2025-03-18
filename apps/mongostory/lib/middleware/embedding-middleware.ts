@@ -23,4 +23,3 @@ export const embeddingMiddleware: LanguageModelV1Middleware = {
     return result
   },
 }
-

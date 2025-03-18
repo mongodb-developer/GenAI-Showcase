@@ -50,4 +50,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to generate AI content" }, { status: 500 })
   }
 }
-

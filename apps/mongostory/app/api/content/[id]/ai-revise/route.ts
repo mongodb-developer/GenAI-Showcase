@@ -111,4 +111,3 @@ Provide only the new title, nothing else.`,
     )
   }
 }
-

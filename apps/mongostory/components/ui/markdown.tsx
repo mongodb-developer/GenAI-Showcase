@@ -12,4 +12,3 @@ export const Markdown = ({
     </div>
   )
 }
-

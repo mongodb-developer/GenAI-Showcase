@@ -46,7 +46,7 @@ const post = await db.collection('content').findOne({
       code: `await db.collection('content').aggregate([
   // Match stage - filter documents
   { $match: { status: "published" } },
-  
+
   // Lookup stage - join with another collection
   { $lookup: {
       from: "comments",
@@ -54,13 +54,13 @@ const post = await db.collection('content').findOne({
       foreignField: "postId",
       as: "comments"
   }},
-  
+
   // Add fields stage - compute new fields
   { $addFields: {
       commentCount: { $size: "$comments" },
       averageRating: { $avg: "$ratings" }
   }},
-  
+
   // Group stage - aggregate data
   { $group: {
       _id: "$author",
@@ -80,15 +80,15 @@ const post = await db.collection('content').findOne({
 await db.collection('content').createIndex({ title: 1 })
 
 // Create a compound index
-await db.collection('content').createIndex({ 
-  author: 1, 
-  createdAt: -1 
+await db.collection('content').createIndex({
+  author: 1,
+  createdAt: -1
 })
 
 // Create a text index for full-text search
-await db.collection('content').createIndex({ 
-  title: "text", 
-  content: "text" 
+await db.collection('content').createIndex({
+  title: "text",
+  content: "text"
 })`,
       explanation:
         "Indexes improve query performance and enable features like text search. The 1 or -1 specifies ascending or descending order.",
@@ -108,7 +108,7 @@ try {
       { $set: { status: "published" } },
       { session }
     )
-    
+
     // Create notification
     await db.collection('notifications').insertOne({
       type: "post_published",
@@ -123,4 +123,3 @@ try {
     },
   ],
 }
-

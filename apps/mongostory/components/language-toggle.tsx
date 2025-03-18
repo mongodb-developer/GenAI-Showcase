@@ -58,4 +58,3 @@ export function LanguageToggle({ currentLanguage, availableLanguages, contentId 
     </DropdownMenu>
   )
 }
-

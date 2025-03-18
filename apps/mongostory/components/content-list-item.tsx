@@ -72,7 +72,7 @@ export function ContentListItem({
   return (
     <>
       <Card
-        className={`relative border border-border/50 shadow-sm rounded-lg 
+        className={`relative border border-border/50 shadow-sm rounded-lg
         ${isRevision ? "border-l-2 border-l-primary" : ""}`}
       >
         <div className="p-4 sm:p-6">
@@ -196,4 +196,3 @@ export function ContentListItem({
     </>
   )
 }
-

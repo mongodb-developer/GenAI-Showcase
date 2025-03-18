@@ -84,4 +84,3 @@ export async function recordSession(visitorId: string, duration: number): Promis
   const db = client.db("mongostory")
   await db.collection("sessions").insertOne({ visitorId, duration, timestamp: new Date() })
 }
-
