@@ -50,11 +50,11 @@ To use an MCP server:
 3. Provide any necessary API keys or credentials
     4. For MongoDB Atlas, obtain API keys by:
     - Log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-    - Navigate to Identity & Access Management > Project Access 
-    
+    - Navigate to Identity & Access Management > Project Access
+
     ![Identity](./atlas-mcp-images/Identity.png)
 
-        - Choose Applications:
+    - Choose Applications:
 
     ![ApiKeys](./atlas-mcp-images/APIKeys.png)
 
