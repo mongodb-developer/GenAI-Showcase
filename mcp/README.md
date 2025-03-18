@@ -48,6 +48,19 @@ To use an MCP server:
 1. Install the required package (if applicable)
 2. Configure the server in your AI assistant's MCP settings
 3. Provide any necessary API keys or credentials
+    4. For MongoDB Atlas, obtain API keys by:
+    - Log in to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+    - Navigate to Identity & Access Management > Project Access 
+    
+    ![Identity](./atlas-mcp-images/Identity.png)
+
+        - Choose Applications:
+
+    ![ApiKeys](./atlas-mcp-images/APIKeys.png)
+
+    - Create a new API Key with appropriate permissions
+    - Save both the Public and Private keys securely
+    - Use these keys in your MCP server configuration
 4. Restart your AI assistant to connect to the MCP server
 
 ## Contributing
