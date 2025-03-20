@@ -1,18 +1,18 @@
 import os
 from operator import itemgetter
 
-import streamlit as st
 import ollama
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_ollama import ChatOllama, OllamaEmbeddings
-from pymongo import MongoClient
-from langchain_mongodb import MongoDBChatMessageHistory, MongoDBAtlasVectorSearch
+import streamlit as st
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.document_transformers import MarkdownifyTransformer
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_mongodb import MongoDBAtlasVectorSearch, MongoDBChatMessageHistory
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from pymongo import MongoClient
 
 # System message for the chatbot
 SYSTEM_MESSAGE = """You're a helpful assistant. Answer all questions to the best of your ability. If you don't know the answer let the user know to find help on the internet.
@@ -46,20 +46,20 @@ collection.drop()
 
 loaders = [
     WebBaseLoader("https://en.wikipedia.org/wiki/AT%26T"),
-    WebBaseLoader("https://en.wikipedia.org/wiki/Bank_of_America")
+    WebBaseLoader("https://en.wikipedia.org/wiki/Bank_of_America"),
 ]
 docs = []
 for loader in loaders:
     for doc in loader.load():
         docs.append(doc)
 md = MarkdownifyTransformer()
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000, chunk_overlap=200)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 docs = loader.load()
 converted_docs = md.transform_documents(docs)
 splits = text_splitter.split_documents(converted_docs)
 vectorstore = MongoDBAtlasVectorSearch.from_documents(
-    splits, embedding, collection=collection, index_name="default")
+    splits, embedding, collection=collection, index_name="default"
+)
 vectorstore.create_vector_search_index(768)
 
 # Initialize retriever and chat model
@@ -67,18 +67,26 @@ retriever = vectorstore.as_retriever()
 chat = ChatOllama(model=MODEL)
 
 # Define prompt template
-prompt_template = ChatPromptTemplate.from_messages([
-    ("system", SYSTEM_MESSAGE),
-    MessagesPlaceholder("history"),
-    ("human", "{input}"),
-])
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system", SYSTEM_MESSAGE),
+        MessagesPlaceholder("history"),
+        ("human", "{input}"),
+    ]
+)
 
 # Define the chain of operations
-chain = {
-    "context": itemgetter("input") | retriever,
-    "input": itemgetter("input"),
-    "history": itemgetter("history")
-} | prompt_template | chat | StrOutputParser()
+chain = (
+    {
+        "context": itemgetter("input") | retriever,
+        "input": itemgetter("input"),
+        "history": itemgetter("history"),
+    }
+    | prompt_template
+    | chat
+    | StrOutputParser()
+)
+
 
 # Function to get session history
 def get_session_history() -> BaseChatMessageHistory:
@@ -87,7 +95,11 @@ def get_session_history() -> BaseChatMessageHistory:
 
 # Initialize history chain
 history_chain = RunnableWithMessageHistory(
-    chain, get_session_history, input_messages_key="input", history_messages_key="history")
+    chain,
+    get_session_history,
+    input_messages_key="input",
+    history_messages_key="history",
+)
 
 # Streamlit UI
 st.title("Chatbot")
