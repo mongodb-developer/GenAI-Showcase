@@ -1,0 +1,9 @@
+langchain-community
+pypdf
+pymongo
+langchain-aws
+langchain-openai
+python-dotenv
+langchain-mongodb
+flask
+flask-pymongo
