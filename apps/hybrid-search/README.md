@@ -1,12 +1,12 @@
 # Hybrid Search Demo
 
-Performs a configurable hybrid search with the ability to control the weights of the scoring as part of the reciprical rank fusion approach. 
+Performs a configurable hybrid search with the ability to control the weights of the scoring as part of the reciprical rank fusion approach.
 
 Uses a set of financial statements from major vehicle manufacturers as the source. The demo allows you to show the following items
 
 - Benefits of vector search
 - Pre-filtering on the vector side
-- Hybrid search capabilities 
+- Hybrid search capabilities
 - Ability to influence the weighting of data in the RRF approach
 
 ## Setup
@@ -42,7 +42,7 @@ Others (or those wishing to use a different model) can submit a `POST` request t
 
 ## Execute demo
 
-The demo runs as a flask app that allows to submit API request to be able to easily change the input params and get back the results. 
+The demo runs as a flask app that allows to submit API request to be able to easily change the input params and get back the results.
 
 ### Start the app
 
@@ -73,5 +73,5 @@ To run calls you need to submit a JSON payload like the example below as a `POST
 
 Changing the values of the weights (and the question) will allow you to show the benefits of the hybrid search.
 
-The `pageNum` attribute is the one that is used for pre-filtering. The code does a simple `{$lte: {'metadata.page' : <variable> }}` on the vector search. It's simplistic, but it does the job of showing the benefits. 
+The `pageNum` attribute is the one that is used for pre-filtering. The code does a simple `{$lte: {'metadata.page' : <variable> }}` on the vector search. It's simplistic, but it does the job of showing the benefits.
 `Company` attribute is used by the Lexical search. You can choose between `Stellantis`, `GM`, or `Ford`
