@@ -4,9 +4,9 @@ This directory contains information about Model Context Protocol (MCP) servers t
 
 ## Available MCP Servers
 
-| Repository | Description | Features/Tools | Installation | Integration |
+| Repository | Description | Features/Tools | Use Case | Integration tools |
 |------------|-------------|----------------|-------------|-------------|
-| [mongodb-developer/mcp-mongodb-atlas](https://github.com/mongodb-developer/mcp-mongodb-atlas) | An MCP server for managing MongoDB Atlas projects. Provides tools for creating and managing MongoDB Atlas clusters, users, and network access through the MCP interface. | • `create_atlas_cluster` - Create a new MongoDB Atlas cluster<br>• `setup_atlas_network_access` - Configure network access<br>• `create_atlas_user` - Create a new database user<br>• `get_atlas_connection_strings` - Retrieve connection strings<br>• `list_atlas_projects` - List all Atlas projects<br>• `list_atlas_clusters` - List all clusters in a project | `npm install mcp-mongodb-atlas` | **VSCode (Cline)**:<br>Add to `cline_mcp_settings.json`<br><br>**Cursor**:<br>Add to MCP settings or `~/.cursor/mcp.json`<br><br>**Claude Desktop**:<br>Add to `claude_desktop_config.json` |
+| [mongodb-developer/mcp-mongodb-atlas](https://github.com/mongodb-developer/mcp-mongodb-atlas) | An MCP server for managing MongoDB Atlas projects. Provides tools for creating and managing MongoDB Atlas clusters, users, and network access through the MCP interface. | • `create_atlas_cluster` - Create a new MongoDB Atlas cluster<br>• `setup_atlas_network_access` - Configure network access<br>• `create_atlas_user` - Create a new database user<br>• `get_atlas_connection_strings` - Retrieve connection strings<br>• `list_atlas_projects` - List all Atlas projects<br>• `list_atlas_clusters` - List all clusters in a project | Create and manage MongoDB Atlas resources from AI assistants | **VSCode (Cline)**:<br>Add to `cline_mcp_settings.json`<br><br>**Cursor**:<br>Add to MCP settings or `~/.cursor/mcp.json`<br><br>**Claude Desktop**:<br>Add to `claude_desktop_config.json` |
 
 ## Usage Examples
 
