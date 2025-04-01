@@ -10,9 +10,11 @@ Discover how MongoDB integrates into RAG pipelines and AI Agents, serving as a v
 
 This repo mainly contains:
 
-* Jupyter notebooks examples for RAG, agentic applications, evaluations etc. under `notebooks`.
-* Javascipt and Python apps and demos under `apps`.
-* Contributions from our AI partners under `partners`.
+| Folder | Description |
+|--------|-------------|
+| [`notebooks`](notebooks/README.md) | Jupyter notebooks examples for RAG, agentic applications, evaluations etc. |
+| [`apps`](apps/README.md) | Javascipt and Python apps and demos |
+| [`partners`](partners/README.md) | Contributions from our AI partners |
 
 ## Getting Started
 

@@ -1,0 +1,35 @@
+{
+  "name": "hr-team-matcher",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "seed": "ts-node scripts/seed-db.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.0.0",
+    "ai": "^4.1.51",
+    "dotenv": "^16.3.1",
+    "mongodb": "^6.3.0",
+    "next": "^14.2.24",
+    "react": "^18",
+    "react-dom": "^18",
+    "voyage-ai-provider": "^1.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5"
+  }
+}

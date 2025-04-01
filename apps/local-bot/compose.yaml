@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - 8501:8501/tcp
+    environment:
+      OLLAMA_HOST: host.docker.internal:11434
+      MONGO_URI: mongodb://root:root@mongo:27017/admin?directConnection=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  # ollama:
+  #   image: ollama/ollama
+  mongo:
+    image: mongodb/mongodb-atlas-local
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=root
+      - MONGODB_INITDB_ROOT_PASSWORD=root
+    ports:
+       - 27017:27017
