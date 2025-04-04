@@ -1,10 +1,11 @@
 import json
+
 import voyageai
 
 # Using our API key.
 vo = voyageai.Client()
 
-with open("guinness_wine_dublin_cleaned.json", "r") as f:
+with open("guinness_wine_dublin_cleaned.json") as f:
     data = json.load(f)
 
 # Focusing on "reviews" field since that's what we are embedding.
