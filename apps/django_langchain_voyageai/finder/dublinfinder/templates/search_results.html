@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dublin City Center Pub Finder</title>
+    <!-- Import Lexend Deca font -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0B3D0B; /* Dark green background */
+            color: #ffffff;           /* White text */
+            font-family: 'Lexend Deca', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #ACE1AF; /* Light green for headings */
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #006400; /* Darker green */
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #008000;
+        }
+        .results {
+            width: 80%;
+            margin-top: 40px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #013220; /* Dark green shade */
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .name {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #7FFF00;
+        }
+        .address, .review, .score {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        p {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Landing Page Header -->
+        <div class="header">Dublin City Center Pub Finder</div>
+        <!-- Search Form -->
+        <form method="GET" action="{% url 'search_places' %}">
+            <input type="text" name="query" value="{{ query }}" placeholder="Enter your query here">
+            <button type="submit">Search</button>
+        </form>
+        <!-- Display Results if a Query is Present -->
+        {% if query and results %}
+            <div class="results">
+                <h2>Results for "{{ query }}"</h2>
+                <ul>
+                    {% for place in results %}
+                        <li>
+                            <div class="name">{{ place.name }}</div>
+                            <div class="address">Address: {{ place.address }}</div>
+                            <div class="review">Review (excerpt): {{ place.review }}</div>
+                            <div class="score">Similarity Score: {{ place.score }}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% elif query %}
+            <p>No results found for "{{ query }}".</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>
+

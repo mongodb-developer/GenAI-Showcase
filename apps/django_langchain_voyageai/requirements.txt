@@ -1,0 +1,5 @@
+django-mongodb-backend==5.1.0b1
+python-dotenv==1.0.1
+voyageai==0.3.2
+langchain-voyageai==0.1.4
+langchain-mongodb==0.5.0
