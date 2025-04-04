@@ -1,7 +1,8 @@
 from django.db import models
 from django_mongodb_backend.fields import ArrayField, EmbeddedModelField
-from django_mongodb_backend.models import EmbeddedModel
 from django_mongodb_backend.managers import MongoManager
+from django_mongodb_backend.models import EmbeddedModel
+
 
 # Embedded, so it doesn't have it's own collection.
 class DisplayName(EmbeddedModel):
@@ -25,4 +26,4 @@ class Place(models.Model):
         managed = False
 
     def __str__(self):
-        return self.displayName.text 
+        return self.displayName.text

@@ -1,7 +1,8 @@
 import json
 import os
-from pymongo import MongoClient
+
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
 
@@ -14,15 +15,12 @@ database = connect["dublinfinder"]
 collection = database["placesinfo"]
 
 # Load in our JSON file.
-with open("embedded_guinness_wine_dublin_cleaned2.json", "r") as file:
+with open("embedded_guinness_wine_dublin_cleaned2.json") as file:
     data = json.load(file)
 
 # Our JSON file starts with "places" so this is just making sure it fits.
-if isinstance(data,dict) and "places" in data:
+if isinstance(data, dict) and "places" in data:
     places = data["places"]
 
 # Use `insert_many` since we have 40 documents.
 result = collection.insert_many(places)
-
-
-
