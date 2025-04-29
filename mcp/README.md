@@ -7,6 +7,7 @@ This directory contains information about Model Context Protocol (MCP) servers t
 | Repository | Description | Features/Tools | Use Case | Integration tools |
 |------------|-------------|----------------|-------------|-------------|
 | [mongodb-developer/mcp-mongodb-atlas](https://github.com/mongodb-developer/mcp-mongodb-atlas) | An MCP server for managing MongoDB Atlas projects. Provides tools for creating and managing MongoDB Atlas clusters, users, and network access through the MCP interface. | • `create_atlas_cluster` - Create a new MongoDB Atlas cluster<br>• `setup_atlas_network_access` - Configure network access<br>• `create_atlas_user` - Create a new database user<br>• `get_atlas_connection_strings` - Retrieve connection strings<br>• `list_atlas_projects` - List all Atlas projects<br>• `list_atlas_clusters` - List all clusters in a project | Create and manage MongoDB Atlas resources from AI assistants | **VSCode (Cline)**:<br>Add to `cline_mcp_settings.json`<br><br>**Cursor**:<br>Add to MCP settings or `~/.cursor/mcp.json`<br><br>**Claude Desktop**:<br>Add to `claude_desktop_config.json` |
+| [mongodb-developer/mongodb-mcp-server](https://github.com/mongodb-developer/mongodb-mcp-server) | An MCP server providing read-only access to MongoDB databases. Enables inspection of collection schemas and execution of aggregation pipelines. | • `aggregate` - Execute aggregation pipelines<br>• `explain` - Get execution plans for pipelines<br>• Resource: Collection Schemas (`mongodb://<host>/<collection>/schema`) | Inspect schemas and run aggregations from AI assistants | **Claude Desktop**:<br>Add to `claude_desktop_config.json` (see repo README for details) |
 
 ## Usage Examples
 
@@ -40,6 +41,59 @@ npx mcp-mongodb-atlas "your-public-key" "your-private-key"
   }
 }
 ```
+
+### MongoDB MCP Server (Database Interaction)
+
+#### Command Line Usage
+```bash
+# Set the MongoDB connection string environment variable
+export MONGODB_URI="mongodb+srv://<user>:<password>@<your-cluster-url>/<database>?retryWrites=true&w=majority" 
+npx -y @pash1986/mcp-server-mongodb
+
+# Or pass the URI as an argument (ensure proper quoting)
+npx -y @pash1986/mcp-server-mongodb "mongodb+srv://<user>:<password>@<your-cluster-url>/<database>?retryWrites=true&w=majority"
+```
+
+#### Configuration Example (Claude Desktop)
+Add the following to the `mcpServers` section in `claude_desktop_config.json`:
+```json
+{
+  "mongodb": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@pash1986/mcp-server-mongodb"
+    ],
+    "env": {
+      "MONGODB_URI": "mongodb+srv://<user>:<password>@<your-cluster-url>/<database>?retryWrites=true&w=majority"
+    },
+    "disabled": false,
+    "autoApprove": [] 
+  }
+}
+```
+*Replace `<user>`, `<password>`, `<your-cluster-url>`, and `<database>` with your actual credentials and database name.*
+
+#### Configuration Example (Cursor)
+Add the following to your MCP settings or `~/.cursor/mcp.json`:
+```json
+{
+  "mongodb": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@pash1986/mcp-server-mongodb"
+    ],
+    "env": {
+      "MONGODB_URI": "mongodb+srv://<user>:<password>@<your-cluster-url>/<database>?retryWrites=true&w=majority"
+    },
+    "disabled": false,
+    "autoApprove": [] 
+  }
+}
+```
+*Replace `<user>`, `<password>`, `<your-cluster-url>`, and `<database>` with your actual credentials and database name.*
+
 
 ## Getting Started
 
