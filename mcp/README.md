@@ -77,7 +77,7 @@ Add the following to the `mcpServers` section in `claude_desktop_config.json`:
   "MongoDB-Official": { // Choose a descriptive key
     "command": "npx",
     "args": [
-      "-y", 
+      "-y",
       "mongodb-mcp-server"
       // Add command-line args here if needed, e.g., "--readOnly"
       ],
