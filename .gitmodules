@@ -1,0 +1,3 @@
+[submodule "apps/apps/foodagent-dotnet"]
+	path = apps/apps/foodagent-dotnet
+	url = https://github.com/mongodb-developer/foodagent-dotnet.git
