@@ -26,9 +26,7 @@ repos:
     - id: jupyter-widget-state
       name: Add widget state to Jupyter notebooks
       description: Ensures Jupyter notebooks have widget state for GitHub rendering
-      entry: scripts/hooks/jupyter-widget-state.sh
+      entry: .github/hooks/jupyter-widget-state.sh
       language: script
       files: \.ipynb$
-      stages: [pre-commit]
-      always_run: true
-      verbose: true
+      stages: [commit]
