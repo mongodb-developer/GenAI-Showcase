@@ -1,6 +1,6 @@
 # OpenAI Agents SDK with MongoDB Memory
 
-This demo app shows how to use the OpenAI Agents SDK with MongoDB for persistent conversation history.
+This demo app shows how to use the [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) with [MongoDB](https://www.mongodb.com/cloud/atlas/register/?utm_campaign=devrel&utm_source=third-party-content&utm_medium=cta&utm_content=openai-agents-sdk-template&utm_term=jesse.hall) for persistent conversation history.
 
 ## Key Features
 
