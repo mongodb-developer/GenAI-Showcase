@@ -11,25 +11,34 @@ This demo app shows how to use the [OpenAI Agents SDK](https://openai.github.io/
 
 ## Getting Started
 
-1. Make sure MongoDB is set up and running
+1. Download this app folder using:
+   ```bash
+   npx degit mongodb-developer/GenAI-Showcase/apps/openai-agents-sdk my-openai-agent
+   ```
 
-2. Create a `.env` file with:
+2. Make sure MongoDB is set up and running
+
+3. Copy the example environment file and add your credentials:
+   ```bash
+   cp .env.example .env
+   ```
+   Then update the `.env` file with your information:
    ```
    MONGODB_URI=mongodb://localhost:27017/agent_memory
    OPENAI_API_KEY=your_openai_api_key
    ```
 
-3. Install dependencies:
+4. Install dependencies:
    ```bash
    npm install
    ```
 
-4. Build the TypeScript:
+5. Build the TypeScript:
    ```bash
    npm run build
    ```
 
-5. Run the demo:
+6. Run the demo:
    ```bash
    npm start
    ```
