@@ -1,4 +1,4 @@
-import { MongoClient, Collection, ObjectId, Db } from 'mongodb';
+import { MongoClient, ObjectId, Db } from 'mongodb';
 import { Conversation, ConversationEntry } from './types.js';
 import 'dotenv/config';
 
@@ -8,38 +8,18 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
 }
 
-// MongoDB client singleton
-let client: MongoClient | null = null;
-let db: Db | null = null;
-
-// Get MongoDB client
-export const getMongoClient = async (): Promise<MongoClient> => {
-  if (!client) {
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    console.log('Connected to MongoDB');
-  }
-  return client;
-};
-
-// Get database
-export const getDb = async (): Promise<Db> => {
-  if (!db) {
-    const client = await getMongoClient();
-    db = client.db('agent_memory');
-  }
-  return db;
-};
-
-// Get conversations collection
-export const getConversationsCollection = async (): Promise<Collection<Conversation>> => {
-  const database = await getDb();
-  return database.collection<Conversation>('conversations');
+// Connect to MongoDB and get database instance
+export const connectToMongoDB = async (): Promise<{ client: MongoClient; db: Db }> => {
+  const client = new MongoClient(MONGODB_URI);
+  await client.connect();
+  console.log('Connected to MongoDB');
+  const db = client.db('agent_memory');
+  return { client, db };
 };
 
 // Create a new conversation
-export const createConversation = async (userId: string): Promise<string> => {
-  const collection = await getConversationsCollection();
+export const createConversation = async (db: Db, userId: string): Promise<string> => {
+  const collection = db.collection<Conversation>('conversations');
 
   const conversation: Conversation = {
     userId,
@@ -49,17 +29,17 @@ export const createConversation = async (userId: string): Promise<string> => {
   };
 
   const result = await collection.insertOne(conversation);
-
   return result.insertedId.toString();
 };
 
 // Add entry to conversation history
 export const addToConversationHistory = async (
+  db: Db,
   conversationId: string,
   role: 'user' | 'assistant',
   content: string
 ): Promise<void> => {
-  const collection = await getConversationsCollection();
+  const collection = db.collection<Conversation>('conversations');
 
   const entry: ConversationEntry = {
     role,
@@ -78,9 +58,10 @@ export const addToConversationHistory = async (
 
 // Get conversation history
 export const getConversationHistory = async (
+  db: Db,
   conversationId: string
 ): Promise<ConversationEntry[]> => {
-  const collection = await getConversationsCollection();
+  const collection = db.collection<Conversation>('conversations');
 
   const conversation = await collection.findOne(
     { _id: new ObjectId(conversationId) }
@@ -89,12 +70,8 @@ export const getConversationHistory = async (
   return conversation?.history || [];
 };
 
-// Close MongoDB connection when the app terminates
-export const closeMongoConnection = async (): Promise<void> => {
-  if (client) {
-    await client.close();
-    console.log('Disconnected from MongoDB');
-    client = null;
-    db = null;
-  }
+// Close MongoDB connection
+export const closeMongoConnection = async (client: MongoClient): Promise<void> => {
+  await client.close();
+  console.log('Disconnected from MongoDB');
 };

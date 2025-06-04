@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { Db, ObjectId } from 'mongodb';
 
 // Define the conversation history document structure
 export type ConversationEntry = {
@@ -19,4 +19,17 @@ export type Conversation = {
 export type AgentRunResult = {
   conversationId: string;
   finalOutput: string;
+};
+
+// App context type
+export type AppContext = {
+  db: Db;
+  userId: string;
+  conversationId?: string;
+  userProfile?: {
+    favoriteLanguage: string;
+    favoriteDatabase: string;
+    experience: number;
+    preferredFramework?: string;
+  };
 };

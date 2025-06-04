@@ -1,55 +1,62 @@
-# OpenAI Agents SDK with MongoDB Memory Template
+# OpenAI Agents SDK with MongoDB Memory
 
-A simple demonstration of using the [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) with [MongoDB](https://www.mongodb.com/cloud/atlas/register/?utm_campaign=devrel&utm_source=third-party-content&utm_medium=cta&utm_content=openai-agents-sdk-template&utm_term=jesse.hall) as a memory store for conversation history.
+This demo app shows how to use the OpenAI Agents SDK with MongoDB for persistent conversation history.
 
-## Setup
+## Key Features
 
-1. Clone this repository
-2. Install dependencies:
+- Uses MongoDB to store conversation history
+- Leverages the SDK's built-in message handling capabilities
+- Custom tool to access user profile information
+- Simple implementation for educational purposes
+
+## Getting Started
+
+1. Make sure MongoDB is set up and running
+
+2. Create a `.env` file with:
    ```
-   npm install
-   ```
-3. Copy the example environment file:
-   ```
-   cp .env.example .env
-   ```
-4. Set up your environment variables in `.env`:
-   ```
-   MONGODB_URI=your_mongodb_connection_string
+   MONGODB_URI=mongodb://localhost:27017/agent_memory
    OPENAI_API_KEY=your_openai_api_key
    ```
 
-## Running the Demo
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Build the project:
+4. Build the TypeScript:
+   ```bash
+   npm run build
+   ```
 
-```bash
-npm run build
-```
+5. Run the demo:
+   ```bash
+   npm start
+   ```
 
-Run the demo with:
+## How It Works
 
-```bash
-npm start
-```
+The demo shows a hybrid approach to conversation memory:
 
-Or use the development mode with automatic reloading:
+1. **MongoDB for Persistence**: Messages are saved to MongoDB so they persist across server restarts
+2. **SDK's Message Handling**: We use the SDK's built-in `user()` and `assistant()` functions to format message history
+3. **Context-Aware Tools**: Custom tools can access application context including user profiles
+4. **Simple Interface**: Clean implementation with minimal code
 
-```bash
-npm run dev
-```
+## Demo Conversation
 
-## How it Works
-
-The demo shows a simple conversation with an agent that maintains memory across multiple interactions:
-
-1. User asks about the capital of France
-2. User asks about its population (agent remembers "its" refers to Paris)
-3. User asks about landmarks there (agent still remembers the context is about Paris)
+The demo runs a simple conversation that demonstrates:
+1. Basic question answering
+2. Memory of previous questions (asking about "its population" after asking about France)
+3. Using a tool to fetch user profile information
 
 ## Project Structure
 
-- `src/types.ts`: TypeScript type definitions
-- `src/db.ts`: MongoDB connection and data access functions
-- `src/agent.ts`: Agent implementation with memory integration
-- `src/index.ts`: Main demo script
+- `src/db.ts`: MongoDB connection and conversation storage functions
+- `src/agent.ts`: OpenAI Agents SDK implementation with custom tools
+- `src/types.ts`: TypeScript type definitions for conversations and context
+- `src/index.ts`: Demo script that runs a sample conversation
+
+## License
+
+MIT
