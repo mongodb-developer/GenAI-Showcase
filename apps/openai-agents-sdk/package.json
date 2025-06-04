@@ -1,0 +1,32 @@
+{
+  "name": "openai-agents-sdk-mongodb-template",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "npx tsc",
+    "dev": "npx tsx watch src/index.ts"
+  },
+  "keywords": [
+    "openai",
+    "agents",
+    "sdk",
+    "mongodb",
+    "template",
+    "memory",
+    "demo"
+  ],
+  "author": "Jesse Hall",
+  "license": "MIT",
+  "description": "A template for using the OpenAI Agents SDK with MongoDB as a memory store for conversation history.",
+  "dependencies": {
+    "@openai/agents": "^0.0.1",
+    "dotenv": "^16.5.0",
+    "mongodb": "^6.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "@types/node": "^20.10.0"
+  }
+}
