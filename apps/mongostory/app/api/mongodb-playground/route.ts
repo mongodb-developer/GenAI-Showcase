@@ -14,11 +14,18 @@ export async function POST(req: Request) {
     const client = await clientPromise
     const db = client.db("mongostory")
 
-    // Execute the query in a safe sandbox environment
-    const result = await eval(`(async () => {
-      const db = client.db("mongostory")
-      return ${query}
-    })()`)
+    // Validate and execute the query securely
+    if (typeof query !== "object" || query === null) {
+      throw new Error("Invalid query format. Query must be a non-null object.");
+    }
+
+    // Example: Allow only find operations with specific constraints
+    if (!query.collection || !query.filter || typeof query.collection !== "string" || typeof query.filter !== "object") {
+      throw new Error("Invalid query structure. Must include 'collection' (string) and 'filter' (object).");
+    }
+
+    const collection = db.collection(query.collection);
+    const result = await collection.find(query.filter).toArray();
 
     return NextResponse.json({
       success: true,
