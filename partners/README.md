@@ -20,16 +20,16 @@ Each partner brings their unique expertise and technology stack to create compre
 [Ada](https://www.ada.cx/) is an AI customer service company making service extraordinary for everyone. A transformation partner and platform that helps enterprise companies deliver experiences people love by accelerating a businesses' AI maturity and improving Agent performance.
 
 ### Galileo
-Galileo specializes in AI safety and reliability, providing tools and techniques for evaluating and improving AI model performance, particularly in detecting and reducing hallucinations.
+[Galileo](https://galileo.ai/) is an AI reliability and observability platform, providing tools and techniques for evaluating, observing, and guardrailing AI apps + agents. Galileo brings automation and insight to AI evaluations so you can reduce hallucinations and ship with confidence.
 
 ### Gravity9
 [Gravity9](https://www.gravity9.com/) is a leading software consultancy specializing in turning legacy complexity into digital agility. They are at the intersection of **Product + Engineering + AI**, helping organizations leverage cutting-edge technologies to drive business growth and efficiency.
 
 ### LangChain
-LangChain is a framework for developing applications powered by language models, enabling developers to build context-aware and reasoning applications.
+[LangChain](https://www.langchain.com/) is a framework for developing applications powered by language models, enabling developers to build context-aware and reasoning applications.
 
 ### LlamaIndex
-LlamaIndex is a data framework for building LLM applications, providing tools for data ingestion, indexing, and querying to connect custom data sources with large language models.
+[LlamaIndex](https://www.llamaindex.ai/) is a data framework for building LLM applications, providing tools for data ingestion, indexing, and querying to connect custom data sources with large language models.
 
 ---
 
