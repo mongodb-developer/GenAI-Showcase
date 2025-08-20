@@ -13,7 +13,8 @@ This repo mainly contains:
 | Folder | Description |
 |--------|-------------|
 | [`notebooks`](notebooks/README.md) | Jupyter notebooks examples for RAG, agentic applications, evaluations etc. |
-| [`apps`](apps/README.md) | Javascipt and Python apps and demos |
+| [`apps`](apps/README.md) | Javascript and Python apps and demos |
+| [`workshops`](workshops/README.md) | Self-paced hands-on workshops |
 | [`partners`](partners/README.md) | Contributions from our AI partners |
 
 ## Getting Started
