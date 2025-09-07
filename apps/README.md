@@ -10,9 +10,4 @@ Javascript and Python apps and demos showcasing how to use MongoDB in GenAI appl
 | RT Voice TS Store Agent | MongoDB Atlas, Next.js, WebRTC, OpenAI | Voice-controlled e-commerce platform with real-time voice processing and hybrid search | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](RT-voice-ts-store-agent) |
 | SpringAI Terraform RAG | MongoDB Atlas, Spring Boot, Terraform, OpenAI | RAG application with automated infrastructure setup using Terraform and Spring Boot | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](springai-terraform-rag) |
 | Voice OpenAI Rentals Agent | MongoDB Atlas, Python, Flask, OpenAI | Voice interaction agent for real estate listings using vector search and real-time voice processing | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](voice-openai-mongo-rentals-agent) |
-
-## Prerequisites
-- MongoDB Atlas account with cluster (6.0+ or 7.0+)
-- OpenAI API credentials
-- Runtime environment (Node.js, Python, or Java) based on application
-- Additional dependencies as specified in each application's README
+| Video Intelligence App | MongoDB Atlas, FastAPI, React, OpenAI, VoyageAI | AI-powered video search system allowing users to upload videos, extract insights, and search content using natural language queries | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](video-intelligence) |
