@@ -1,11 +1,10 @@
-import asyncio
 import logging
 import os
 import time
 import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict
 
 from dotenv import load_dotenv
 from fastapi import (
@@ -22,7 +21,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from models.schemas import (
-    ProcessingStatus,
     SearchQuery,
     SearchResponse,
     SearchResult,
@@ -416,16 +414,8 @@ async def search_frames(query: SearchQuery):
             )
             logger.info(f"🔀 Hybrid search returned {len(search_results)} results")
 
-        # Convert to response format with normalized similarity scores
+        # Convert to response format with raw similarity scores
         results = []
-        max_score = (
-            max([r.get("similarity_score", 0.0) for r in search_results])
-            if search_results
-            else 1.0
-        )
-        logger.info(
-            f"📊 Score normalization: max_score={max_score}, normalizing={max_score > 1.0}"
-        )
 
         for result in search_results:
             # Generate thumbnail path for frontend
@@ -433,22 +423,14 @@ async def search_frames(query: SearchQuery):
             if not os.path.exists(thumbnail_path):
                 thumbnail_path = result.get("file_path", "")
 
-            # Normalize similarity score to 0-1 range
+            # Use raw similarity score without normalization
             raw_score = result.get("similarity_score", 0.0)
-            if max_score > 1.0:
-                # Scale down scores that are > 1.0 to 0-1 range
-                normalized_score = min(raw_score / max_score, 1.0)
-            else:
-                # Keep scores that are already in 0-1 range
-                normalized_score = min(raw_score, 1.0)
 
             search_result = SearchResult(
                 frame_number=result.get("frame_number", 0),
                 timestamp=result.get("timestamp", 0.0),
                 description=result.get("description", "No description available"),
-                similarity_score=round(
-                    normalized_score, 3
-                ),  # Round to 3 decimal places
+                similarity_score=round(raw_score, 3),  # Round to 3 decimal places
                 thumbnail_path=thumbnail_path.replace(str(frames_dir), "/frames"),
                 metadata=result.get("metadata", {}),
             )

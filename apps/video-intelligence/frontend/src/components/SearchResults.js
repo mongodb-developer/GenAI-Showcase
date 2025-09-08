@@ -11,7 +11,7 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
   };
 
   const formatScore = (score) => {
-    return `${(score * 100).toFixed(1)}%`;
+    return score.toFixed(3);
   };
 
   const handleFrameClick = (result) => {

@@ -370,8 +370,7 @@ class MongoDBService:
                         "filter": {"video_id": video_filter},
                         "limit": top_k,
                     }
-                },
-                {"$addFields": {"similarity_score": {"$meta": "vectorSearchScore"}}},
+                }
             ]
 
             pipeline.append(
@@ -383,7 +382,7 @@ class MongoDBService:
                         "file_path": 1,
                         "metadata": 1,
                         "video_id": 1,
-                        "similarity_score": 1,
+                        "similarity_score": {"$meta": "vectorSearchScore"},
                         "_id": 0,
                     }
                 }
@@ -431,7 +430,6 @@ class MongoDBService:
             # Add fields and score
             pipeline.extend(
                 [
-                    {"$addFields": {"similarity_score": {"$meta": "searchScore"}}},
                     {
                         "$project": {
                             "frame_number": 1,
@@ -440,7 +438,7 @@ class MongoDBService:
                             "file_path": 1,
                             "metadata": 1,
                             "video_id": 1,
-                            "similarity_score": 1,
+                            "similarity_score": {"$meta": "searchScore"},
                             "_id": 0,
                         }
                     },
@@ -567,6 +565,8 @@ class MongoDBService:
                         "scoreDetails": True,
                     }
                 },
+                {"$addFields": {"scoreDetails": {"$meta": "scoreDetails"}}},
+                {"$addFields": {"similarity_score": "$scoreDetails.value"}},
                 {"$limit": top_k},
                 {
                     "$project": {
@@ -576,7 +576,7 @@ class MongoDBService:
                         "file_path": 1,
                         "metadata": 1,
                         "video_id": 1,
-                        "similarity_score": {"$meta": "searchScore"},
+                        "similarity_score": 1,
                         "_id": 0,
                     }
                 },
@@ -638,9 +638,9 @@ class MongoDBService:
                 {
                     "$set": {
                         "status": status,
-                        "processed_at": datetime.utcnow()
-                        if status == "completed"
-                        else None,
+                        "processed_at": (
+                            datetime.utcnow() if status == "completed" else None
+                        ),
                     }
                 },
             )
