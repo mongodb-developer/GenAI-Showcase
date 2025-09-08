@@ -152,7 +152,7 @@ class VideoProcessor:
 
         # Tip: When testing, set MAX_FRAMES_FOR_TESTING to limit extraction
         # Set to None or a large number to extract all available frames
-        MAX_FRAMES_FOR_TESTING = 100  # Extract all available frames
+        MAX_FRAMES_FOR_TESTING = max_possible_frames  # Extract all available frames
 
         video_frames_dir = self.frames_dir / video_id
         video_frames_dir.mkdir(exist_ok=True)
