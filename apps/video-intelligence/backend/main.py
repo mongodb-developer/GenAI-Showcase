@@ -423,21 +423,19 @@ async def search_frames(query: SearchQuery):
             if not os.path.exists(thumbnail_path):
                 thumbnail_path = result.get("file_path", "")
 
-            # For hybrid search, keep original score but add rank to metadata
-            raw_score = round(result.get("similarity_score", 0.0), 3)
-            metadata = result.get("metadata", {})
-
+            # For hybrid search, use rank as score; otherwise use actual similarity score
             if search_type == "hybrid":
-                metadata["rank"] = index + 1  # Add rank for hybrid search
-                metadata["search_type"] = "hybrid"
+                display_score = index + 1  # Rank starts from 1
+            else:
+                display_score = round(result.get("similarity_score", 0.0), 3)
 
             search_result = SearchResult(
                 frame_number=result.get("frame_number", 0),
                 timestamp=result.get("timestamp", 0.0),
                 description=result.get("description", "No description available"),
-                similarity_score=raw_score,
+                similarity_score=display_score,
                 thumbnail_path=thumbnail_path.replace(str(frames_dir), "/frames"),
-                metadata=metadata,
+                metadata=result.get("metadata", {}),
             )
             results.append(search_result)
 
