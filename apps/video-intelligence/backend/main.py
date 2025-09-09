@@ -355,8 +355,8 @@ async def process_video_async(video_id: str):
             {
                 "status": "completed",
                 "progress": 100,
-                "message": f"Processing complete! {len(frames_with_ai)} frames processed and ready for search.",
-                "frames_processed": len(frames_with_ai),
+                "message": f"Processing complete! {total_frames} frames processed and ready for search.",
+                "frames_processed": total_frames,
             },
         )
 
