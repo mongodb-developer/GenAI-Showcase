@@ -417,22 +417,27 @@ async def search_frames(query: SearchQuery):
         # Convert to response format with raw similarity scores
         results = []
 
-        for result in search_results:
+        for index, result in enumerate(search_results):
             # Generate thumbnail path for frontend
             thumbnail_path = result.get("file_path", "").replace("frame_", "thumb_")
             if not os.path.exists(thumbnail_path):
                 thumbnail_path = result.get("file_path", "")
 
-            # Use raw similarity score without normalization
-            raw_score = result.get("similarity_score", 0.0)
+            # For hybrid search, keep original score but add rank to metadata
+            raw_score = round(result.get("similarity_score", 0.0), 3)
+            metadata = result.get("metadata", {})
+
+            if search_type == "hybrid":
+                metadata["rank"] = index + 1  # Add rank for hybrid search
+                metadata["search_type"] = "hybrid"
 
             search_result = SearchResult(
                 frame_number=result.get("frame_number", 0),
                 timestamp=result.get("timestamp", 0.0),
                 description=result.get("description", "No description available"),
-                similarity_score=round(raw_score, 3),  # Round to 3 decimal places
+                similarity_score=raw_score,
                 thumbnail_path=thumbnail_path.replace(str(frames_dir), "/frames"),
-                metadata=result.get("metadata", {}),
+                metadata=metadata,
             )
             results.append(search_result)
 

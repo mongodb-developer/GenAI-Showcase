@@ -10,7 +10,12 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const formatScore = (score) => {
+  const formatScore = (score, metadata) => {
+    // Check if this is a hybrid search result (has rank in metadata)
+    if (metadata && metadata.rank) {
+      return `Rank #${metadata.rank} (Score: ${score.toFixed(3)})`;
+    }
+    // Otherwise it's a similarity score only
     return score.toFixed(3);
   };
 
@@ -78,7 +83,9 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
                 {result.description}
               </div>
               <div className="result-score">
-                Similarity: {formatScore(result.similarity_score)}
+                {result.metadata && result.metadata.rank
+                  ? formatScore(result.similarity_score, result.metadata)
+                  : `Similarity: ${formatScore(result.similarity_score, result.metadata)}`}
               </div>
             </div>
           </div>
