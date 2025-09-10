@@ -1,0 +1,265 @@
+{
+  "sop_id": "acme-SOP-SPECIALTY-BIO-20250318.4",
+  "title": "Specialty Biologic Medication Prior Authorization Process",
+  "version": "4.2",
+  "effective_date": "2025-03-18",
+  "review_date": "2025-09-18",
+  "department": "Pharmacy Benefits Management",
+  "status": "ACTIVE",
+  "applicable_plans": [
+    "acme-SPECIALTYPLUS-2025",
+    "acme-STANDARD-2025",
+    "acme-VALUECARE-2025"
+  ],
+  "applicable_medications": [
+    {
+      "category": "TNF Inhibitors",
+      "drugs": [
+        "infliximab",
+        "adalimumab",
+        "etanercept",
+        "golimumab",
+        "certolizumab"
+      ]
+    },
+    {
+      "category": "Interleukin Inhibitors",
+      "drugs": [
+        "ustekinumab",
+        "secukinumab",
+        "ixekizumab",
+        "risankizumab"
+      ]
+    }
+  ],
+  "purpose": "This SOP establishes the standardized process for reviewing and determining medical necessity for specialty biologic medications requiring prior authorization under acme pharmacy benefit plans.",
+  "scope": "Applies to all specialty biologic medications administered by subcutaneous injection or intravenous infusion for autoimmune and inflammatory conditions.",
+  "definitions": [
+    {
+      "term": "PA",
+      "definition": "Prior Authorization"
+    },
+    {
+      "term": "TNF",
+      "definition": "Tumor Necrosis Factor"
+    },
+    {
+      "term": "DMARD",
+      "definition": "Disease-Modifying Anti-Rheumatic Drug"
+    }
+  ],
+  "roles_and_responsibilities": [
+    {
+      "role": "Pharmacy Technician",
+      "responsibilities": [
+        "Initial documentation gathering",
+        "Administrative review",
+        "Claim routing"
+      ],
+      "authority_level": 1
+    },
+    {
+      "role": "Clinical Pharmacist",
+      "responsibilities": [
+        "Clinical appropriateness review",
+        "Step therapy evaluation",
+        "Initial determination"
+      ],
+      "authority_level": 2
+    },
+    {
+      "role": "Medical Director",
+      "responsibilities": [
+        "Complex case review",
+        "Exception approvals",
+        "Final determinations"
+      ],
+      "authority_level": 3
+    }
+  ],
+  "procedure_steps": [
+    {
+      "step_number": 1,
+      "title": "Claim Receipt and Validation",
+      "description": "Verify claim contains all required elements for processing.",
+      "actions": [
+        "Confirm patient demographics and eligibility",
+        "Verify claim includes diagnosis code(s)",
+        "Confirm NDC or HCPCS code is present",
+        "Validate prescriber information"
+      ],
+      "timeframe": "24 hours from receipt",
+      "required_fields": [
+        "member_id",
+        "diagnosis_code",
+        "drug_code",
+        "prescriber_npi"
+      ],
+      "escalation_path": "Incomplete claims routed to Exception Queue"
+    },
+    {
+      "step_number": 2,
+      "title": "Benefit Verification",
+      "description": "Confirm patient's plan covers requested medication and determine authorization requirements.",
+      "actions": [
+        "Check formulary status of medication",
+        "Determine tier level and patient cost-share",
+        "Identify any quantity limits or duration restrictions",
+        "Verify site-of-care requirements"
+      ],
+      "timeframe": "24 hours from validation",
+      "system_access": [
+        "Formulary Database",
+        "Benefits Platform",
+        "Coverage Policy Database"
+      ],
+      "output": "Benefit Verification Summary"
+    },
+    {
+      "step_number": 3,
+      "title": "Clinical Criteria Evaluation",
+      "description": "Review clinical documentation to assess medical necessity according to acme coverage criteria.",
+      "actions": [
+        "Verify diagnosis is FDA-approved or supported by clinical guidelines",
+        "Confirm required baseline testing is documented",
+        "Evaluate prior treatment history against step therapy requirements",
+        "Assess dosing against weight-based guidelines"
+      ],
+      "decision_logic": {
+        "approval_criteria": [
+          "Diagnosis is FDA-approved or supported by NCCN/ACR guidelines",
+          "Required prior therapies have been tried for minimum duration",
+          "Documentation of inadequate response to prior therapies",
+          "No contraindications to requested therapy",
+          "Dosing within approved range for indication and weight"
+        ],
+        "denial_criteria": [
+          "Non-approved diagnosis without supporting literature",
+          "Required step therapy not attempted",
+          "Contraindication to requested therapy exists",
+          "Dosing exceeds maximum approved limits"
+        ],
+        "exception_criteria": [
+          "Documented adverse reaction to required prior therapy",
+          "Documented contraindication to all step therapy options",
+          "Rapid disease progression requiring immediate biologic therapy"
+        ]
+      },
+      "timeframe": "72 hours from benefit verification",
+      "escalation_trigger": "Any case not meeting straightforward approval/denial criteria"
+    }
+  ],
+  "indications_and_criteria": [
+    {
+      "indication": "Rheumatoid Arthritis",
+      "icd10_codes": [
+        "M05.1",
+        "M05.2",
+        "M05.3",
+        "M05.9",
+        "M06.9"
+      ],
+      "approval_criteria": [
+        "Moderate to severe disease (CDAI > 10 or DAS28 > 3.2)",
+        "Prior treatment with methotrexate for ≥ 12 weeks unless contraindicated",
+        "If methotrexate contraindicated, prior trial of leflunomide or sulfasalazine",
+        "Documentation of active inflammation (elevated CRP/ESR or synovitis on exam)"
+      ],
+      "duration_of_approval": "Initial: 6 months, Renewal: 12 months",
+      "renewal_criteria": [
+        "Documentation of clinical improvement (reduction in CDAI score ≥ 10 points or DAS28 improvement ≥ 1.2)",
+        "No serious adverse events requiring discontinuation"
+      ]
+    },
+    {
+      "indication": "Crohn's Disease",
+      "icd10_codes": [
+        "K50.00",
+        "K50.10",
+        "K50.80",
+        "K50.90"
+      ],
+      "approval_criteria": [
+        "Moderate to severe disease (CDAI > 220 or fecal calprotectin > 250 μg/g)",
+        "Prior treatment with corticosteroids and one immunomodulator (azathioprine, 6-MP, or methotrexate)",
+        "Documentation of active inflammation (elevated CRP/ESR, endoscopic evidence, or imaging)",
+        "For fistulizing disease: presence of draining enterocutaneous or perianal fistula(s)"
+      ],
+      "duration_of_approval": "Initial: 6 months, Renewal: 12 months",
+      "renewal_criteria": [
+        "Documentation of clinical improvement (reduction in CDAI score ≥ 70 points or 50% reduction in fistula drainage)",
+        "No serious adverse events requiring discontinuation"
+      ]
+    }
+  ],
+  "state_specific_requirements": [
+    {
+      "state": "IL",
+      "requirements": [
+        "PA determination must be issued within 72 hours (24 hours for urgent requests)",
+        "Step therapy exceptions must be granted for documented adverse events",
+        "Written notification required for all denials including appeal rights"
+      ],
+      "regulatory_citations": [
+        "215 ILCS 5/356z.35",
+        "Illinois Admin Code Title 50, Ch. I, Part 2026"
+      ]
+    },
+    {
+      "state": "CA",
+      "requirements": [
+        "PA determination must be issued within 72 hours (24 hours for urgent requests)",
+        "External review option required for all denials",
+        "Exception process required for non-formulary medications"
+      ],
+      "regulatory_citations": [
+        "CA Health & Safety Code § 1367.241",
+        "CA Insurance Code § 10123.191"
+      ]
+    }
+  ],
+  "documentation_requirements": [
+    "Current chart notes documenting diagnosis",
+    "Lab results supporting diagnosis and disease activity",
+    "Treatment history including dates, doses, and response",
+    "Current weight for weight-based dosing calculations",
+    "TB test results within past 12 months",
+    "Hepatitis B screening results"
+  ],
+  "references": [
+    {
+      "title": "American College of Rheumatology Treatment Guidelines",
+      "url": "https://www.rheumatology.org/Practice-Quality/Clinical-Support/Clinical-Practice-Guidelines",
+      "last_updated": "2024-01-15"
+    },
+    {
+      "title": "American Gastroenterological Association Guidelines",
+      "url": "https://gastro.org/guidelines/",
+      "last_updated": "2023-11-30"
+    }
+  ],
+  "attachments": [
+    {
+      "title": "Specialty Medication Prior Authorization Form",
+      "file_id": "FORM-PA-SPECIALTY-2025-1"
+    },
+    {
+      "title": "Step Therapy Exception Request Form",
+      "file_id": "FORM-ST-EXCEPTION-2025-1"
+    }
+  ],
+  "revision_history": [
+    {
+      "version": "4.2",
+      "date": "2025-03-18",
+      "author": "Maria Rodriguez, PharmD",
+      "changes": "Updated IL state requirements to comply with new legislation effective March 1, 2025"
+    },
+    {
+      "version": "4.1",
+      "date": "2024-12-10",
+      "author": "David Chen, PharmD",
+      "changes": "Added risankizumab to covered IL inhibitors; updated dosing guidelines for pediatric Crohn's disease"
+    }
+  ]
+}

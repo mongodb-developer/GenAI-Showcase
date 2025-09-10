@@ -1,0 +1,481 @@
+[
+  {
+    "Drug_ID": "REM45678",
+    "NDC_Code": "57894-0030-01",
+    "Drug_Name": "Remicade",
+    "Generic_Name": "infliximab",
+    "GPI_Code": "52.50.30.30.10",
+    "Drug_Class": "Tumor Necrosis Factor (TNF) Blocker",
+    "Tier_Level": 5,
+    "Form": "Powder for Injection",
+    "Strength": "100 mg",
+    "Route": "Intravenous",
+    "Prior_Authorization_Required": true,
+    "Step_Therapy_Required": true,
+    "Quantity_Limits": "5 vials per infusion, based on weight",
+    "Age_Restrictions": "6 years and older",
+    "Gender_Restrictions": null,
+    "Specialty_Drug": true,
+    "Limited_Distribution": false,
+    "Plan_ID": "acme Comprehensive Specialty Plus",
+    "Copay_Amount": null,
+    "Coinsurance_Percentage": 20,
+    "Deductible_Applies": true,
+    "Maximum_Days_Supply": 56,
+    "Network_Restrictions": "Preferred Infusion Centers Only",
+    "Effective_Date": "2025-01-01",
+    "End_Date": null,
+    "Required_Prior_Drugs": [
+      {
+        "Drug_Name": "Humira",
+        "Generic_Name": "adalimumab",
+        "For_Indications": [
+          "Crohn's Disease",
+          "Ulcerative Colitis",
+          "Rheumatoid Arthritis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Mesalamine",
+        "Generic_Name": "mesalamine",
+        "For_Indications": [
+          "Crohn's Disease",
+          "Ulcerative Colitis"
+        ],
+        "Minimum_Trial_Period": "8 weeks"
+      }
+    ],
+    "Failure_Criteria": "Inadequate response, intolerance, or contraindication to required prior therapies",
+    "Exception_Criteria": "Documented severe disease requiring immediate biologic therapy; documented adverse reaction to step therapy medications",
+    "PA_Criteria": [
+      "Diagnosis confirmed by endoscopy or imaging",
+      "Moderate to severe disease documented by disease activity scores",
+      "Prescribed by or in consultation with a gastroenterologist or rheumatologist",
+      "Negative TB test within past 12 months",
+      "Negative hepatitis B screening"
+    ],
+    "Diagnosis_Restrictions": [
+      {
+        "ICD10_Code": "K50.00",
+        "Description": "Crohn's disease of small intestine without complications"
+      },
+      {
+        "ICD10_Code": "K51.90",
+        "Description": "Ulcerative colitis, unspecified, without complications"
+      },
+      {
+        "ICD10_Code": "M05.9",
+        "Description": "Rheumatoid arthritis with rheumatoid factor, unspecified"
+      }
+    ],
+    "Documentation_Required": [
+      "Chart notes documenting diagnosis",
+      "Previous treatment history",
+      "TB test results",
+      "Hepatitis B screening results",
+      "Current weight for dose calculation"
+    ],
+    "Approval_Duration": "Initial: 6 months, Renewal: 12 months",
+    "Renewal_Criteria": "Documentation of positive clinical response to therapy"
+  },
+  {
+    "Drug_ID": "HUM28756",
+    "NDC_Code": "0074-0243-02",
+    "Drug_Name": "Humira",
+    "Generic_Name": "adalimumab",
+    "GPI_Code": "66.40.10.10.30",
+    "Drug_Class": "Tumor Necrosis Factor (TNF) Blocker",
+    "Tier_Level": 4,
+    "Form": "Solution for Injection",
+    "Strength": "40 mg/0.8 mL",
+    "Route": "Subcutaneous",
+    "Prior_Authorization_Required": true,
+    "Step_Therapy_Required": false,
+    "Quantity_Limits": "2 pens/syringes per 28 days",
+    "Age_Restrictions": "2 years and older (varies by indication)",
+    "Gender_Restrictions": null,
+    "Specialty_Drug": true,
+    "Limited_Distribution": false,
+    "Plan_ID": "acme Comprehensive Specialty Plus",
+    "Copay_Amount": null,
+    "Coinsurance_Percentage": 20,
+    "Deductible_Applies": true,
+    "Maximum_Days_Supply": 28,
+    "Network_Restrictions": "acme Specialty Pharmacy Network",
+    "Effective_Date": "2025-01-01",
+    "End_Date": null,
+    "Required_Prior_Drugs": [
+      {
+        "Drug_Name": "Methotrexate",
+        "Generic_Name": "methotrexate",
+        "For_Indications": [
+          "Rheumatoid Arthritis",
+          "Psoriatic Arthritis",
+          "Juvenile Idiopathic Arthritis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Conventional DMARDs",
+        "Generic_Name": "varies",
+        "For_Indications": [
+          "Rheumatoid Arthritis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      }
+    ],
+    "Failure_Criteria": "Inadequate response, intolerance, or contraindication to required prior therapies",
+    "Exception_Criteria": "Documented severe disease requiring immediate biologic therapy; documented adverse reaction to step therapy medications",
+    "PA_Criteria": [
+      "Diagnosis confirmed by appropriate clinical evaluation",
+      "Moderate to severe disease documented by disease activity scores",
+      "Prescribed by or in consultation with a rheumatologist, gastroenterologist, or dermatologist (depending on indication)",
+      "Negative TB test within past 12 months",
+      "Negative hepatitis B screening"
+    ],
+    "Diagnosis_Restrictions": [
+      {
+        "ICD10_Code": "M05.9",
+        "Description": "Rheumatoid arthritis with rheumatoid factor, unspecified"
+      },
+      {
+        "ICD10_Code": "K50.90",
+        "Description": "Crohn's disease, unspecified, without complications"
+      },
+      {
+        "ICD10_Code": "L40.50",
+        "Description": "Arthropathic psoriasis, unspecified"
+      },
+      {
+        "ICD10_Code": "M08.00",
+        "Description": "Unspecified juvenile rheumatoid arthritis of unspecified site"
+      }
+    ],
+    "Documentation_Required": [
+      "Chart notes documenting diagnosis",
+      "Previous treatment history",
+      "TB test results",
+      "Hepatitis B screening results",
+      "Clinical assessment scores if applicable"
+    ],
+    "Approval_Duration": "Initial: 6 months, Renewal: 12 months",
+    "Renewal_Criteria": "Documentation of positive clinical response to therapy"
+  },
+  {
+    "Drug_ID": "ENT96325",
+    "NDC_Code": "58468-0132-08",
+    "Drug_Name": "Entyvio",
+    "Generic_Name": "vedolizumab",
+    "GPI_Code": "52.92.00.40.30",
+    "Drug_Class": "Integrin Receptor Antagonist",
+    "Tier_Level": 5,
+    "Form": "Lyophilized Powder for Injection",
+    "Strength": "300 mg",
+    "Route": "Intravenous",
+    "Prior_Authorization_Required": true,
+    "Step_Therapy_Required": true,
+    "Quantity_Limits": "300 mg per infusion",
+    "Age_Restrictions": "18 years and older",
+    "Gender_Restrictions": null,
+    "Specialty_Drug": true,
+    "Limited_Distribution": false,
+    "Plan_ID": "acme Comprehensive Specialty Plus",
+    "Copay_Amount": null,
+    "Coinsurance_Percentage": 20,
+    "Deductible_Applies": true,
+    "Maximum_Days_Supply": 56,
+    "Network_Restrictions": "Preferred Infusion Centers Only",
+    "Effective_Date": "2025-01-01",
+    "End_Date": null,
+    "Required_Prior_Drugs": [
+      {
+        "Drug_Name": "Humira",
+        "Generic_Name": "adalimumab",
+        "For_Indications": [
+          "Ulcerative Colitis",
+          "Crohn's Disease"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Remicade",
+        "Generic_Name": "infliximab",
+        "For_Indications": [
+          "Ulcerative Colitis",
+          "Crohn's Disease"
+        ],
+        "Minimum_Trial_Period": "14 weeks"
+      },
+      {
+        "Drug_Name": "Conventional Therapy",
+        "Generic_Name": "varies",
+        "For_Indications": [
+          "Ulcerative Colitis",
+          "Crohn's Disease"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      }
+    ],
+    "Failure_Criteria": "Inadequate response, loss of response, or intolerance to at least one TNF blocker",
+    "Exception_Criteria": "Documented contraindication to TNF blockers; history of demyelinating disease or congestive heart failure",
+    "PA_Criteria": [
+      "Diagnosis of moderate to severe ulcerative colitis or Crohn's disease",
+      "Previous failure of or contraindication to conventional therapy",
+      "Previous failure of or contraindication to at least one TNF blocker",
+      "Prescribed by or in consultation with a gastroenterologist",
+      "Negative TB test within past 12 months"
+    ],
+    "Diagnosis_Restrictions": [
+      {
+        "ICD10_Code": "K51.90",
+        "Description": "Ulcerative colitis, unspecified, without complications"
+      },
+      {
+        "ICD10_Code": "K50.90",
+        "Description": "Crohn's disease, unspecified, without complications"
+      }
+    ],
+    "Documentation_Required": [
+      "Chart notes documenting diagnosis",
+      "Previous treatment history including TNF blockers",
+      "TB test results",
+      "Disease activity scores or endoscopy results"
+    ],
+    "Approval_Duration": "Initial: 6 months, Renewal: 12 months",
+    "Renewal_Criteria": "Documentation of clinical remission or improvement in signs and symptoms of disease"
+  },
+  {
+    "Drug_ID": "KEY78214",
+    "NDC_Code": "00085-1291-01",
+    "Drug_Name": "Keytruda",
+    "Generic_Name": "pembrolizumab",
+    "GPI_Code": "21.10.00.60.30",
+    "Drug_Class": "Programmed Death Receptor-1 (PD-1) Blocking Antibody",
+    "Tier_Level": 5,
+    "Form": "Solution for Injection",
+    "Strength": "100 mg/4 mL",
+    "Route": "Intravenous",
+    "Prior_Authorization_Required": true,
+    "Step_Therapy_Required": false,
+    "Quantity_Limits": "Based on weight, typically 200mg every 3 weeks",
+    "Age_Restrictions": "Varies by indication, generally 18 years and older",
+    "Gender_Restrictions": null,
+    "Specialty_Drug": true,
+    "Limited_Distribution": false,
+    "Plan_ID": "acme Comprehensive Specialty Plus",
+    "Copay_Amount": null,
+    "Coinsurance_Percentage": 20,
+    "Deductible_Applies": true,
+    "Maximum_Days_Supply": 21,
+    "Network_Restrictions": "Preferred Infusion Centers Only",
+    "Effective_Date": "2025-01-01",
+    "End_Date": null,
+    "Required_Prior_Drugs": [],
+    "Failure_Criteria": "Not applicable as first-line therapy for many indications",
+    "Exception_Criteria": "Not applicable",
+    "PA_Criteria": [
+      "FDA-approved diagnosis or NCCN-supported indication",
+      "Prescribed by or in consultation with an oncologist",
+      "Documentation of PD-L1 expression status when required by indication",
+      "Documentation of BRAF/MSI/dMMR/TMB-H status when required by indication",
+      "ECOG performance status 0-2"
+    ],
+    "Diagnosis_Restrictions": [
+      {
+        "ICD10_Code": "C34.90",
+        "Description": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+      },
+      {
+        "ICD10_Code": "C43.9",
+        "Description": "Malignant melanoma of skin, unspecified"
+      },
+      {
+        "ICD10_Code": "C64.9",
+        "Description": "Malignant neoplasm of unspecified kidney, except renal pelvis"
+      },
+      {
+        "ICD10_Code": "C20",
+        "Description": "Malignant neoplasm of rectum"
+      }
+    ],
+    "Documentation_Required": [
+      "Pathology report confirming diagnosis",
+      "Genetic/biomarker testing results if applicable (PD-L1, MSI, dMMR, etc.)",
+      "Current ECOG performance status",
+      "Previous cancer treatments and responses",
+      "Recent imaging reports"
+    ],
+    "Approval_Duration": "Initial: 6 months, Renewal: 12 months",
+    "Renewal_Criteria": "No evidence of disease progression and no unacceptable toxicity"
+  },
+  {
+    "Drug_ID": "STE42390",
+    "NDC_Code": "69639-0102-01",
+    "Drug_Name": "Stelara",
+    "Generic_Name": "ustekinumab",
+    "GPI_Code": "66.40.10.50.60",
+    "Drug_Class": "Interleukin-12 and -23 Inhibitor",
+    "Tier_Level": 5,
+    "Form": "Solution for Injection",
+    "Strength": "90 mg/mL",
+    "Route": "Subcutaneous/Intravenous (depending on indication)",
+    "Prior_Authorization_Required": true,
+    "Step_Therapy_Required": true,
+    "Quantity_Limits": "Induction: Single IV dose based on weight; Maintenance: 90 mg subQ every 8 weeks",
+    "Age_Restrictions": "6 years and older for psoriasis; 18 years and older for other indications",
+    "Gender_Restrictions": null,
+    "Specialty_Drug": true,
+    "Limited_Distribution": false,
+    "Plan_ID": "acme Comprehensive Specialty Plus",
+    "Copay_Amount": null,
+    "Coinsurance_Percentage": 20,
+    "Deductible_Applies": true,
+    "Maximum_Days_Supply": 56,
+    "Network_Restrictions": "acme Specialty Pharmacy Network",
+    "Effective_Date": "2025-01-01",
+    "End_Date": null,
+    "Required_Prior_Drugs": [
+      {
+        "Drug_Name": "Humira",
+        "Generic_Name": "adalimumab",
+        "For_Indications": [
+          "Psoriasis",
+          "Psoriatic Arthritis",
+          "Crohn's Disease",
+          "Ulcerative Colitis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Phototherapy",
+        "Generic_Name": "ultraviolet light therapy",
+        "For_Indications": [
+          "Psoriasis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Methotrexate",
+        "Generic_Name": "methotrexate",
+        "For_Indications": [
+          "Psoriatic Arthritis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      }
+    ],
+    "Failure_Criteria": "Inadequate response, intolerance, or contraindication to required prior therapies",
+    "Exception_Criteria": "Documented severe disease requiring immediate biologic therapy; documented adverse reaction to TNF blockers",
+    "PA_Criteria": [
+      "Diagnosis confirmed by appropriate clinical evaluation",
+      "Moderate to severe disease documented by disease activity scores",
+      "Previous failure of conventional therapy and/or TNF inhibitor",
+      "Prescribed by or in consultation with a dermatologist, rheumatologist, or gastroenterologist",
+      "Negative TB test within past 12 months"
+    ],
+    "Diagnosis_Restrictions": [
+      {
+        "ICD10_Code": "L40.0",
+        "Description": "Psoriasis vulgaris"
+      },
+      {
+        "ICD10_Code": "L40.50",
+        "Description": "Arthropathic psoriasis, unspecified"
+      },
+      {
+        "ICD10_Code": "K50.90",
+        "Description": "Crohn's disease, unspecified, without complications"
+      },
+      {
+        "ICD10_Code": "K51.90",
+        "Description": "Ulcerative colitis, unspecified, without complications"
+      }
+    ],
+    "Documentation_Required": [
+      "Chart notes documenting diagnosis",
+      "Previous treatment history",
+      "TB test results",
+      "Clinical assessment scores (PASI, BSA for psoriasis; CDAI for Crohn's; Mayo for UC)",
+      "Current weight for dose calculation (for Crohn's/UC IV induction)"
+    ],
+    "Approval_Duration": "Initial: 6 months, Renewal: 12 months",
+    "Renewal_Criteria": "Documentation of positive clinical response to therapy"
+  },
+  {
+    "Drug_ID": "OCR12549",
+    "NDC_Code": "50242-0150-01",
+    "Drug_Name": "Ocrevus",
+    "Generic_Name": "ocrelizumab",
+    "GPI_Code": "62.20.22.30.40",
+    "Drug_Class": "CD20-Directed Cytolytic Antibody",
+    "Tier_Level": 5,
+    "Form": "Solution for Injection",
+    "Strength": "300 mg/10 mL",
+    "Route": "Intravenous",
+    "Prior_Authorization_Required": true,
+    "Step_Therapy_Required": true,
+    "Quantity_Limits": "Initial: 300 mg on day 1 and 15; Maintenance: 600 mg every 6 months",
+    "Age_Restrictions": "18 years and older",
+    "Gender_Restrictions": null,
+    "Specialty_Drug": true,
+    "Limited_Distribution": false,
+    "Plan_ID": "acme Comprehensive Specialty Plus",
+    "Copay_Amount": null,
+    "Coinsurance_Percentage": 20,
+    "Deductible_Applies": true,
+    "Maximum_Days_Supply": 180,
+    "Network_Restrictions": "Preferred Infusion Centers Only",
+    "Effective_Date": "2025-01-01",
+    "End_Date": null,
+    "Required_Prior_Drugs": [
+      {
+        "Drug_Name": "Interferon beta-1a",
+        "Generic_Name": "interferon beta-1a",
+        "For_Indications": [
+          "Relapsing Multiple Sclerosis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Glatiramer Acetate",
+        "Generic_Name": "glatiramer acetate",
+        "For_Indications": [
+          "Relapsing Multiple Sclerosis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      },
+      {
+        "Drug_Name": "Dimethyl Fumarate",
+        "Generic_Name": "dimethyl fumarate",
+        "For_Indications": [
+          "Relapsing Multiple Sclerosis"
+        ],
+        "Minimum_Trial_Period": "12 weeks"
+      }
+    ],
+    "Failure_Criteria": "Inadequate response, intolerance, or contraindication to at least two MS disease-modifying therapies",
+    "Exception_Criteria": "Primary progressive MS diagnosis (no step therapy required); highly active relapsing MS with rapid progression",
+    "PA_Criteria": [
+      "Diagnosis of relapsing or primary progressive multiple sclerosis confirmed by MRI",
+      "For relapsing MS: prior failure of at least two disease-modifying therapies, unless exception criteria are met",
+      "Prescribed by or in consultation with a neurologist",
+      "No active hepatitis B infection",
+      "No active malignancy"
+    ],
+    "Diagnosis_Restrictions": [
+      {
+        "ICD10_Code": "G35",
+        "Description": "Multiple sclerosis"
+      }
+    ],
+    "Documentation_Required": [
+      "MRI reports confirming diagnosis",
+      "Neurologist consultation notes",
+      "Previous MS treatment history and response",
+      "Hepatitis B screening results",
+      "JC virus antibody status (if previously on natalizumab)"
+    ],
+    "Approval_Duration": "Initial: 6 months, Renewal: 12 months",
+    "Renewal_Criteria": "Documentation of stable or improved disease activity; no significant adverse events"
+  }
+]
