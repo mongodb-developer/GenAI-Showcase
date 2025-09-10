@@ -2,7 +2,6 @@ import asyncio
 import base64
 import logging
 import os
-from io import BytesIO
 from typing import Any, Dict, List, Optional
 
 import openai

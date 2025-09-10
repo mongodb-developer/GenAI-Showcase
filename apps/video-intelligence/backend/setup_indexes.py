@@ -4,7 +4,6 @@ MongoDB Atlas Search Index Setup Script
 Creates the required vector search and text search indexes for the Video Intelligence app.
 """
 
-import json
 import os
 import sys
 
