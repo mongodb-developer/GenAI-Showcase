@@ -35,8 +35,8 @@ class ConnectionPool {
     const mongoUri = process.env.MONGODB_URI
     const openaiKey = process.env.OPENAI_API_KEY
     const embeddingModel = process.env.EMBEDDING_MODEL || "text-embedding-3-small"
-    const dbName = process.env.MEM0_DB || "mem0_agent_memory"
-    const collectionName = process.env.MEM0_COLLECTION || "extracted_memories"
+    const dbName = process.env.MEMORY_DB || "mem0_agent_memory"
+    const collectionName = process.env.MEMORY_COLLECTION || "extracted_memories"
 
     if (!mongoUri || typeof mongoUri !== 'string') {
       throw new Error("MONGODB_URI environment variable is required and must be a string")

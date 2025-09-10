@@ -398,7 +398,7 @@ export async function getThreadStorage(): Promise<ThreadStorage> {
     }
 
     const client = await getMongoClient();
-    const db = client.db(process.env.MEM0_DB || 'mem0_agent_memory');
+    const db = client.db(process.env.MEMORY_DB || 'mem0_agent_memory');
     
     cachedThreadStorage = new ThreadStorage(db);
     await cachedThreadStorage.initialize();

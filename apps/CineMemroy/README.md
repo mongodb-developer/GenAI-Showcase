@@ -51,10 +51,10 @@ GOOGLE_API_KEY=your-google-ai-api-key-here
 MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority"
 
 # Optional: Database name (defaults to "mem_agent_memory")
-MEM0_DB=mem_agent_memory
+MEMORY_DB=mem_agent_memory
 
 # Optional: Collection name (defaults to "extracted_memories")
-MEM0_COLLECTION=extracted_memories
+MEMORY_COLLECTION=extracted_memories
 
 # Optional: OpenAI embedding model (defaults to "text-embedding-3-small")
 EMBEDDING_MODEL=text-embedding-3-small
@@ -87,7 +87,12 @@ pnpm dev
 
 ## MongoDB Atlas Vector Index Setup
 
-Create a vector search index on your collection:
+The application requires vector search indexes on the following collections:
+
+### Required Collections and Indexes
+
+#### 1. Memory Collection (`extracted_memories`)
+Create a vector search index on the memory collection (default: `extracted_memories` as specified in `.env example`):
 
 1. Go to your MongoDB Atlas cluster
 2. Navigate to "Search" → "Create Search Index"
@@ -97,14 +102,51 @@ Create a vector search index on your collection:
 {
   "fields": [
     {
-      "numDimensions": 1536,
+      "type": "vector",
       "path": "embedding",
-      "similarity": "cosine",
-      "type": "vector"
+      "numDimensions": 1536,
+      "similarity": "cosine"
+    },
+    {
+      "type": "filter",
+      "path": "userId"
     }
   ]
 }
 ```
+
+#### 2. Movies Collection (`sample_mfilx.embedded_movies`)
+Create a vector search index on the pre-loaded movies collection:
+
+1. Navigate to "Search" → "Create Search Index" 
+2. Select the `sample_mfilx.embedded_movies` collection
+3. Choose "JSON Editor" and use this configuration:
+
+```json
+{
+  "fields": [
+    {
+      "type": "vector",
+      "path": "plot_embedding",
+      "numDimensions": 1536,
+      "similarity": "cosine"
+    }
+  ]
+}
+```
+
+### Collection Details
+
+- **Memory Collection**: Stores user memories with embeddings and user filtering capability
+  - Database: `mem0_agent_memory` (configurable via `MEMORY_DB`)
+  - Collection: `extracted_memories` (configurable via `MEMORY_COLLECTION`)
+  - Vector Field: `embedding` (1536 dimensions)
+  - Filter Field: `userId` for user-specific memory isolation
+
+- **Movies Collection**: Pre-loaded movie data with plot embeddings for recommendations
+  - Database: `sample_mfilx`
+  - Collection: `embedded_movies`
+  - Vector Field: `plot_embedding` (1536 dimensions)
 
 ## Memory System Architecture
 
