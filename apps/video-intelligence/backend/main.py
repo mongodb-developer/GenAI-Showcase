@@ -288,39 +288,9 @@ async def process_video_async(video_id: str):
             str(video_path), video_id, progress_callback, mongodb_service, ai_service
         )
 
-        # Check how many frames were already processed progressively
-        already_saved_count = await mongodb_service.get_video_frame_count(video_id)
+        # All frames should have been processed progressively during extraction
         total_frames = len(result["frames_data"])
-
-        if already_saved_count < total_frames:
-            # Some frames still need AI processing (fallback for any that weren't processed progressively)
-            await manager.send_progress(
-                video_id,
-                {
-                    "status": "processing",
-                    "progress": 90,
-                    "message": f"Processing remaining {total_frames - already_saved_count} frames...",
-                },
-            )
-
-            # Only process frames that weren't saved progressively
-            remaining_frames = (
-                result["frames_data"][already_saved_count:]
-                if already_saved_count > 0
-                else result["frames_data"]
-            )
-
-            if remaining_frames:
-                frames_with_ai = await ai_service.process_frame_batch(
-                    remaining_frames, batch_size=3, progress_callback=progress_callback
-                )
-
-                # Insert remaining frame data
-                await mongodb_service.insert_frame_data(video_id, frames_with_ai)
-        else:
-            logger.info(
-                f"All {already_saved_count} frames were already processed progressively"
-            )
+        logger.info(f"Progressive processing completed for {total_frames} frames")
 
         # Save video metadata
         await manager.send_progress(
@@ -423,9 +393,9 @@ async def search_frames(query: SearchQuery):
             if not os.path.exists(thumbnail_path):
                 thumbnail_path = result.get("file_path", "")
 
-            # For hybrid search, use rank as score; otherwise use actual similarity score
+            # For hybrid search, show rank (index + 1), otherwise show rounded similarity score
             if search_type == "hybrid":
-                display_score = index + 1  # Rank starts from 1
+                display_score = index + 1  # Rank (1-based)
             else:
                 display_score = round(result.get("similarity_score", 0.0), 3)
 

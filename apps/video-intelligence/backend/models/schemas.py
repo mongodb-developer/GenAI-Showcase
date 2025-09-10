@@ -4,23 +4,6 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel
 
 
-class ProcessingStatus(BaseModel):
-    status: str  # "processing", "completed", "failed"
-    progress: int  # 0-100
-    message: str
-    frames_processed: int = 0
-    total_frames: int = 0
-
-
-class FrameData(BaseModel):
-    frame_number: int
-    timestamp: float
-    file_path: str
-    description: str
-    embedding: List[float]
-    metadata: Dict[str, Any]
-
-
 class VideoMetadata(BaseModel):
     video_id: str
     original_filename: str

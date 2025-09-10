@@ -309,33 +309,6 @@ class MongoDBService:
             logger.error(f"Failed to insert frame batch: {e}")
             raise
 
-    async def insert_frame_data(self, video_id: str, frame_data: List[Dict[str, Any]]):
-        """Insert frame data for a video (legacy method - kept for compatibility)"""
-        try:
-            # Add video_id to each frame document
-            for frame in frame_data:
-                frame["video_id"] = video_id
-                frame["created_at"] = datetime.utcnow()
-
-            result = self.frame_collection.insert_many(frame_data)
-            logger.info(
-                f"Inserted {len(result.inserted_ids)} frames for video {video_id}"
-            )
-            return result.inserted_ids
-
-        except Exception as e:
-            logger.error(f"Failed to insert frame data: {e}")
-            raise
-
-    async def get_video_frame_count(self, video_id: str) -> int:
-        """Get the number of frames already inserted for a video"""
-        try:
-            count = self.frame_collection.count_documents({"video_id": video_id})
-            return count
-        except Exception as e:
-            logger.error(f"Failed to get frame count: {e}")
-            return 0
-
     async def insert_video_metadata(self, video_metadata: Dict[str, Any]):
         """Insert video metadata"""
         try:
@@ -518,34 +491,36 @@ class MongoDBService:
     ) -> List[Dict[str, Any]]:
         """Perform hybrid search combining text and vector search"""
         try:
-            # Build vector search pipeline
+            # Build vector search pipeline - match individual semantic search exactly
             vector_pipeline = [
                 {
                     "$vectorSearch": {
                         "index": "vector_search_index",
                         "path": "embedding",
                         "queryVector": query_embedding,
-                        "numCandidates": 100,
-                        "limit": 20,
+                        "numCandidates": top_k * 2,
+                        "filter": {"video_id": video_filter},
+                        "limit": top_k,
                     }
                 }
             ]
 
-            # Build text search pipeline
+            # Build text search pipeline - match individual text search exactly
             text_pipeline = [
                 {
                     "$search": {
                         "index": "text_search_index",
-                        "phrase": {"query": query_text, "path": "description"},
+                        "text": {"query": query_text, "path": ["description"]},
                     }
-                },
-                {"$limit": 20},
+                }
             ]
 
-            # Add video filter if specified
+            # Add video filter for text pipeline (matching individual text search)
             if video_filter:
-                vector_pipeline.append({"$match": {"video_id": video_filter}})
                 text_pipeline.append({"$match": {"video_id": video_filter}})
+
+            # Add limit for text pipeline (matching individual text search)
+            text_pipeline.append({"$limit": top_k})
 
             pipeline = [
                 {
@@ -627,28 +602,6 @@ class MongoDBService:
         except Exception as e:
             logger.error(f"Failed to get video metadata: {e}")
             return None
-
-    async def update_video_status(self, video_id: str, status: str):
-        """Update video status"""
-        try:
-            from datetime import datetime
-
-            result = self.video_collection.update_one(
-                {"video_id": video_id},
-                {
-                    "$set": {
-                        "status": status,
-                        "processed_at": (
-                            datetime.utcnow() if status == "completed" else None
-                        ),
-                    }
-                },
-            )
-            logger.info(f"Updated video {video_id} status to {status}")
-            return result.modified_count > 0
-        except Exception as e:
-            logger.error(f"Failed to update video status: {e}")
-            return False
 
     async def cleanup_video_data(self, video_id: str):
         """Clean up all data for a video"""

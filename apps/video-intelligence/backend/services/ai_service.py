@@ -2,7 +2,7 @@ import asyncio
 import base64
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import List
 
 import openai
 import voyageai
@@ -167,95 +167,6 @@ Keep the description concise but informative, around 2-3 sentences."""
         except Exception as e:
             logger.error(f"Failed to generate frame description: {e}")
             return f"Frame at {image_path} - description generation failed"
-
-    async def process_frame_batch(
-        self,
-        frames_data: List[Dict[str, Any]],
-        batch_size: int = 5,
-        progress_callback: Optional[callable] = None,
-    ) -> List[Dict[str, Any]]:
-        """
-        Process a batch of frames to generate descriptions and embeddings
-
-        Args:
-            frames_data: List of frame data dictionaries
-            batch_size: Number of frames to process concurrently
-            progress_callback: Optional callback for progress updates
-
-        Returns:
-            Updated frames_data with descriptions and embeddings
-        """
-        try:
-            total_frames = len(frames_data)
-            processed_frames = 0
-
-            # Process frames in batches
-            for i in range(0, total_frames, batch_size):
-                batch = frames_data[i : i + batch_size]
-
-                # Create tasks for concurrent processing
-                tasks = []
-                for frame_data in batch:
-                    task = self._process_single_frame(frame_data)
-                    tasks.append(task)
-
-                # Wait for batch completion
-                batch_results = await asyncio.gather(*tasks, return_exceptions=True)
-
-                # Update processed frames count
-                processed_frames += len(batch)
-
-                # Update progress
-                if progress_callback:
-                    progress = (
-                        95 + (processed_frames / total_frames) * 5
-                    )  # Last 5% for AI processing
-                    await progress_callback(
-                        {
-                            "status": "processing",
-                            "progress": int(progress),
-                            "message": f"Generating descriptions and embeddings... {processed_frames}/{total_frames}",
-                            "frames_processed": processed_frames,
-                        }
-                    )
-
-                # Small delay to prevent rate limiting
-                await asyncio.sleep(0.1)
-
-            return frames_data
-
-        except Exception as e:
-            logger.error(f"Failed to process frame batch: {e}")
-            raise
-
-    async def _process_single_frame(self, frame_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Process a single frame to add description and embedding"""
-        try:
-            image_path = frame_data["file_path"]
-
-            # Generate description
-            description = await self.generate_frame_description(image_path)
-            frame_data["description"] = description
-
-            # Generate embedding directly from the image using Voyage AI multimodal model
-            embedding = await self.get_voyage_embedding(image_path, "document")
-            frame_data["embedding"] = embedding
-
-            # Add additional metadata
-            frame_data["metadata"]["has_description"] = True
-            frame_data["metadata"]["has_embedding"] = len(embedding) > 0
-            frame_data["metadata"]["description_length"] = len(description)
-
-            return frame_data
-
-        except Exception as e:
-            logger.error(f"Failed to process single frame: {e}")
-            # Add fallback data
-            frame_data["description"] = "Frame processing failed"
-            frame_data["embedding"] = [0.0] * self.EMBEDDING_DIM_SIZE
-            frame_data["metadata"]["has_description"] = False
-            frame_data["metadata"]["has_embedding"] = False
-            return frame_data
 
     async def get_query_embedding(self, query_text: str) -> List[float]:
         """Get embedding for search query"""

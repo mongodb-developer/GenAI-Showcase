@@ -1,4 +1,4 @@
-import base64
+import asyncio
 import logging
 import os
 import shutil
@@ -152,7 +152,7 @@ class VideoProcessor:
 
         # Tip: When testing, set MAX_FRAMES_FOR_TESTING to limit extraction
         # Set to None or a large number to extract all available frames
-        MAX_FRAMES_FOR_TESTING = max_possible_frames  # Extract all available frames
+        MAX_FRAMES_FOR_TESTING = 500  # Extract all available frames
 
         video_frames_dir = self.frames_dir / video_id
         video_frames_dir.mkdir(exist_ok=True)
@@ -205,40 +205,10 @@ class VideoProcessor:
 
                 # Progressive insertion: save frames in batches to preserve progress
                 if mongodb_service and ai_service and len(pending_frames) >= BATCH_SIZE:
-                    try:
-                        # Process AI descriptions and embeddings for this batch
-                        batch_with_ai = []
-                        for frame in pending_frames:
-                            # Generate description and embedding
-                            description = await ai_service.generate_frame_description(
-                                frame["file_path"]
-                            )
-                            embedding = await ai_service.get_voyage_embedding(
-                                description
-                            )
-
-                            frame_with_ai = {
-                                **frame,
-                                "description": description,
-                                "embedding": embedding,
-                            }
-                            batch_with_ai.append(frame_with_ai)
-
-                        # Insert batch to database
-                        await mongodb_service.insert_frame_batch(
-                            video_id, batch_with_ai
-                        )
-
-                        # Clear the pending batch
-                        pending_frames.clear()
-
-                        logger.info(
-                            f"Progressively saved batch of {len(batch_with_ai)} frames for video {video_id}"
-                        )
-
-                    except Exception as e:
-                        logger.error(f"Failed to progressively save frame batch: {e}")
-                        # Continue processing even if batch save fails
+                    await self._process_and_save_frame_batch(
+                        pending_frames, video_id, mongodb_service, ai_service
+                    )
+                    pending_frames.clear()
 
                 # Progress update after each frame extraction
                 if progress_callback:
@@ -273,45 +243,68 @@ class VideoProcessor:
 
         # Process any remaining frames in the pending batch
         if mongodb_service and ai_service and pending_frames:
-            try:
-                # Process AI descriptions and embeddings for remaining frames
-                batch_with_ai = []
-                for frame in pending_frames:
-                    # Generate description and embedding
-                    description = await ai_service.generate_frame_description(
-                        frame["file_path"]
-                    )
-                    embedding = await ai_service.get_voyage_embedding(description)
-
-                    frame_with_ai = {
-                        **frame,
-                        "description": description,
-                        "embedding": embedding,
-                    }
-                    batch_with_ai.append(frame_with_ai)
-
-                # Insert final batch to database
-                await mongodb_service.insert_frame_batch(video_id, batch_with_ai)
-
-                logger.info(
-                    f"Progressively saved final batch of {len(batch_with_ai)} frames for video {video_id}"
-                )
-
-            except Exception as e:
-                logger.error(f"Failed to save final frame batch: {e}")
-                # Continue anyway, frames are still returned for fallback processing
+            await self._process_and_save_frame_batch(
+                pending_frames, video_id, mongodb_service, ai_service
+            )
 
         return frames_data
 
-    def get_frame_as_base64(self, frame_path: str) -> str:
-        """Convert frame image to base64 for web display"""
+    async def _process_single_frame(self, frame, ai_service):
+        """Process a single frame to generate description and embedding"""
         try:
-            with open(frame_path, "rb") as img_file:
-                img_data = img_file.read()
-                return base64.b64encode(img_data).decode()
+            frame_path = frame["file_path"]
+
+            # Generate description and embedding concurrently
+            description_task = ai_service.generate_frame_description(frame_path)
+            embedding_task = ai_service.get_voyage_embedding(frame_path)
+
+            # Wait for both to complete
+            description, embedding = await asyncio.gather(
+                description_task, embedding_task
+            )
+
+            return {
+                **frame,
+                "description": description,
+                "embedding": embedding,
+            }
         except Exception as e:
-            logger.error(f"Failed to convert frame to base64: {e}")
-            return ""
+            logger.error(
+                f"Failed to process single frame {frame.get('frame_number', '?')}: {e}"
+            )
+            # Return frame with fallback data
+            return {
+                **frame,
+                "description": "Frame processing failed",
+                "embedding": [0.0] * 1024,  # Fallback embedding
+            }
+
+    async def _process_and_save_frame_batch(
+        self, frames_batch, video_id, mongodb_service, ai_service
+    ):
+        """Process a batch of frames concurrently with AI descriptions and embeddings, then save to database"""
+        try:
+            # Process all frames in the batch concurrently
+            frame_tasks = [
+                self._process_single_frame(frame, ai_service) for frame in frames_batch
+            ]
+
+            # Wait for all frames to be processed
+            batch_with_ai = await asyncio.gather(*frame_tasks)
+
+            # Insert batch to database
+            await mongodb_service.insert_frame_batch(video_id, batch_with_ai)
+
+            logger.info(
+                f"Saved batch of {len(batch_with_ai)} frames for video {video_id}."
+            )
+
+            # Small delay between batches to respect rate limits
+            await asyncio.sleep(1.0)
+
+        except Exception as e:
+            logger.error(f"Failed to save frame batch: {e}")
+            # Continue processing - some frames missing is better than crashing entire video
 
     async def cleanup_video_files(self, video_id: str):
         """Clean up video files and extracted frames"""

@@ -11,12 +11,8 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
   };
 
   const formatScore = (score) => {
-    // If score is a whole number (1, 2, 3, etc.), it's a rank from hybrid search
-    if (Number.isInteger(score) && score > 0) {
-      return score;
-    }
-    // Otherwise it's a similarity score
-    return score.toFixed(3);
+    // Round to 3 decimal places for non-hybrid, show as integer for hybrid (ranks)
+    return Number.isInteger(score) ? score.toString() : score.toFixed(3);
   };
 
   const handleFrameClick = (result) => {
@@ -83,9 +79,7 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
                 {result.description}
               </div>
               <div className="result-score">
-                {Number.isInteger(result.similarity_score) && result.similarity_score > 0
-                  ? `Rank: ${formatScore(result.similarity_score)}`
-                  : `Similarity: ${formatScore(result.similarity_score)}`}
+                {Number.isInteger(result.similarity_score) ? 'Rank' : 'Similarity'}: {formatScore(result.similarity_score)}
               </div>
             </div>
           </div>
