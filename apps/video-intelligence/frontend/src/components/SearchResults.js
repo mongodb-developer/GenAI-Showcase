@@ -5,8 +5,10 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
   if (!results) return null;
 
   const formatTimestamp = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
+    // Go back 10 seconds from the search result timestamp
+    const adjustedSeconds = Math.max(0, seconds - 10);
+    const mins = Math.floor(adjustedSeconds / 60);
+    const secs = Math.floor(adjustedSeconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
