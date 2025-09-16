@@ -18,7 +18,12 @@ const SearchResults = ({ results, onFrameSelect, query }) => {
   };
 
   const handleFrameClick = (result) => {
-    onFrameSelect(result);
+    // Create a modified result with timestamp adjusted back by 10 seconds
+    const adjustedResult = {
+      ...result,
+      timestamp: Math.max(0, result.timestamp - 10)
+    };
+    onFrameSelect(adjustedResult);
   };
 
   if (results.results.length === 0) {
