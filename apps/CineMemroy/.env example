@@ -1,6 +1,6 @@
 OPENAI_API_KEY=your_openai_api_key_here
 
-#GOOGLE_GENERATIVE_AI_API_KEY=AIzaSyACshSv635oQ2On1I_6DgpRRvG-V5d15mE
+#
 # MongoDB Atlas Connection String - Required
 # Get from: https://cloud.mongodb.com
 MONGODB_URI=your_mongodb_connection_string_here
