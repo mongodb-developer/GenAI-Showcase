@@ -31,6 +31,7 @@ ignore = [
    "UP035",   # `typing.List` is deprecated, use `list` instead"
    "E731",    # Do not assign a `lambda` expression, use a `def`
    "E722",    # Do not use bare `except`
+   "F821",
 ]
 unfixable = ["F401"]
 
