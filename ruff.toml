@@ -24,6 +24,7 @@ ignore = [
    "B007",    # Loop control variable `index` not used within loop body
    "B008",    # Do not perform function call `File` in argument defaults
    "B904",    # Within an `except` clause, raise exceptions with `raise ... from err`"
+   "RUF001",  # String contains ambiguous `’`
    "RUF005",  # Consider iterable unpacking instead of concatenation"
    "RUF015",  # Prefer `next(iter(queries.items()))` over single element slice
    "F841",    # Local variable `full_text_search_result` is assigned to but never used"
