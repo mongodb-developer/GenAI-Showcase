@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react'
 
-function Sidebar({ chats, activeChat, onSelectChat, onNewChat, onDeleteChat }) {
+function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntry, isV2, onToggleVersion, activeSection, onSectionChange }) {
   const [openMenu, setOpenMenu] = useState(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
 
-  const handleMenuClick = (e, chatId) => {
+  // Filter entries to only show recent ones (last 7 days) in V2
+  const recentEntries = entries.filter(entry => {
+    const entryDate = new Date(entry.created_at)
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    return entryDate >= oneWeekAgo
+  })
+
+  const handleMenuClick = (e, entryId) => {
     e.stopPropagation()
-    if (openMenu === chatId) {
+    if (openMenu === entryId) {
       setOpenMenu(null)
     } else {
       const rect = e.currentTarget.getBoundingClientRect()
@@ -14,13 +22,13 @@ function Sidebar({ chats, activeChat, onSelectChat, onNewChat, onDeleteChat }) {
         top: rect.bottom + 4,
         left: rect.left
       })
-      setOpenMenu(chatId)
+      setOpenMenu(entryId)
     }
   }
 
-  const handleDelete = (e, chatId) => {
+  const handleDelete = (e, entryId) => {
     e.stopPropagation()
-    onDeleteChat(chatId)
+    onDeleteEntry(entryId)
     setOpenMenu(null)
   }
 
@@ -33,35 +41,74 @@ function Sidebar({ chats, activeChat, onSelectChat, onNewChat, onDeleteChat }) {
     }
   }, [openMenu])
 
+  const displayEntries = isV2 ? recentEntries : entries
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <h1 className="logo">Memoir</h1>
+        <div className="version-toggle">
+          <span className={`version-label ${!isV2 ? 'active' : ''}`}>V1</span>
+          <button
+            className={`toggle-switch ${isV2 ? 'on' : ''}`}
+            onClick={onToggleVersion}
+            aria-label="Toggle version"
+          >
+            <span className="toggle-knob" />
+          </button>
+          <span className={`version-label ${isV2 ? 'active' : ''}`}>V2</span>
+        </div>
       </div>
 
       <div className="sidebar-section">
-        <button className="new-chat-btn" onClick={onNewChat}>
-          <span className="new-chat-icon">+</span>
+        <button className="new-entry-btn" onClick={onNewEntry}>
+          <span className="new-entry-icon">+</span>
           New Entry
         </button>
       </div>
 
+      {isV2 && (
+        <div className="sidebar-nav">
+          <button
+            className={`nav-item ${activeSection === 'entries' ? 'active' : ''}`}
+            onClick={() => onSectionChange('entries')}
+          >
+            Entries
+          </button>
+          <button
+            className={`nav-item ${activeSection === 'insights' ? 'active' : ''}`}
+            onClick={() => onSectionChange('insights')}
+          >
+            Insights
+          </button>
+        </div>
+      )}
+
       <div className="sidebar-section">
-        <div className="section-header">Previous Entries</div>
-        <div className="chat-list">
-          {chats.length === 0 ? (
-            <div className="empty-state">No entries yet</div>
+        <div className="section-header">Recent</div>
+        <div className="entry-list">
+          {displayEntries.length === 0 ? (
+            <div className="empty-state">No recent entries</div>
           ) : (
-            chats.map((chat) => (
+            displayEntries.map((entry) => (
               <div
-                key={chat._id}
-                className={`chat-item ${activeChat === chat._id ? 'active' : ''} ${openMenu === chat._id ? 'menu-open' : ''}`}
-                onClick={() => onSelectChat(chat._id)}
+                key={entry._id}
+                className={`entry-item ${activeEntry === entry._id ? 'active' : ''} ${openMenu === entry._id ? 'menu-open' : ''}`}
+                onClick={() => onSelectEntry(entry._id)}
               >
-                <span className="chat-title">{chat.title}</span>
+                <span className="entry-title">{formatDate(entry.created_at)}</span>
                 <button
-                  className={`menu-btn ${openMenu === chat._id ? 'open' : ''}`}
-                  onClick={(e) => handleMenuClick(e, chat._id)}
+                  className={`menu-btn ${openMenu === entry._id ? 'open' : ''}`}
+                  onClick={(e) => handleMenuClick(e, entry._id)}
                 >
                   ⋯
                 </button>
@@ -86,6 +133,11 @@ function Sidebar({ chats, activeChat, onSelectChat, onNewChat, onDeleteChat }) {
           </button>
         </div>
       )}
+
+      <div className="user-info">
+        <span className="user-avatar">A</span>
+        <span className="user-name">Apoorva</span>
+      </div>
     </div>
   )
 }

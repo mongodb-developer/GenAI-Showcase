@@ -1,18 +1,31 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import chats
+from app.routers import entries
 from app.services.database import close_db, connect_db
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    logger.info("Starting Memoir API...")
     connect_db()
+    logger.info("Memoir API started successfully")
     yield
     # Shutdown
+    logger.info("Shutting down Memoir API...")
     close_db()
 
 
@@ -33,7 +46,7 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(chats.router, prefix="/api/chats", tags=["chats"])
+app.include_router(entries.router, prefix="/api/entries", tags=["entries"])
 
 
 @app.get("/")

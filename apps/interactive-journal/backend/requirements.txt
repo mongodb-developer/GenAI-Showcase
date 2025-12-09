@@ -3,6 +3,5 @@ uvicorn[standard]==0.34.0
 pymongo==4.10.1
 openai==1.82.0
 python-dotenv==1.0.1
-pydantic==2.10.6
-pydantic-settings==2.7.1
-python-multipart==0.0.20
+voyageai==0.3.2
+Pillow==11.0.0
