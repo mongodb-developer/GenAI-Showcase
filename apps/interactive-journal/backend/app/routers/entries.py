@@ -1,14 +1,19 @@
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, File, Form, UploadFile
 
-from app.services.database import create_vector_index, get_database
-from app.services.openai_service import extract_memories, generate_response
+from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
+from app.services.database import get_database, vector_index_exists
+from app.services.openai_service import (
+    extract_memories,
+    generate_journal_prompt,
+    generate_response,
+)
 from app.services.voyage_service import get_embedding, get_text_embedding
 
 logger = logging.getLogger(__name__)
@@ -19,25 +24,18 @@ UPLOADS_DIR = (
 )
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
-
 router = APIRouter()
-
-USER_ID = "Apoorva"
-
-
-def utc_now():
-    return datetime.now(timezone.utc)
 
 
 @router.post("/")
-def create_entry(version: int = Form(1)):
+def create_entry(version: int = Form(1), entry_date: str = Form(...)):
     db = get_database()
-    now = utc_now()
+    entry_dt = datetime.fromisoformat(entry_date)
     entry_data = {
         "user_id": USER_ID,
-        "title": now.strftime("%d/%m/%Y"),
+        "title": entry_dt.strftime("%d/%m/%Y"),
         "version": version,
-        "created_at": now,
+        "created_at": entry_dt,
     }
     result = db.entries.insert_one(entry_data)
     logger.info(f"Created entry {result.inserted_id} for user {USER_ID}")
@@ -54,50 +52,75 @@ def get_entries(version: int = 1):
     return entries
 
 
-@router.post("/init-v2")
-def init_v2():
-    """Initialize V2 features by creating the vector search index."""
-    success = create_vector_index()
-    return {"success": success}
-
-
 @router.get("/search")
 def search_entries(q: str):
-    """Search through entries using MongoDB Atlas Vector Search."""
+    """Search entries using vector search, grouped by entry."""
     db = get_database()
     logger.info(f"Searching entries with query: {q[:50]}...")
 
     query_embedding = get_embedding(q, mode="text", input_type="query")
-
     pipeline = [
         {
             "$vectorSearch": {
-                "index": "vector_index",
+                "index": VECTOR_INDEX_NAME,
                 "path": "embedding",
                 "queryVector": query_embedding,
-                "numCandidates": 100,
-                "limit": 10,
+                "numCandidates": VECTOR_NUM_CANDIDATES,
+                "limit": 20,
+                "filter": {"user_id": USER_ID},
             }
         },
         {
-            "$project": {
-                "_id": 1,
-                "entry_id": 1,
-                "content": 1,
-                "image": 1,
-                "role": 1,
-                "created_at": 1,
-                "score": {"$meta": "vectorSearchScore"},
+            "$group": {
+                "_id": "$entry_id",
+                "content": {"$first": "$content"},
+                "image": {"$first": "$image"},
+                "created_at": {"$first": "$created_at"},
             }
         },
+        {"$limit": 5},
     ]
 
     results = list(db.messages.aggregate(pipeline))
     for result in results:
         result["_id"] = str(result["_id"])
 
-    logger.info(f"Search returned {len(results)} results")
+    logger.info(f"Search returned {len(results)} entries")
     return results
+
+
+@router.post("/generate-prompt")
+def generate_prompt(entry_id: str = Form(...), entry_date: str = Form(...)):
+    """Generate a journal prompt based on the last month's memories and save it."""
+    db = get_database()
+    one_month_ago = datetime.now() - timedelta(days=30)
+
+    memories = list(
+        db.memories.find(
+            {"user_id": USER_ID, "created_at": {"$gte": one_month_ago}},
+            {"content": 1, "created_at": 1, "_id": 0},
+        )
+    )
+    memory_contents = [
+        f"Date: {m['created_at'].strftime('%Y-%m-%d')}, Memory: {m['content']}"
+        for m in memories
+    ]
+    logger.info(f"Found {len(memory_contents)} memories from the last month")
+
+    prompt = generate_journal_prompt(memory_contents)
+
+    # Save the prompt as an assistant message
+    msg_date = datetime.fromisoformat(entry_date)
+    prompt_msg = {
+        "entry_id": entry_id,
+        "role": "assistant",
+        "content": prompt,
+        "created_at": msg_date,
+    }
+    db.messages.insert_one(prompt_msg)
+    logger.info(f"Saved generated prompt for entry {entry_id}")
+
+    return {"prompt": prompt}
 
 
 @router.get("/{entry_id}/messages")
@@ -116,22 +139,27 @@ def send_message(
     content: Optional[str] = Form(None),
     images: list[UploadFile] = File([]),
     version: int = Form(1),
+    entry_date: Optional[str] = Form(None),
 ):
     db = get_database()
     is_v2 = version == 2
     logger.info(f"Processing message for entry {entry_id} (v{version})")
+
+    msg_date = datetime.fromisoformat(entry_date)
 
     # Save text message if provided
     if content:
         embedding = get_embedding(content, mode="text", input_type="document")
         text_msg = {
             "entry_id": entry_id,
+            "user_id": USER_ID,
             "role": "user",
             "content": content,
             "embedding": embedding,
-            "created_at": utc_now(),
+            "created_at": msg_date,
         }
         db.messages.insert_one(text_msg)
+        vector_index_exists("messages")
         logger.info(f"Saved text message for entry {entry_id}")
 
     # Save each image as a separate message
@@ -144,19 +172,29 @@ def send_message(
         embedding = get_embedding(image_path, mode="image", input_type="document")
         image_msg = {
             "entry_id": entry_id,
+            "user_id": USER_ID,
             "role": "user",
             "image": filename,
             "embedding": embedding,
-            "created_at": utc_now(),
+            "created_at": msg_date,
         }
         db.messages.insert_one(image_msg)
+        vector_index_exists("messages")
         logger.info(f"Saved image {filename} for entry {entry_id}")
 
     # V2 only: Extract and save memories, then retrieve relevant ones
     retrieved_memories = []
     if is_v2 and content:
-        # Extract memories from user message
-        memories = extract_memories(content)
+        # Get last 3 messages for context when extracting memories
+        recent_msgs = list(db.messages.aggregate([
+            {"$match": {"entry_id": entry_id, "content": {"$exists": True}}},
+            {"$sort": {"created_at": -1}},
+            {"$limit": 3},
+        ]))
+        context_for_memories = "\n".join(
+            f"{msg['role'].capitalize()}: {msg['content']}" for msg in recent_msgs
+        )
+        memories = extract_memories(context_for_memories)
         if memories:
             memory_docs = []
             for memory_content in memories:
@@ -169,10 +207,11 @@ def send_message(
                         "entry_id": entry_id,
                         "content": memory_content,
                         "embedding": memory_embedding,
-                        "created_at": utc_now(),
+                        "created_at": msg_date,
                     }
                 )
             db.memories.insert_many(memory_docs)
+            vector_index_exists("memories")
             logger.info(f"Extracted and saved {len(memories)} memories: {memories}")
 
         # Retrieve relevant memories via vector search
@@ -180,10 +219,10 @@ def send_message(
         pipeline = [
             {
                 "$vectorSearch": {
-                    "index": "vector_index",
+                    "index": VECTOR_INDEX_NAME,
                     "path": "embedding",
                     "queryVector": query_embedding,
-                    "numCandidates": 100,
+                    "numCandidates": VECTOR_NUM_CANDIDATES,
                     "limit": 10,
                     "filter": {"user_id": USER_ID},
                 }
@@ -194,14 +233,18 @@ def send_message(
         retrieved_memories = [r["content"] for r in results]
         logger.info(f"Retrieved {len(retrieved_memories)} memories for context")
 
-    # Get conversation history (text only for AI context)
-    history = list(db.messages.find({"entry_id": entry_id}).sort("created_at", 1))
-    conversation = []
-    for msg in history:
-        if msg.get("content"):
-            conversation.append({"role": msg["role"], "content": msg["content"]})
-        elif msg.get("image") and msg["role"] == "user":
-            conversation.append({"role": "user", "content": "[User shared an image]"})
+    # Get conversation history (only fetch needed fields)
+    history = list(
+        db.messages.find(
+            {"entry_id": entry_id},
+            {"role": 1, "content": 1, "_id": 0}
+        ).sort("created_at", 1)
+    )
+    conversation = [
+        {"role": msg["role"], "content": msg["content"]}
+        for msg in history
+        if msg.get("content")
+    ]
 
     # Generate AI response with retrieved memories
     ai_content = generate_response(conversation, memories=retrieved_memories)
@@ -211,7 +254,7 @@ def send_message(
         "entry_id": entry_id,
         "role": "assistant",
         "content": ai_content,
-        "created_at": utc_now(),
+        "created_at": msg_date,
     }
     db.messages.insert_one(ai_msg)
     logger.info(f"Generated and saved AI response for entry {entry_id}")

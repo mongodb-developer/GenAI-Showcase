@@ -1,8 +1,14 @@
 import logging
-import os
 
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
+
+from app.config import (
+    DATABASE_NAME,
+    MONGODB_URI,
+    VECTOR_DIMENSIONS,
+    VECTOR_INDEX_NAME,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -12,12 +18,10 @@ db = None
 
 def connect_db():
     global client, db
-    uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-    db_name = os.getenv("DATABASE_NAME", "memoir")
-    client = MongoClient(uri)
-    db = client[db_name]
+    client = MongoClient(MONGODB_URI)
+    db = client[DATABASE_NAME]
     client.admin.command("ping")
-    logger.info(f"Connected to MongoDB: {db_name}")
+    logger.info(f"Connected to MongoDB: {DATABASE_NAME}")
 
 
 def close_db():
@@ -31,37 +35,59 @@ def get_database():
     return db
 
 
-def create_vector_index():
-    """Create vector search indexes on messages and memories collections."""
+# Track which collections have had their vector index created this session
+_index_created = set()
+
+
+def vector_index_exists(collection_name: str) -> bool:
+    """Create vector search index on first write to a collection.
+
+    The index includes a filter field for user_id to support filtered vector search.
+    """
     if db is None:
+        logger.error("Database not connected")
         return False
 
-    # Index config (same for both collections)
+    if collection_name in _index_created:
+        return True
+
+    collection = getattr(db, collection_name)
+
+    # Check if index already exists
+    existing_indexes = list(collection.list_search_indexes())
+    if any(idx.get("name") == VECTOR_INDEX_NAME for idx in existing_indexes):
+        logger.info(f"Vector index already exists on {collection_name}")
+        _index_created.add(collection_name)
+        return True
+
     index_model = {
-        "name": "vector_index",
+        "name": VECTOR_INDEX_NAME,
         "type": "vectorSearch",
         "definition": {
             "fields": [
                 {
                     "type": "vector",
-                    "numDimensions": 1024,
+                    "numDimensions": VECTOR_DIMENSIONS,
                     "path": "embedding",
                     "similarity": "cosine",
-                }
+                },
+                {
+                    "type": "filter",
+                    "path": "user_id",
+                },
             ]
         },
     }
 
-    success = True
-    for collection in ["messages", "memories"]:
-        try:
-            logger.info(f"Creating vector_index on {collection}")
-            getattr(db, collection).create_search_index(model=index_model)
-            logger.info(f"Vector search index created on {collection}")
-        except OperationFailure:
-            logger.info(f"Vector search index on {collection} already exists")
-        except Exception as e:
-            logger.error(f"Error creating vector search index on {collection}: {e}")
-            success = False
-
-    return success
+    try:
+        logger.info(f"Creating vector_index on {collection_name}")
+        collection.create_search_index(model=index_model)
+        logger.info(f"Vector search index created on {collection_name}")
+        _index_created.add(collection_name)
+        return True
+    except OperationFailure as e:
+        logger.error(f"OperationFailure creating index on {collection_name}: {e}")
+        return False
+    except Exception as e:
+        logger.error(f"Error creating vector search index on {collection_name}: {e}")
+        return False

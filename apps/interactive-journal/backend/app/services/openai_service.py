@@ -1,50 +1,28 @@
 import json
 import logging
-import os
+from datetime import datetime
 from typing import Optional
 
 from openai import OpenAI
 
+from app.config import OPENAI_API_KEY, OPENAI_MODEL
+from app.services.prompts import (
+    JOURNAL_SYSTEM_PROMPT,
+    MEMORY_EXTRACTION_PROMPT,
+    PROMPT_GENERATOR,
+)
+
 logger = logging.getLogger(__name__)
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-JOURNAL_SYSTEM_PROMPT = """You are a thoughtful and empathetic AI journaling companion called Memoir.
-Your role is to help users reflect on their thoughts, feelings, and experiences through conversation.
-
-Guidelines:
-- Ask thoughtful follow-up questions to help users explore their thoughts deeper
-- Be supportive and non-judgmental
-- Help users identify patterns and insights in their reflections
-- Keep responses concise but meaningful
-- Encourage self-reflection without being preachy
-- If users share something difficult, acknowledge their feelings first
-
-Remember: You're a journaling companion, not a therapist. Focus on reflection and exploration."""
-
-MEMORY_EXTRACTION_PROMPT = """You are a memory extraction system. Analyze the user's journal entry and extract meaningful memories, insights, and facts about the user.
-
-Extract information such as:
-- Personal facts (relationships, work, hobbies, preferences)
-- Emotional patterns and feelings
-- Goals, aspirations, and plans
-- Significant events or experiences
-- Insights and realizations
-
-Return a JSON array of memory strings. Each memory should be a concise, standalone statement ending in a period.
-If no meaningful memories can be extracted, return an empty array.
-
-Example output:
-["User has a sister named Sarah.", "User feels anxious about their job interview next week.", "User enjoys morning walks."]"""
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 def extract_memories(user_message: str) -> list[str]:
     """Extract memories/insights from a user's journal entry."""
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-    logger.info(f"Extracting memories using {model}")
+    logger.info(f"Extracting memories using {OPENAI_MODEL}")
 
     response = client.chat.completions.create(
-        model=model,
+        model=OPENAI_MODEL,
         messages=[
             {"role": "system", "content": MEMORY_EXTRACTION_PROMPT},
             {"role": "user", "content": user_message},
@@ -72,9 +50,8 @@ def generate_response(
     messages: list[dict], memories: Optional[list[str]] = None
 ) -> str:
     """Generate a response using OpenAI's chat completion."""
-    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     logger.info(
-        f"Generating response using {model} with {len(memories) if memories else 0} memories"
+        f"Generating response using {OPENAI_MODEL} with {len(memories) if memories else 0} memories"
     )
 
     system_prompt = JOURNAL_SYSTEM_PROMPT
@@ -83,11 +60,35 @@ def generate_response(
         system_prompt += f"\n\nRelevant memories about this user:\n{memory_context}\n\nUse these memories to provide more personalized and contextual responses when relevant."
 
     response = client.chat.completions.create(
-        model=model,
+        model=OPENAI_MODEL,
         messages=[{"role": "system", "content": system_prompt}, *messages],
         temperature=0.7,
         max_tokens=500,
     )
 
     logger.info("Response generated successfully")
+    return response.choices[0].message.content
+
+
+def generate_journal_prompt(memories: list[str]) -> str:
+    """Generate a reflective journal prompt based on past memories."""
+    logger.info(f"Generating journal prompt from {len(memories)} memories")
+
+    if not memories:
+        return "What's on your mind today?"
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    memory_context = "\n".join(f"- {m}" for m in memories)
+    user_content = f"Today's date: {today}\n\nMemories:\n{memory_context}"
+
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": PROMPT_GENERATOR},
+            {"role": "user", "content": user_content},
+        ],
+        temperature=0.8,
+        max_tokens=150,
+    )
+
     return response.choices[0].message.content

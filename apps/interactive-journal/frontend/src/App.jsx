@@ -10,7 +10,6 @@ function App() {
   const [activeEntry, setActiveEntry] = useState(null)
   const [messages, setMessages] = useState([])
   const [isV2, setIsV2] = useState(false)
-  const [v2Initialized, setV2Initialized] = useState(false)
   const [activeSection, setActiveSection] = useState(null)
 
   useEffect(() => {
@@ -36,10 +35,11 @@ function App() {
     setMessages(data)
   }
 
-  const createEntry = async () => {
+  const createEntry = async (entryDate) => {
     const version = isV2 ? 2 : 1
     const formData = new FormData()
     formData.append('version', version)
+    formData.append('entry_date', entryDate)
     const res = await fetch(`${API_URL}/entries/`, {
       method: 'POST',
       body: formData
@@ -60,22 +60,8 @@ function App() {
     }
   }
 
-  const initV2 = async () => {
-    if (v2Initialized) return
-    try {
-      await fetch(`${API_URL}/entries/init-v2`, { method: 'POST' })
-      setV2Initialized(true)
-    } catch (error) {
-      console.error('Failed to initialize V2:', error)
-    }
-  }
-
-  const toggleVersion = async () => {
-    const newIsV2 = !isV2
-    if (newIsV2 && !v2Initialized) {
-      await initV2()
-    }
-    setIsV2(newIsV2)
+  const toggleVersion = () => {
+    setIsV2(!isV2)
     setActiveEntry(null)
     setMessages([])
   }
@@ -111,6 +97,10 @@ function App() {
       formData.append('images', img.file)
     })
     formData.append('version', isV2 ? 2 : 1)
+    const activeEntryObj = entries.find(e => e._id === activeEntry)
+    if (activeEntryObj?.created_at) {
+      formData.append('entry_date', activeEntryObj.created_at)
+    }
 
     const res = await fetch(`${API_URL}/entries/${activeEntry}/messages`, {
       method: 'POST',
@@ -146,6 +136,9 @@ function App() {
         messages={messages}
         onSendMessage={sendMessage}
         hasActiveEntry={!!activeEntry}
+        activeEntry={activeEntry}
+        entries={entries}
+        onRefreshMessages={() => activeEntry && fetchMessages(activeEntry)}
         isV2={isV2}
         activeSection={activeSection}
         onSelectEntry={setActiveEntry}

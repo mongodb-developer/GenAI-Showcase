@@ -1,13 +1,33 @@
 import { useState, useRef, useEffect } from 'react'
 
-function Entry({ messages, onSendMessage, hasActiveEntry, isV2, activeSection, onSelectEntry }) {
+function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, onRefreshMessages, isV2, activeSection, onSelectEntry }) {
   const [input, setInput] = useState('')
   const [selectedImages, setSelectedImages] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
+
+  const handleGeneratePrompt = async () => {
+    setIsGeneratingPrompt(true)
+    try {
+      const activeEntryObj = entries.find(e => e._id === activeEntry)
+      const formData = new FormData()
+      formData.append('entry_id', activeEntry)
+      formData.append('entry_date', activeEntryObj?.created_at || new Date().toISOString())
+
+      await fetch('http://localhost:8000/api/entries/generate-prompt', {
+        method: 'POST',
+        body: formData
+      })
+      onRefreshMessages()
+    } catch (error) {
+      console.error('Failed to generate prompt:', error)
+    }
+    setIsGeneratingPrompt(false)
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -16,6 +36,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, isV2, activeSection, o
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -98,7 +119,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, isV2, activeSection, o
                   <div
                     key={result._id}
                     className="search-result-item"
-                    onClick={() => onSelectEntry(result.entry_id)}
+                    onClick={() => onSelectEntry(result._id)}
                   >
                     <span className="result-date">
                       {new Date(result.created_at).toLocaleDateString('en-US', {
@@ -177,6 +198,18 @@ function Entry({ messages, onSendMessage, hasActiveEntry, isV2, activeSection, o
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {isV2 && messages.length === 0 && (
+        <div className="prompt-generator">
+          <button
+            className="generate-prompt-btn"
+            onClick={handleGeneratePrompt}
+            disabled={isGeneratingPrompt}
+          >
+            {isGeneratingPrompt ? 'Generating...' : "Need inspiration? Generate a prompt"}
+          </button>
         </div>
       )}
 

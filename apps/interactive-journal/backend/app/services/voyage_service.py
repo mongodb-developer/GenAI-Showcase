@@ -1,17 +1,17 @@
 import logging
-import os
 from pathlib import Path
-from typing import List, Union
 
 import voyageai
 from PIL import Image
 
+from app.config import IMAGE_SIZE, VOYAGE_API_KEY, VOYAGE_MULTIMODAL_MODEL, VOYAGE_TEXT_MODEL
+
 logger = logging.getLogger(__name__)
 
-vo = voyageai.Client(api_key=os.getenv("VOYAGE_API_KEY"))
+vo = voyageai.Client(api_key=VOYAGE_API_KEY)
 
 
-def get_embedding(content: Union[str, Path], mode: str, input_type: str) -> List[float]:
+def get_embedding(content: str | Path, mode: str, input_type: str) -> list[float]:
     """
     Generate embeddings using Voyage AI's multimodal model.
 
@@ -21,24 +21,23 @@ def get_embedding(content: Union[str, Path], mode: str, input_type: str) -> List
         input_type (str): Type of input ("document" or "query")
 
     Returns:
-        List[float]: Embedding of the content as a list.
+        list[float]: Embedding of the content as a list.
     """
-    logger.debug(
-        f"Generating multimodal embedding: mode={mode}, input_type={input_type}"
-    )
+    logger.info(f"Generating multimodal embedding: mode={mode}, input_type={input_type}")
 
     if mode == "image":
-        content = Image.open(content)
+        img = Image.open(content)
+        content = img.resize(IMAGE_SIZE, Image.Resampling.LANCZOS)
 
     result = vo.multimodal_embed(
-        inputs=[[content]], model="voyage-multimodal-3", input_type=input_type
+        inputs=[[content]], model=VOYAGE_MULTIMODAL_MODEL, input_type=input_type
     ).embeddings[0]
 
-    logger.debug(f"Generated embedding with {len(result)} dimensions")
+    logger.debug(f"Generated {len(result)}-dim embedding")
     return result
 
 
-def get_text_embedding(text: str, input_type: str = "document") -> List[float]:
+def get_text_embedding(text: str, input_type: str = "document") -> list[float]:
     """
     Generate text embeddings using Voyage AI's voyage-3-large model.
 
@@ -47,13 +46,13 @@ def get_text_embedding(text: str, input_type: str = "document") -> List[float]:
         input_type: Type of input ("document" or "query")
 
     Returns:
-        List[float]: Embedding of the text as a list.
+        list[float]: Embedding of the text as a list.
     """
-    logger.debug(f"Generating text embedding: input_type={input_type}")
+    logger.info(f"Generating text embedding: input_type={input_type}")
 
     result = vo.embed(
-        texts=[text], model="voyage-3-large", input_type=input_type
+        texts=[text], model=VOYAGE_TEXT_MODEL, input_type=input_type
     ).embeddings[0]
 
-    logger.debug(f"Generated embedding with {len(result)} dimensions")
+    logger.debug(f"Generated {len(result)}-dim embedding")
     return result

@@ -3,6 +3,20 @@ import { useState, useEffect } from 'react'
 function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntry, isV2, onToggleVersion, activeSection, onSectionChange }) {
   const [openMenu, setOpenMenu] = useState(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [selectedDate, setSelectedDate] = useState('')
+
+  const handleNewEntryClick = () => {
+    setSelectedDate(new Date().toISOString().split('T')[0])
+    setShowDatePicker(true)
+  }
+
+  const handleDateConfirm = () => {
+    if (selectedDate) {
+      onNewEntry(selectedDate)
+      setShowDatePicker(false)
+    }
+  }
 
   // Filter entries to only show recent ones (last 7 days) in V2
   const recentEntries = entries.filter(entry => {
@@ -41,7 +55,18 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
     }
   }, [openMenu])
 
-  const displayEntries = isV2 ? recentEntries : entries
+  // Ensure active entry is always included, sorted chronologically
+  const getDisplayEntries = () => {
+    if (!isV2) return entries
+    const activeEntryObj = entries.find(e => e._id === activeEntry)
+    if (!activeEntryObj || recentEntries.find(e => e._id === activeEntry)) {
+      return recentEntries
+    }
+    return [...recentEntries, activeEntryObj].sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    )
+  }
+  const displayEntries = getDisplayEntries()
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -70,11 +95,33 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
       </div>
 
       <div className="sidebar-section">
-        <button className="new-entry-btn" onClick={onNewEntry}>
+        <button className="new-entry-btn" onClick={handleNewEntryClick}>
           <span className="new-entry-icon">+</span>
           New Entry
         </button>
       </div>
+
+      {showDatePicker && (
+        <div className="date-picker-overlay" onClick={() => setShowDatePicker(false)}>
+          <div className="date-picker-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Select entry date</h3>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="date-input"
+            />
+            <div className="date-picker-actions">
+              <button className="date-cancel-btn" onClick={() => setShowDatePicker(false)}>
+                Cancel
+              </button>
+              <button className="date-confirm-btn" onClick={handleDateConfirm}>
+                Create Entry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isV2 && (
         <div className="sidebar-nav">
