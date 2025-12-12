@@ -123,22 +123,22 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
         </div>
       )}
 
-      {isV2 && (
-        <div className="sidebar-nav">
-          <button
-            className={`nav-item ${activeSection === 'entries' ? 'active' : ''}`}
-            onClick={() => onSectionChange('entries')}
-          >
-            Entries
-          </button>
+      <div className="sidebar-nav">
+        <button
+          className={`nav-item ${activeSection === 'entries' ? 'active' : ''}`}
+          onClick={() => onSectionChange('entries')}
+        >
+          Entries
+        </button>
+        {isV2 && (
           <button
             className={`nav-item ${activeSection === 'insights' ? 'active' : ''}`}
             onClick={() => onSectionChange('insights')}
           >
             Insights
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="sidebar-section">
         <div className="section-header">Recent</div>

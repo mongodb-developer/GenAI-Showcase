@@ -8,8 +8,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import entries
-from app.services.database import close_db, connect_db
+from app.routers import routes
+from app.services.mongodb import close_db, connect_db
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -46,7 +46,7 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(entries.router, prefix="/api/entries", tags=["entries"])
+app.include_router(routes.router, prefix="/api/entries", tags=["entries"])
 
 
 @app.get("/")

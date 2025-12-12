@@ -76,7 +76,8 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
 
     setIsSearching(true)
     try {
-      const res = await fetch(`http://localhost:8000/api/entries/search?q=${encodeURIComponent(searchQuery)}`)
+      const version = isV2 ? 2 : 1
+      const res = await fetch(`http://localhost:8000/api/entries/search?q=${encodeURIComponent(searchQuery)}&version=${version}`)
       const data = await res.json()
       setSearchResults(data)
     } catch (error) {
@@ -90,8 +91,8 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     setSearchResults(null)
   }
 
-  // Show search interface when V2 Entries tab is clicked and no entry selected
-  if (isV2 && activeSection === 'entries' && !hasActiveEntry) {
+  // Show search interface when Entries tab is clicked and no entry selected
+  if (activeSection === 'entries' && !hasActiveEntry) {
     return (
       <div className="entry">
         <div className="entry-search">
@@ -121,13 +122,18 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
                     className="search-result-item"
                     onClick={() => onSelectEntry(result._id)}
                   >
-                    <span className="result-date">
-                      {new Date(result.created_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })}
-                    </span>
+                    <div className="result-header">
+                      <span className="result-date">
+                        {new Date(result.created_at).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </span>
+                      <span className="result-score">
+                        {(result.score * 100).toFixed(0)}% match
+                      </span>
+                    </div>
                     {result.image ? (
                       <img src={`/uploads/${result.image}`} alt="Result" className="result-image" />
                     ) : (

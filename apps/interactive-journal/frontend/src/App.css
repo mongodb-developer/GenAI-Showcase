@@ -643,12 +643,25 @@
   border-color: rgba(139, 92, 246, 0.3);
 }
 
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .result-date {
-  display: block;
   font-size: 12px;
   font-weight: 500;
   color: #8b5cf6;
-  margin-bottom: 8px;
+}
+
+.result-score {
+  font-size: 11px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
 .result-content {

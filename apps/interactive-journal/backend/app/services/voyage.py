@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 vo = voyageai.Client(api_key=VOYAGE_API_KEY)
 
 
-def get_embedding(content: str | Path, mode: str, input_type: str) -> list[float]:
+def get_multimodal_embedding(content: str | Path, mode: str, input_type: str) -> list[float]:
     """
     Generate embeddings using Voyage AI's multimodal model.
 
