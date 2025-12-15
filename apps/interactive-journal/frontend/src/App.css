@@ -850,3 +850,37 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Insights */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  width: 100%;
+}
+
+.insight-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.insight-value {
+  font-size: 48px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.insight-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}

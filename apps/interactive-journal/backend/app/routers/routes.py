@@ -9,6 +9,8 @@ from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
 from app.routers.helpers import (
     extract_and_save_memories,
     get_conversation_history,
+    get_longest_streak,
+    get_total_entries,
     retrieve_relevant_memories,
     save_assistant_message,
     save_image_file,
@@ -183,14 +185,24 @@ def send_message(
     return {"response": ai_content}
 
 
+@router.get("/insights")
+def get_insights():
+    """Get user insights: total entries and longest streak."""
+    db = get_database()
+    return {
+        "total_entries": get_total_entries(db, USER_ID),
+        "longest_streak": get_longest_streak(db, USER_ID),
+    }
+
+
 @router.delete("/{entry_id}")
 def delete_entry(entry_id: str):
     db = get_database()
     db.entries.delete_one({"_id": ObjectId(entry_id)})
-    messages_deleted = db.messages.delete_many({"entry_id": entry_id})
-    memories_deleted = db.memories.delete_many({"entry_id": entry_id})
+    messages = db.messages.delete_many({"entry_id": entry_id})
+    memories = db.memories.delete_many({"entry_id": entry_id})
     logger.info(
-        f"Deleted entry {entry_id}: {messages_deleted.deleted_count} messages, "
-        f"{memories_deleted.deleted_count} memories"
+        f"Deleted entry {entry_id}: "
+        f"{messages.deleted_count} messages, {memories.deleted_count} memories"
     )
     return {"deleted": True}

@@ -1,6 +1,6 @@
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from fastapi import UploadFile
@@ -59,11 +59,15 @@ def save_image_file(image_file: UploadFile) -> Path:
 
 def extract_and_save_memories(db, entry_id: str, msg_date: datetime) -> None:
     """Extract memories from recent messages and save them."""
-    recent_msgs = list(db.messages.aggregate([
-        {"$match": {"entry_id": entry_id, "content": {"$exists": True}}},
-        {"$sort": {"created_at": -1}},
-        {"$limit": 3},
-    ]))
+    recent_msgs = list(
+        db.messages.aggregate(
+            [
+                {"$match": {"entry_id": entry_id, "content": {"$exists": True}}},
+                {"$sort": {"created_at": -1}},
+                {"$limit": 3},
+            ]
+        )
+    )
     context = "\n".join(
         f"{msg['role'].capitalize()}: {msg['content']}" for msg in recent_msgs
     )
@@ -75,9 +79,7 @@ def extract_and_save_memories(db, entry_id: str, msg_date: datetime) -> None:
                 "user_id": USER_ID,
                 "entry_id": entry_id,
                 "content": memory_content,
-                "embedding": get_text_embedding(
-                    memory_content, input_type="document"
-                ),
+                "embedding": get_text_embedding(memory_content, input_type="document"),
                 "created_at": msg_date,
             }
             for memory_content in memories
@@ -112,8 +114,7 @@ def get_conversation_history(db, entry_id: str) -> list[dict]:
     """Get conversation history for an entry."""
     history = list(
         db.messages.find(
-            {"entry_id": entry_id},
-            {"role": 1, "content": 1, "_id": 0}
+            {"entry_id": entry_id}, {"role": 1, "content": 1, "_id": 0}
         ).sort("created_at", 1)
     )
     return [
@@ -123,14 +124,56 @@ def get_conversation_history(db, entry_id: str) -> list[dict]:
     ]
 
 
-def save_assistant_message(
-    db, entry_id: str, content: str, msg_date: datetime
-) -> None:
+def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) -> None:
     """Save an assistant response message."""
-    db.messages.insert_one({
-        "entry_id": entry_id,
-        "role": "assistant",
-        "content": content,
-        "created_at": msg_date,
-    })
+    db.messages.insert_one(
+        {
+            "entry_id": entry_id,
+            "role": "assistant",
+            "content": content,
+            "created_at": msg_date,
+        }
+    )
     logger.info(f"Saved AI response for entry {entry_id}")
+
+
+def get_total_entries(db, user_id: str) -> int:
+    """Get total entries count for past 30 days."""
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+    return db.entries.count_documents({
+        "user_id": user_id,
+        "version": 2,
+        "created_at": {"$gte": thirty_days_ago},
+    })
+
+
+def get_longest_streak(db, user_id: str) -> int:
+    """Get longest consecutive days streak in past 30 days."""
+    thirty_days_ago = datetime.now() - timedelta(days=30)
+
+    pipeline = [
+        {"$match": {
+            "user_id": user_id,
+            "version": 2,
+            "created_at": {"$gte": thirty_days_ago},
+        }},
+        {"$project": {
+            "date": {"$dateTrunc": {"date": "$created_at", "unit": "day"}}
+        }},
+        {"$group": {"_id": "$date"}},
+        {"$sort": {"_id": 1}},
+    ]
+    dates = [doc["_id"] for doc in db.entries.aggregate(pipeline)]
+
+    if not dates:
+        return 0
+
+    longest = current = 1
+    for i in range(1, len(dates)):
+        if (dates[i] - dates[i - 1]).days == 1:
+            current += 1
+            longest = max(longest, current)
+        else:
+            current = 1
+
+    return longest

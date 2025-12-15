@@ -7,6 +7,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false)
+  const [insights, setInsights] = useState(null)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -36,6 +37,15 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    if (isV2 && activeSection === 'insights') {
+      fetch('http://localhost:8000/api/entries/insights')
+        .then(res => res.json())
+        .then(data => setInsights(data))
+        .catch(err => console.error('Failed to fetch insights:', err))
+    }
+  }, [isV2, activeSection])
 
 
   const handleSubmit = (e) => {
@@ -149,12 +159,26 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     )
   }
 
-  // Show insights placeholder when V2 Insights tab is active and no entry selected
+  // Show insights when V2 Insights tab is active and no entry selected
   if (isV2 && activeSection === 'insights' && !hasActiveEntry) {
     return (
       <div className="entry">
-        <div className="entry-empty">
-          <p>Insights coming soon...</p>
+        <div className="entry-search">
+          <h2 className="search-title">Your month in review</h2>
+          {insights ? (
+            <div className="insights-grid">
+              <div className="insight-card">
+                <span className="insight-value">{insights.total_entries}</span>
+                <span className="insight-label">Entries</span>
+              </div>
+              <div className="insight-card">
+                <span className="insight-value">{insights.longest_streak}</span>
+                <span className="insight-label">Longest streak</span>
+              </div>
+            </div>
+          ) : (
+            <p className="no-results">Loading...</p>
+          )}
         </div>
       </div>
     )
