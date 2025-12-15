@@ -8,6 +8,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
   const [isSearching, setIsSearching] = useState(false)
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false)
   const [insights, setInsights] = useState(null)
+  const [saveStatus, setSaveStatus] = useState(null)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -28,6 +29,18 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
       console.error('Failed to generate prompt:', error)
     }
     setIsGeneratingPrompt(false)
+  }
+
+  const handleSaveEntry = async () => {
+    try {
+      await fetch(`http://localhost:8000/api/entries/${activeEntry}/analyze`, {
+        method: 'POST'
+      })
+      setSaveStatus('saved')
+      setTimeout(() => setSaveStatus(null), 2000)
+    } catch (error) {
+      console.error('Failed to save entry:', error)
+    }
   }
 
   const scrollToBottom = () => {
@@ -210,6 +223,16 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
             </div>
           </div>
         ))}
+        {isV2 && messages.length > 0 && (
+          <div className="save-entry">
+            <button
+              className={`save-btn ${saveStatus === 'saved' ? 'saved' : ''}`}
+              onClick={handleSaveEntry}
+            >
+              {saveStatus === 'saved' ? 'Saved ✓' : 'Save'}
+            </button>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 

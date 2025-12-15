@@ -17,7 +17,7 @@ from app.routers.helpers import (
     save_user_message,
 )
 from app.services.mongodb import get_database
-from app.services.openai import generate_journal_prompt, generate_response
+from app.services.openai import analyze_entry, generate_journal_prompt, generate_response
 from app.services.voyage import get_multimodal_embedding, get_text_embedding
 
 logger = logging.getLogger(__name__)
@@ -183,6 +183,29 @@ def send_message(
     save_assistant_message(db, entry_id, ai_content, msg_date)
 
     return {"response": ai_content}
+
+
+@router.post("/{entry_id}/analyze")
+def save_entry(entry_id: str):
+    """Analyze entry for sentiment and themes."""
+    db = get_database()
+    conversation = get_conversation_history(db, entry_id)
+
+    if not conversation:
+        return {"error": "No messages in entry"}
+
+    analysis = analyze_entry(conversation)
+
+    db.entries.update_one(
+        {"_id": ObjectId(entry_id)},
+        {"$set": {
+            "sentiment": analysis["sentiment"],
+            "themes": analysis["themes"],
+        }}
+    )
+
+    logger.info(f"Analyzed entry {entry_id}: {analysis}")
+    return analysis
 
 
 @router.get("/insights")

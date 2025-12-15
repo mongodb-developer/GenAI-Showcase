@@ -33,3 +33,15 @@ Each memory includes its date. Use this to frame your prompt appropriately (e.g.
 Pick one memory that seems meaningful and ask an open-ended question about it. Keep the prompt concise (1-2 sentences).
 
 Return only the prompt, nothing else."""
+
+INSIGHTS_PROMPT = """Analyze this journal entry conversation and extract:
+1. Overall sentiment (positive, negative, neutral, or mixed)
+2. Key themes discussed (2-4 short themes)
+
+Return a JSON object with this structure:
+{
+  "sentiment": "positive" | "negative" | "neutral" | "mixed",
+  "themes": ["theme1", "theme2", ...]
+}
+
+Keep themes concise (1-3 words each). Examples: "work stress", "family", "self-improvement", "gratitude"."""

@@ -69,7 +69,7 @@ def extract_and_save_memories(db, entry_id: str, msg_date: datetime) -> None:
         )
     )
     context = "\n".join(
-        f"{msg['role'].capitalize()}: {msg['content']}" for msg in recent_msgs
+        f"{msg['role']}: {msg['content']}" for msg in recent_msgs
     )
     memories = extract_memories(context)
 

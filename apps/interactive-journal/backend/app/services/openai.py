@@ -7,6 +7,7 @@ from openai import OpenAI
 
 from app.config import OPENAI_API_KEY, OPENAI_MODEL
 from app.services.prompts import (
+    INSIGHTS_PROMPT,
     JOURNAL_SYSTEM_PROMPT,
     MEMORY_EXTRACTION_PROMPT,
     PROMPT_GENERATOR,
@@ -92,3 +93,29 @@ def generate_journal_prompt(memories: list[str]) -> str:
     )
 
     return response.choices[0].message.content
+
+
+def analyze_entry(conversation: list[dict]) -> dict:
+    """Analyze a journal entry for sentiment and themes."""
+    logger.info(f"Analyzing entry with {len(conversation)} messages")
+
+    content = "\n".join(f"{msg['role']}: {msg['content']}" for msg in conversation)
+
+    response = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": INSIGHTS_PROMPT},
+            {"role": "user", "content": content},
+        ],
+        temperature=0.8,
+        max_tokens=200,
+        response_format={"type": "json_object"},
+    )
+
+    try:
+        result = json.loads(response.choices[0].message.content)
+        logger.info(f"Entry analysis: {result}")
+        return result
+    except (json.JSONDecodeError, AttributeError) as e:
+        logger.error(f"Failed to parse entry analysis: {e}")
+        return {"sentiment": "neutral", "themes": []}

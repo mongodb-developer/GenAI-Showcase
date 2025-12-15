@@ -884,3 +884,39 @@
   color: #6b7280;
   font-weight: 500;
 }
+
+/* Save Entry */
+.save-entry {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 48px;
+  max-width: 816px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.save-btn {
+  padding: 12px 24px;
+  background: #8b5cf6;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+  background: #7c3aed;
+}
+
+.save-btn:active {
+  transform: scale(0.95);
+}
+
+.save-btn.saved {
+  background: #bbf7d0;
+  color: #166534;
+}
