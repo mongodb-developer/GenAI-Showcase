@@ -10,6 +10,8 @@ from app.routers.helpers import (
     extract_and_save_memories,
     get_conversation_history,
     get_longest_streak,
+    get_mood_distribution,
+    get_themes,
     get_total_entries,
     retrieve_relevant_memories,
     save_assistant_message,
@@ -17,7 +19,7 @@ from app.routers.helpers import (
     save_user_message,
 )
 from app.services.mongodb import get_database
-from app.services.openai import analyze_entry, generate_journal_prompt, generate_response
+from app.services.anthropic import analyze_entry, generate_journal_prompt, generate_response
 from app.services.voyage import get_multimodal_embedding, get_text_embedding
 
 logger = logging.getLogger(__name__)
@@ -210,11 +212,13 @@ def save_entry(entry_id: str):
 
 @router.get("/insights")
 def get_insights():
-    """Get user insights: total entries and longest streak."""
+    """Get user insights: stats, mood distribution, and themes."""
     db = get_database()
     return {
         "total_entries": get_total_entries(db, USER_ID),
         "longest_streak": get_longest_streak(db, USER_ID),
+        "mood": get_mood_distribution(db, USER_ID),
+        "themes": get_themes(db, USER_ID),
     }
 
 

@@ -60,6 +60,11 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     }
   }, [isV2, activeSection])
 
+  useEffect(() => {
+    setSearchQuery('')
+    setSearchResults(null)
+  }, [isV2])
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -179,16 +184,71 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
         <div className="entry-search">
           <h2 className="search-title">Your month in review</h2>
           {insights ? (
-            <div className="insights-grid">
-              <div className="insight-card">
-                <span className="insight-value">{insights.total_entries}</span>
-                <span className="insight-label">Entries</span>
+            <>
+              <div className="insights-grid">
+                <div className="insight-card">
+                  <span className="insight-value">{insights.total_entries}</span>
+                  <span className="insight-label">Entries</span>
+                </div>
+                <div className="insight-card">
+                  <span className="insight-value">{insights.longest_streak}</span>
+                  <span className="insight-label">Longest streak</span>
+                </div>
               </div>
-              <div className="insight-card">
-                <span className="insight-value">{insights.longest_streak}</span>
-                <span className="insight-label">Longest streak</span>
-              </div>
-            </div>
+
+              {(insights.mood.positive > 0 || insights.mood.neutral > 0 || insights.mood.mixed > 0 || insights.mood.negative > 0) && (
+                <div className="mood-section">
+                  <h3 className="section-title">Mood</h3>
+                  <div className="mood-bars">
+                    <div className="mood-row">
+                      <span className="mood-emoji">😊</span>
+                      <div className="mood-bar-track">
+                        <div className="mood-bar-fill positive" style={{ width: `${insights.mood.positive}%` }} />
+                      </div>
+                      <span className="mood-percent">{insights.mood.positive}%</span>
+                    </div>
+                    <div className="mood-row">
+                      <span className="mood-emoji">😐</span>
+                      <div className="mood-bar-track">
+                        <div className="mood-bar-fill neutral" style={{ width: `${insights.mood.neutral}%` }} />
+                      </div>
+                      <span className="mood-percent">{insights.mood.neutral}%</span>
+                    </div>
+                    <div className="mood-row">
+                      <span className="mood-emoji">🤔</span>
+                      <div className="mood-bar-track">
+                        <div className="mood-bar-fill mixed" style={{ width: `${insights.mood.mixed}%` }} />
+                      </div>
+                      <span className="mood-percent">{insights.mood.mixed}%</span>
+                    </div>
+                    <div className="mood-row">
+                      <span className="mood-emoji">😔</span>
+                      <div className="mood-bar-track">
+                        <div className="mood-bar-fill negative" style={{ width: `${insights.mood.negative}%` }} />
+                      </div>
+                      <span className="mood-percent">{insights.mood.negative}%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {insights.themes.length > 0 && (
+                <div className="themes-section">
+                  <h3 className="section-title">Themes</h3>
+                  <div className="word-cloud">
+                    {insights.themes.map((item, i) => (
+                      <span
+                        key={i}
+                        className="theme-word"
+                        style={{ fontSize: `${Math.max(14, Math.min(32, 14 + item.count * 4))}px` }}
+                      >
+                        {item.theme}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <p className="no-results">Loading...</p>
           )}

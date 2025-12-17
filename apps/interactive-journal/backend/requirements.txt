@@ -1,7 +1,7 @@
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 pymongo==4.10.1
-openai==1.82.0
+anthropic==0.75.0
 python-dotenv==1.0.1
 voyageai==0.3.2
 Pillow==11.0.0

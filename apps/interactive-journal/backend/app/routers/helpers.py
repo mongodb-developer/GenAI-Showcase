@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi import UploadFile
 
 from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
-from app.services.openai import extract_memories
+from app.services.anthropic import extract_memories
 from app.services.voyage import get_multimodal_embedding, get_text_embedding
 
 logger = logging.getLogger(__name__)
@@ -137,29 +137,26 @@ def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) 
     logger.info(f"Saved AI response for entry {entry_id}")
 
 
-def get_total_entries(db, user_id: str) -> int:
-    """Get total entries count for past 30 days."""
+def get_monthly_filter(user_id: str) -> dict:
+    """Get common filter for monthly v2 entries."""
     thirty_days_ago = datetime.now() - timedelta(days=30)
-    return db.entries.count_documents({
+    return {
         "user_id": user_id,
         "version": 2,
         "created_at": {"$gte": thirty_days_ago},
-    })
+    }
+
+
+def get_total_entries(db, user_id: str) -> int:
+    """Get total entries count for past 30 days."""
+    return db.entries.count_documents(get_monthly_filter(user_id))
 
 
 def get_longest_streak(db, user_id: str) -> int:
     """Get longest consecutive days streak in past 30 days."""
-    thirty_days_ago = datetime.now() - timedelta(days=30)
-
     pipeline = [
-        {"$match": {
-            "user_id": user_id,
-            "version": 2,
-            "created_at": {"$gte": thirty_days_ago},
-        }},
-        {"$project": {
-            "date": {"$dateTrunc": {"date": "$created_at", "unit": "day"}}
-        }},
+        {"$match": get_monthly_filter(user_id)},
+        {"$project": {"date": {"$dateTrunc": {"date": "$created_at", "unit": "day"}}}},
         {"$group": {"_id": "$date"}},
         {"$sort": {"_id": 1}},
     ]
@@ -177,3 +174,36 @@ def get_longest_streak(db, user_id: str) -> int:
             current = 1
 
     return longest
+
+
+def get_mood_distribution(db, user_id: str) -> dict:
+    """Get sentiment distribution for past 30 days."""
+    filter = get_monthly_filter(user_id)
+    filter["sentiment"] = {"$exists": True}
+    pipeline = [
+        {"$match": filter},
+        {"$group": {"_id": "$sentiment", "count": {"$sum": 1}}},
+    ]
+    results = list(db.entries.aggregate(pipeline))
+    counts = {r["_id"]: r["count"] for r in results}
+    total = sum(counts.values()) or 1
+    return {
+        "positive": round(counts.get("positive", 0) / total * 100),
+        "neutral": round(counts.get("neutral", 0) / total * 100),
+        "mixed": round(counts.get("mixed", 0) / total * 100),
+        "negative": round(counts.get("negative", 0) / total * 100),
+    }
+
+
+def get_themes(db, user_id: str) -> list[dict]:
+    """Get all themes with counts for past 30 days."""
+    filter = get_monthly_filter(user_id)
+    filter["themes"] = {"$exists": True}
+    pipeline = [
+        {"$match": filter},
+        {"$unwind": "$themes"},
+        {"$group": {"_id": "$themes", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+    ]
+    results = list(db.entries.aggregate(pipeline))
+    return [{"theme": r["_id"], "count": r["count"]} for r in results]

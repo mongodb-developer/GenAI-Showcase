@@ -561,7 +561,7 @@
   max-width: 600px;
   margin: 0 auto;
   width: 100%;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .search-title {
@@ -919,4 +919,112 @@
 .save-btn.saved {
   background: #bbf7d0;
   color: #166534;
+}
+
+/* Insights Sections */
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.mood-section,
+.themes-section {
+  width: 100%;
+  margin-top: 32px;
+}
+
+/* Mood Bars */
+.mood-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mood-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mood-emoji {
+  font-size: 20px;
+  width: 28px;
+}
+
+.mood-bar-track {
+  flex: 1;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mood-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.mood-bar-fill.positive {
+  background: #22c55e;
+}
+
+.mood-bar-fill.neutral {
+  background: #94a3b8;
+}
+
+.mood-bar-fill.mixed {
+  background: #f59e0b;
+}
+
+.mood-bar-fill.negative {
+  background: #ef4444;
+}
+
+.mood-percent {
+  font-size: 14px;
+  color: #6b7280;
+  width: 40px;
+  text-align: right;
+}
+
+/* Word Cloud */
+.word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  justify-content: center;
+  align-items: baseline;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.theme-word {
+  color: #6b7280;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  cursor: default;
+}
+
+.theme-word:hover {
+  color: #7c3aed;
+}
+
+/* Hidden Scrollbar */
+.entry-list,
+.messages,
+.entry-search,
+.search-results-main,
+.word-cloud {
+  scrollbar-width: none;
+}
+
+.entry-list::-webkit-scrollbar,
+.messages::-webkit-scrollbar,
+.entry-search::-webkit-scrollbar,
+.search-results-main::-webkit-scrollbar,
+.word-cloud::-webkit-scrollbar {
+  display: none;
 }

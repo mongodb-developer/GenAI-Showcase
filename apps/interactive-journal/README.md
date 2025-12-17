@@ -16,8 +16,8 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your values:
 # MONGODB_URI=your-mongodb-connection-string
-# OPENAI_API_KEY=your-openai-api-key
-# VOYAGE_API_KEY=your-voyage-api-key (for V2 search)
+# ANTHROPIC_API_KEY=your-anthropic-api-key
+# VOYAGE_API_KEY=your-voyage-api-key
 
 # Run the server
 uvicorn app.main:app --reload
