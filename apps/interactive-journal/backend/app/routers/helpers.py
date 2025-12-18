@@ -18,6 +18,20 @@ UPLOADS_DIR = (
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def get_conversation_history(db, entry_id: str) -> list[dict]:
+    """Get conversation history for an entry."""
+    history = list(
+        db.messages.find(
+            {"entry_id": entry_id}, {"role": 1, "content": 1, "_id": 0}
+        ).sort("created_at", 1)
+    )
+    return [
+        {"role": msg["role"], "content": msg["content"]}
+        for msg in history
+        if msg.get("content")
+    ]
+
+
 def save_user_message(
     db, entry_id: str, content: str | Path, version: int, msg_date: datetime
 ) -> None:
@@ -48,46 +62,6 @@ def save_user_message(
     logger.info(f"Saved message for entry {entry_id}")
 
 
-def save_image_file(image_file: UploadFile) -> Path:
-    """Save uploaded image file and return the path."""
-    filename = f"{uuid.uuid4()}{Path(image_file.filename).suffix or '.jpg'}"
-    image_path = UPLOADS_DIR / filename
-    with open(image_path, "wb") as f:
-        f.write(image_file.file.read())
-    return image_path
-
-
-def extract_and_save_memories(db, entry_id: str, msg_date: datetime) -> None:
-    """Extract memories from recent messages and save them."""
-    recent_msgs = list(
-        db.messages.aggregate(
-            [
-                {"$match": {"entry_id": entry_id, "content": {"$exists": True}}},
-                {"$sort": {"created_at": -1}},
-                {"$limit": 3},
-            ]
-        )
-    )
-    context = "\n".join(
-        f"{msg['role']}: {msg['content']}" for msg in recent_msgs
-    )
-    memories = extract_memories(context)
-
-    if memories:
-        memory_docs = [
-            {
-                "user_id": USER_ID,
-                "entry_id": entry_id,
-                "content": memory_content,
-                "embedding": get_text_embedding(memory_content, input_type="document"),
-                "created_at": msg_date,
-            }
-            for memory_content in memories
-        ]
-        db.memories.insert_many(memory_docs)
-        logger.info(f"Extracted and saved {len(memories)} memories: {memories}")
-
-
 def retrieve_relevant_memories(db, query: str) -> list[str]:
     """Retrieve relevant memories via vector search."""
     query_embedding = get_text_embedding(query, input_type="query")
@@ -110,18 +84,26 @@ def retrieve_relevant_memories(db, query: str) -> list[str]:
     return memories
 
 
-def get_conversation_history(db, entry_id: str) -> list[dict]:
-    """Get conversation history for an entry."""
-    history = list(
-        db.messages.find(
-            {"entry_id": entry_id}, {"role": 1, "content": 1, "_id": 0}
-        ).sort("created_at", 1)
-    )
-    return [
-        {"role": msg["role"], "content": msg["content"]}
-        for msg in history
-        if msg.get("content")
-    ]
+def extract_and_save_memories(
+    db, entry_id: str, conversation: list[dict], entry_date: datetime
+) -> None:
+    """Extract memories from conversation and save them."""
+    context = "\n".join(f"{msg['role']}: {msg['content']}" for msg in conversation)
+    memories = extract_memories(context)
+
+    if memories:
+        memory_docs = [
+            {
+                "user_id": USER_ID,
+                "entry_id": entry_id,
+                "content": memory_content,
+                "embedding": get_text_embedding(memory_content, input_type="document"),
+                "created_at": entry_date,
+            }
+            for memory_content in memories
+        ]
+        db.memories.insert_many(memory_docs)
+        logger.info(f"Extracted and saved {len(memories)} memories: {memories}")
 
 
 def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) -> None:
@@ -135,6 +117,15 @@ def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) 
         }
     )
     logger.info(f"Saved AI response for entry {entry_id}")
+
+
+def save_image_file(image_file: UploadFile) -> Path:
+    """Save uploaded image file and return the path."""
+    filename = f"{uuid.uuid4()}{Path(image_file.filename).suffix or '.jpg'}"
+    image_path = UPLOADS_DIR / filename
+    with open(image_path, "wb") as f:
+        f.write(image_file.file.read())
+    return image_path
 
 
 def get_monthly_filter(user_id: str) -> dict:

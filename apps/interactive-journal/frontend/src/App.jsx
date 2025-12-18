@@ -86,6 +86,7 @@ function App() {
       })
     })
 
+    // Show user messages immediately
     setMessages(prev => [...prev, ...newMessages])
 
     // Send to backend using FormData
@@ -106,10 +107,31 @@ function App() {
       method: 'POST',
       body: formData
     })
-    const data = await res.json()
 
-    // Add AI response
-    setMessages(prev => [...prev, { _id: Date.now().toString() + '-ai', role: 'assistant', content: data.response }])
+    // Read the streaming response
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    const aiMessageId = Date.now().toString() + '-ai'
+    let fullResponse = ''
+    let messageAdded = false
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      const chunk = decoder.decode(value, { stream: true })
+      fullResponse += chunk
+
+      // Add AI message on first chunk, then update
+      if (!messageAdded) {
+        setMessages(prev => [...prev, { _id: aiMessageId, role: 'assistant', content: fullResponse }])
+        messageAdded = true
+      } else {
+        setMessages(prev => prev.map(msg =>
+          msg._id === aiMessageId ? { ...msg, content: fullResponse } : msg
+        ))
+      }
+    }
   }
 
   return (

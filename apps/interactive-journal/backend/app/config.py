@@ -13,7 +13,7 @@ ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 
 # Voyage AI config
 VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
-VOYAGE_MULTIMODAL_MODEL = "voyage-multimodal-3"
+VOYAGE_MULTIMODAL_MODEL = "voyage-multimodal-3.5"
 VOYAGE_TEXT_MODEL = "voyage-3-large"
 
 # Vector search config

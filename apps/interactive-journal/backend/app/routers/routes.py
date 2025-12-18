@@ -19,7 +19,12 @@ from app.routers.helpers import (
     save_user_message,
 )
 from app.services.mongodb import get_database
-from app.services.anthropic import analyze_entry, generate_journal_prompt, generate_response
+from fastapi.responses import StreamingResponse
+from app.services.anthropic import (
+    analyze_entry,
+    generate_journal_prompt,
+    generate_response,
+)
 from app.services.voyage import get_multimodal_embedding, get_text_embedding
 
 logger = logging.getLogger(__name__)
@@ -42,14 +47,44 @@ def create_entry(version: int = Form(1), entry_date: str = Form(...)):
     return {"_id": str(result.inserted_id)}
 
 
-@router.get("/")
-def get_entries(version: int = 1):
+@router.post("/{entry_id}/messages")
+def send_message(
+    entry_id: str,
+    content: Optional[str] = Form(None),
+    images: list[UploadFile] = File([]),
+    version: int = Form(1),
+    entry_date: Optional[str] = Form(None),
+):
     db = get_database()
-    query = {"user_id": USER_ID, "version": version}
-    entries = list(db.entries.find(query).sort("created_at", -1))
-    for entry in entries:
-        entry["_id"] = str(entry["_id"])
-    return entries
+    is_v2 = version == 2
+    msg_date = datetime.fromisoformat(entry_date)
+
+    # Save image files to disk before streaming (file handles close after)
+    image_paths = [save_image_file(image) for image in images]
+
+    # Get conversation history and add current message
+    conversation = get_conversation_history(db, entry_id)
+    if content:
+        conversation.append({"role": "user", "content": content})
+
+    # Retrieve relevant memories for context (V2 only)
+    memories = retrieve_relevant_memories(db, content) if is_v2 and content else []
+
+    def respond_and_save():
+        # Stream response to user
+        response_text = []
+        for chunk in generate_response(conversation, memories=memories):
+            response_text.append(chunk)
+            yield chunk
+
+        # Save messages to DB after response completes
+        if content:
+            save_user_message(db, entry_id, content, version, msg_date)
+        for path in image_paths:
+            save_user_message(db, entry_id, path, version, msg_date)
+        save_assistant_message(db, entry_id, "".join(response_text), msg_date)
+
+    return StreamingResponse(respond_and_save(), media_type="text/plain")
 
 
 @router.get("/search")
@@ -60,9 +95,7 @@ def search_entries(q: str, version: int = 1):
 
     # Use appropriate embedding based on version
     if version == 2:
-        query_embedding = get_multimodal_embedding(
-            q, mode="text", input_type="query"
-        )
+        query_embedding = get_multimodal_embedding(q, mode="text", input_type="query")
     else:
         query_embedding = get_text_embedding(q, input_type="query")
 
@@ -107,6 +140,38 @@ def search_entries(q: str, version: int = 1):
     return results
 
 
+@router.post("/{entry_id}/analyze")
+def save_entry(entry_id: str, entry_date: str = Form(...)):
+    """Analyze entry for sentiment/themes and extract memories."""
+    db = get_database()
+    conversation = get_conversation_history(db, entry_id)
+
+    if not conversation:
+        return {"error": "No messages in entry"}
+
+    # Analyze sentiment and themes
+    analysis = analyze_entry(conversation)
+    db.entries.update_one(
+        {"_id": ObjectId(entry_id)},
+        {"$set": {"sentiment": analysis["sentiment"], "themes": analysis["themes"]}},
+    )
+
+    # Extract memories from full conversation
+    extract_and_save_memories(
+        db, entry_id, conversation, datetime.fromisoformat(entry_date)
+    )
+
+
+@router.get("/")
+def get_entries(version: int = 1):
+    db = get_database()
+    query = {"user_id": USER_ID, "version": version}
+    entries = list(db.entries.find(query).sort("created_at", -1))
+    for entry in entries:
+        entry["_id"] = str(entry["_id"])
+    return entries
+
+
 @router.post("/generate-prompt")
 def generate_prompt(entry_id: str = Form(...), entry_date: str = Form(...)):
     """Generate a journal prompt based on the last month's memories."""
@@ -144,70 +209,11 @@ def generate_prompt(entry_id: str = Form(...), entry_date: str = Form(...)):
 @router.get("/{entry_id}/messages")
 def get_messages(entry_id: str):
     db = get_database()
-    messages = list(
-        db.messages.find({"entry_id": entry_id}).sort("created_at", 1)
-    )
+    messages = list(db.messages.find({"entry_id": entry_id}).sort("created_at", 1))
     for msg in messages:
         msg["_id"] = str(msg["_id"])
         msg.pop("embedding", None)
     return messages
-
-
-@router.post("/{entry_id}/messages")
-def send_message(
-    entry_id: str,
-    content: Optional[str] = Form(None),
-    images: list[UploadFile] = File([]),
-    version: int = Form(1),
-    entry_date: Optional[str] = Form(None),
-):
-    db = get_database()
-    is_v2 = version == 2
-    msg_date = datetime.fromisoformat(entry_date)
-    logger.info(f"Processing message for entry {entry_id} (v{version})")
-
-    # Save user messages
-    if content:
-        save_user_message(db, entry_id, content, version, msg_date)
-    for image_file in images:
-        image_path = save_image_file(image_file)
-        save_user_message(db, entry_id, image_path, version, msg_date)
-
-    # V2 only: Extract and retrieve memories
-    retrieved_memories = []
-    if is_v2 and content:
-        extract_and_save_memories(db, entry_id, msg_date)
-        retrieved_memories = retrieve_relevant_memories(db, content)
-
-    # Generate and save AI response
-    conversation = get_conversation_history(db, entry_id)
-    ai_content = generate_response(conversation, memories=retrieved_memories)
-    save_assistant_message(db, entry_id, ai_content, msg_date)
-
-    return {"response": ai_content}
-
-
-@router.post("/{entry_id}/analyze")
-def save_entry(entry_id: str):
-    """Analyze entry for sentiment and themes."""
-    db = get_database()
-    conversation = get_conversation_history(db, entry_id)
-
-    if not conversation:
-        return {"error": "No messages in entry"}
-
-    analysis = analyze_entry(conversation)
-
-    db.entries.update_one(
-        {"_id": ObjectId(entry_id)},
-        {"$set": {
-            "sentiment": analysis["sentiment"],
-            "themes": analysis["themes"],
-        }}
-    )
-
-    logger.info(f"Analyzed entry {entry_id}: {analysis}")
-    return analysis
 
 
 @router.get("/insights")

@@ -49,53 +49,6 @@ def extract_memories(user_message: str) -> list[str]:
         return []
 
 
-def generate_response(
-    messages: list[dict], memories: Optional[list[str]] = None
-) -> str:
-    """Generate a response using Anthropic's Claude."""
-    logger.info(
-        f"Generating response using {ANTHROPIC_MODEL} with {len(memories) if memories else 0} memories"
-    )
-
-    system_prompt = JOURNAL_SYSTEM_PROMPT
-    if memories:
-        memory_context = "\n".join(f"- {m}" for m in memories)
-        system_prompt += f"\n\nRelevant memories about this user:\n{memory_context}\n\nUse these memories to provide more personalized and contextual responses when relevant."
-
-    response = client.messages.create(
-        model=ANTHROPIC_MODEL,
-        max_tokens=500,
-        temperature=0.8,
-        system=system_prompt,
-        messages=messages,
-    )
-
-    logger.info("Response generated successfully")
-    return response.content[0].text
-
-
-def generate_journal_prompt(memories: list[str]) -> str:
-    """Generate a reflective journal prompt based on past memories."""
-    logger.info(f"Generating journal prompt from {len(memories)} memories")
-
-    if not memories:
-        return "What's on your mind today?"
-
-    today = datetime.now().strftime("%Y-%m-%d")
-    memory_context = "\n".join(f"- {m}" for m in memories)
-    user_content = f"Today's date: {today}\n\nMemories:\n{memory_context}"
-
-    response = client.messages.create(
-        model=ANTHROPIC_MODEL,
-        max_tokens=150,
-        temperature=0.8,
-        system=PROMPT_GENERATOR,
-        messages=[{"role": "user", "content": user_content}],
-    )
-
-    return response.content[0].text
-
-
 def analyze_entry(conversation: list[dict]) -> dict:
     """Analyze a journal entry for sentiment and themes."""
     logger.info(f"Analyzing entry with {len(conversation)} messages")
@@ -121,3 +74,47 @@ def analyze_entry(conversation: list[dict]) -> dict:
     except Exception as e:
         logger.error(f"Failed to analyze entry: {e}")
         return {"sentiment": "neutral", "themes": []}
+
+
+def generate_response(messages: list[dict], memories: Optional[list[str]] = None):
+    """Generate a streaming response using Anthropic's Claude."""
+    logger.info(
+        f"Generating response using {ANTHROPIC_MODEL} with {len(memories) if memories else 0} memories"
+    )
+
+    system_prompt = JOURNAL_SYSTEM_PROMPT
+    if memories:
+        memory_context = "\n".join(f"- {m}" for m in memories)
+        system_prompt += f"\n\nRelevant memories about this user:\n{memory_context}\n\nUse these memories to provide more personalized and contextual responses when relevant."
+
+    with client.messages.stream(
+        model=ANTHROPIC_MODEL,
+        max_tokens=500,
+        temperature=0.8,
+        system=system_prompt,
+        messages=messages,
+    ) as stream:
+        for text in stream.text_stream:
+            yield text
+
+
+def generate_journal_prompt(memories: list[str]) -> str:
+    """Generate a reflective journal prompt based on past memories."""
+    logger.info(f"Generating journal prompt from {len(memories)} memories")
+
+    if not memories:
+        return "What's on your mind today?"
+
+    today = datetime.now().strftime("%Y-%m-%d")
+    memory_context = "\n".join(f"- {m}" for m in memories)
+    user_content = f"Today's date: {today}\n\nMemories:\n{memory_context}"
+
+    response = client.messages.create(
+        model=ANTHROPIC_MODEL,
+        max_tokens=150,
+        temperature=0.8,
+        system=PROMPT_GENERATOR,
+        messages=[{"role": "user", "content": user_content}],
+    )
+
+    return response.content[0].text

@@ -33,8 +33,13 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
 
   const handleSaveEntry = async () => {
     try {
+      const activeEntryObj = entries.find(e => e._id === activeEntry)
+      const formData = new FormData()
+      formData.append('entry_date', activeEntryObj?.created_at || new Date().toISOString())
+
       await fetch(`http://localhost:8000/api/entries/${activeEntry}/analyze`, {
-        method: 'POST'
+        method: 'POST',
+        body: formData
       })
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus(null), 2000)
