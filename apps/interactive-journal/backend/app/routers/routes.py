@@ -13,6 +13,7 @@ from app.routers.helpers import (
     get_mood_distribution,
     get_themes,
     get_total_entries,
+    image_to_base64,
     retrieve_relevant_memories,
     save_assistant_message,
     save_image_file,
@@ -62,10 +63,17 @@ def send_message(
     # Save image files to disk before streaming (file handles close after)
     image_paths = [save_image_file(image) for image in images]
 
+    # Build current message (text, images, or both)
+    messages = []
+    if content:
+        messages.append({"type": "text", "text": content})
+    for path in image_paths:
+        messages.append(image_to_base64(path))
+
     # Get conversation history and add current message
     conversation = get_conversation_history(db, entry_id)
-    if content:
-        conversation.append({"role": "user", "content": content})
+    if messages:
+        conversation.append({"role": "user", "content": messages})
 
     # Retrieve relevant memories for context (V2 only)
     memories = retrieve_relevant_memories(db, content) if is_v2 and content else []
@@ -144,7 +152,7 @@ def search_entries(q: str, version: int = 1):
 def save_entry(entry_id: str, entry_date: str = Form(...)):
     """Analyze entry for sentiment/themes and extract memories."""
     db = get_database()
-    conversation = get_conversation_history(db, entry_id)
+    conversation = get_conversation_history(db, entry_id, include_images=False)
 
     if not conversation:
         return {"error": "No messages in entry"}

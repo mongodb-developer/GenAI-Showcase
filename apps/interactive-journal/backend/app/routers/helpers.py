@@ -1,11 +1,14 @@
+import base64
 import logging
 import uuid
 from datetime import datetime, timedelta
+from io import BytesIO
 from pathlib import Path
 
 from fastapi import UploadFile
+from PIL import Image
 
-from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
+from app.config import IMAGE_SIZE, USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
 from app.services.anthropic import extract_memories
 from app.services.voyage import get_multimodal_embedding, get_text_embedding
 
@@ -16,20 +19,6 @@ UPLOADS_DIR = (
     Path(__file__).parent.parent.parent.parent / "frontend" / "public" / "uploads"
 )
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
-
-
-def get_conversation_history(db, entry_id: str) -> list[dict]:
-    """Get conversation history for an entry."""
-    history = list(
-        db.messages.find(
-            {"entry_id": entry_id}, {"role": 1, "content": 1, "_id": 0}
-        ).sort("created_at", 1)
-    )
-    return [
-        {"role": msg["role"], "content": msg["content"]}
-        for msg in history
-        if msg.get("content")
-    ]
 
 
 def save_user_message(
@@ -62,28 +51,6 @@ def save_user_message(
     logger.info(f"Saved message for entry {entry_id}")
 
 
-def retrieve_relevant_memories(db, query: str) -> list[str]:
-    """Retrieve relevant memories via vector search."""
-    query_embedding = get_text_embedding(query, input_type="query")
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": VECTOR_INDEX_NAME,
-                "path": "embedding",
-                "queryVector": query_embedding,
-                "numCandidates": VECTOR_NUM_CANDIDATES,
-                "limit": 10,
-                "filter": {"user_id": USER_ID},
-            }
-        },
-        {"$project": {"content": 1, "score": {"$meta": "vectorSearchScore"}}},
-    ]
-    results = list(db.memories.aggregate(pipeline))
-    memories = [r["content"] for r in results]
-    logger.info(f"Retrieved {len(memories)} memories for context")
-    return memories
-
-
 def extract_and_save_memories(
     db, entry_id: str, conversation: list[dict], entry_date: datetime
 ) -> None:
@@ -106,6 +73,66 @@ def extract_and_save_memories(
         logger.info(f"Extracted and saved {len(memories)} memories: {memories}")
 
 
+def retrieve_relevant_memories(db, query: str) -> list[str]:
+    """Retrieve relevant memories via vector search."""
+    query_embedding = get_text_embedding(query, input_type="query")
+    pipeline = [
+        {
+            "$vectorSearch": {
+                "index": VECTOR_INDEX_NAME,
+                "path": "embedding",
+                "queryVector": query_embedding,
+                "numCandidates": VECTOR_NUM_CANDIDATES,
+                "limit": 10,
+                "filter": {"user_id": USER_ID},
+            }
+        },
+        {"$project": {"content": 1, "score": {"$meta": "vectorSearchScore"}}},
+    ]
+    results = list(db.memories.aggregate(pipeline))
+    memories = [r["content"] for r in results]
+    logger.info(f"Retrieved {len(memories)} memories for context")
+    return memories
+
+
+def get_conversation_history(db, entry_id: str, include_images: bool = True) -> list[dict]:
+    """Get conversation history for an entry."""
+    history = list(
+        db.messages.find(
+            {"entry_id": entry_id}, {"role": 1, "content": 1, "image": 1, "_id": 0}
+        ).sort("created_at", 1)
+    )
+
+    messages = []
+    for msg in history:
+        if msg.get("content"):
+            messages.append({"role": msg["role"], "content": msg["content"]})
+        elif msg.get("image") and include_images:
+            image_path = UPLOADS_DIR / msg["image"]
+            if image_path.exists():
+                messages.append(
+                    {
+                        "role": msg["role"],
+                        "content": [image_to_base64(image_path)],
+                    }
+                )
+    return messages
+
+
+def image_to_base64(image_path: Path) -> dict:
+    """Convert an image file to Claude's base64 format, resizing to fit limits."""
+    with Image.open(image_path) as img:
+        img = img.resize(IMAGE_SIZE, Image.Resampling.LANCZOS)
+        buffer = BytesIO()
+        img.save(buffer, format="JPEG", quality=85)
+        data = base64.standard_b64encode(buffer.getvalue()).decode("utf-8")
+
+    return {
+        "type": "image",
+        "source": {"type": "base64", "media_type": "image/jpeg", "data": data},
+    }
+
+
 def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) -> None:
     """Save an assistant response message."""
     db.messages.insert_one(
@@ -120,7 +147,7 @@ def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) 
 
 
 def save_image_file(image_file: UploadFile) -> Path:
-    """Save uploaded image file and return the path."""
+    """Save uploaded image file."""
     filename = f"{uuid.uuid4()}{Path(image_file.filename).suffix or '.jpg'}"
     image_path = UPLOADS_DIR / filename
     with open(image_path, "wb") as f:

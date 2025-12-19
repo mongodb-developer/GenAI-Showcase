@@ -32,6 +32,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
   }
 
   const handleSaveEntry = async () => {
+    setSaveStatus('saving')
     try {
       const activeEntryObj = entries.find(e => e._id === activeEntry)
       const formData = new FormData()
@@ -45,6 +46,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
       setTimeout(() => setSaveStatus(null), 2000)
     } catch (error) {
       console.error('Failed to save entry:', error)
+      setSaveStatus(null)
     }
   }
 
@@ -291,10 +293,11 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
         {isV2 && messages.length > 0 && (
           <div className="save-entry">
             <button
-              className={`save-btn ${saveStatus === 'saved' ? 'saved' : ''}`}
+              className={`save-btn ${saveStatus || ''}`}
               onClick={handleSaveEntry}
+              disabled={saveStatus === 'saving'}
             >
-              {saveStatus === 'saved' ? 'Saved ✓' : 'Save'}
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved ✓' : 'Save'}
             </button>
           </div>
         )}
