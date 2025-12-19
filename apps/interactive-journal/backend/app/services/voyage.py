@@ -4,16 +4,23 @@ from pathlib import Path
 import voyageai
 from PIL import Image
 
-from app.config import IMAGE_SIZE, VOYAGE_API_KEY, VOYAGE_MULTIMODAL_MODEL, VOYAGE_TEXT_MODEL
+from app.config import (
+    IMAGE_SIZE,
+    VOYAGE_API_KEY,
+    VOYAGE_MULTIMODAL_MODEL,
+    VOYAGE_TEXT_MODEL,
+)
 
 logger = logging.getLogger(__name__)
 
 vo = voyageai.Client(api_key=VOYAGE_API_KEY)
 
 
-def get_multimodal_embedding(content: str | Path, mode: str, input_type: str) -> list[float]:
+def get_multimodal_embedding(
+    content: str | Path, mode: str, input_type: str
+) -> list[float]:
     """
-    Generate embeddings using Voyage AI's multimodal model.
+    Generate embeddings using Voyage AI's voyage-multimodal-3.5 model.
 
     Args:
         content: Text string or path to image file
@@ -23,7 +30,9 @@ def get_multimodal_embedding(content: str | Path, mode: str, input_type: str) ->
     Returns:
         list[float]: Embedding of the content as a list.
     """
-    logger.info(f"Generating multimodal embedding: mode={mode}, input_type={input_type}")
+    logger.info(
+        f"Generating multimodal embedding: mode={mode}, input_type={input_type}"
+    )
 
     if mode == "image":
         img = Image.open(content)
