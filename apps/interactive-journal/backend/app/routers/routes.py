@@ -4,6 +4,7 @@ from typing import Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, File, Form, UploadFile
+from fastapi.responses import StreamingResponse
 
 from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
 from app.routers.helpers import (
@@ -19,13 +20,12 @@ from app.routers.helpers import (
     save_image_file,
     save_user_message,
 )
-from app.services.mongodb import get_database
-from fastapi.responses import StreamingResponse
 from app.services.anthropic import (
     analyze_entry,
     generate_journal_prompt,
     generate_response,
 )
+from app.services.mongodb import get_database
 from app.services.voyage import get_multimodal_embedding, get_text_embedding
 
 logger = logging.getLogger(__name__)

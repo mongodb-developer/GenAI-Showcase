@@ -94,8 +94,7 @@ def generate_response(messages: list[dict], memories: Optional[list[str]] = None
         system=system_prompt,
         messages=messages,
     ) as stream:
-        for text in stream.text_stream:
-            yield text
+        yield from stream.text_stream
 
 
 def generate_journal_prompt(memories: list[str]) -> str:

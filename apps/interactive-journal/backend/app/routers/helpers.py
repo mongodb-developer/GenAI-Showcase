@@ -95,7 +95,9 @@ def retrieve_relevant_memories(db, query: str) -> list[str]:
     return memories
 
 
-def get_conversation_history(db, entry_id: str, include_images: bool = True) -> list[dict]:
+def get_conversation_history(
+    db, entry_id: str, include_images: bool = True
+) -> list[dict]:
     """Get conversation history for an entry."""
     history = list(
         db.messages.find(
