@@ -17,6 +17,7 @@ extend-select = [
   "YTT",      # flake8-2020
 ]
 ignore = [
+   "E402",    # Module level import not at top of file,
    "F811",    # Redefinition of unused,
    "F402",    # Import shadowing,
    "B006",    # Do not use mutable data structures for argument defaults,
