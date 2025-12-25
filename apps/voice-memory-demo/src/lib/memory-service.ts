@@ -87,7 +87,7 @@ Respond ONLY with valid JSON (no markdown):
       model: 'gemini-2.0-flash',
       contents: prompt,
     });
-    
+
     const text = response.text || '{"isGlobal": false, "processedValue": "' + value + '", "reasoning": "Default to private"}';
     const cleaned = text.replace(/```json\n?|\n?```/g, '').trim();
     return JSON.parse(cleaned);
@@ -104,14 +104,14 @@ export async function setMemory(
   value: string
 ): Promise<{ success: boolean; isGlobal: boolean; reasoning: string }> {
   const collection = await getMemoriesCollection();
-  
+
   // Classify the memory
   const classification = await classifyMemory(key, value);
-  
+
   // Generate embedding for the memory content
   const embeddingText = `${key}: ${classification.processedValue}`;
   const embedding = await generateEmbedding(embeddingText);
-  
+
   const now = new Date();
   const memory: Omit<Memory, '_id'> = {
     deploymentId,
@@ -131,7 +131,7 @@ export async function setMemory(
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { createdAt, ...memoryWithoutCreatedAt } = memory;
-  
+
   await collection.updateOne(
     filter,
     { $set: { ...memoryWithoutCreatedAt, updatedAt: now }, $setOnInsert: { createdAt: now } },
@@ -147,7 +147,7 @@ export async function getMemory(
   key: string
 ): Promise<Memory | null> {
   const collection = await getMemoriesCollection();
-  
+
   // Try user-specific first, then global
   const memory = await collection.findOne({
     deploymentId,
@@ -164,7 +164,7 @@ export async function deleteMemory(
   key: string
 ): Promise<{ success: boolean; deletedCount: number }> {
   const collection = await getMemoriesCollection();
-  
+
   // Only delete user's own memories (not global ones unless they're the creator)
   const result = await collection.deleteOne({
     deploymentId,
@@ -188,10 +188,10 @@ export async function queryMemories(
   limit: number = 10
 ): Promise<QueryResult> {
   const collection = await getMemoriesCollection();
-  
+
   // Generate embedding for the query
   const queryEmbedding = await generateEmbedding(query);
-  
+
   // If we have embeddings enabled, use hybrid search with $rankFusion
   if (queryEmbedding.length > 0) {
     const pipeline = [
@@ -327,7 +327,7 @@ export async function queryMemories(
       // Fall through to fallback search
     }
   }
-  
+
   // Fallback: text search or regex search
   const textSearchFilter = {
     deploymentId,
@@ -381,7 +381,7 @@ export async function listAllMemories(
   userCookie: string
 ): Promise<Memory[]> {
   const collection = await getMemoriesCollection();
-  
+
   const memories = await collection
     .find({
       deploymentId,

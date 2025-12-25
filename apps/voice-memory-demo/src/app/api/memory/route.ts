@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           );
         }
         const queryResult = await queryMemories(deploymentId, userCookie, query);
-        result = { 
+        result = {
           memories: queryResult.memories,
           pipeline: queryResult.pipeline,
           searchType: queryResult.searchType

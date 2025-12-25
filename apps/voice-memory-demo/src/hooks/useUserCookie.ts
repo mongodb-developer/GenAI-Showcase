@@ -10,7 +10,7 @@ export function useUserCookie(deploymentId: string) {
     if (typeof window !== 'undefined') {
       const storageKey = `userCookie_${deploymentId}`;
       const existing = localStorage.getItem(storageKey);
-      
+
       if (existing) {
         setUserCookie(existing);
       } else {

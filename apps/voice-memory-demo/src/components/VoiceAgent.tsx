@@ -13,7 +13,7 @@ export function VoiceAgent() {
 
   const handleToolCall = useCallback(async (name: string, args: Record<string, unknown>) => {
     console.log('Tool call:', name, args);
-    
+
     if (name === 'agentMemory') {
       const response = await fetch('/api/memory', {
         method: 'POST',
@@ -26,7 +26,7 @@ export function VoiceAgent() {
       });
       const data = await response.json();
       console.log('Memory operation result:', data);
-      
+
       // Log the operation
       const operation = args.operation as string;
       const newLog: QueryLog = {
@@ -42,12 +42,12 @@ export function VoiceAgent() {
         pipeline: data.result?.pipeline,
         searchType: data.result?.searchType,
       };
-      
+
       setQueryLogs(prev => [...prev, newLog]);
-      
+
       return data.result;
     }
-    
+
     return { error: 'Unknown tool' };
   }, [userCookie]);
 
@@ -86,7 +86,7 @@ export function VoiceAgent() {
           </p>
           <div className="mt-2 text-sm text-gray-500">
             User ID: <code className="bg-gray-800 px-2 py-1 rounded">{userCookie.slice(0, 8)}...</code>
-            <button 
+            <button
               onClick={resetCookie}
               className="ml-2 text-blue-400 hover:text-blue-300"
               title="Reset user identity"
@@ -100,12 +100,12 @@ export function VoiceAgent() {
           {/* Voice Control Panel */}
           <div className="bg-gray-900 rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Voice Agent</h2>
-            
+
             {/* Status */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-3 h-3 rounded-full ${
-                  isSessionActive 
+                  isSessionActive
                     ? 'bg-green-500 animate-pulse'
                     : status === 'connecting' || status === 'connecting to gemini'
                     ? 'bg-yellow-500 animate-pulse'
@@ -201,9 +201,9 @@ export function VoiceAgent() {
 
           {/* Memory Panel */}
           <div className="h-[600px]">
-            <MemoryPanel 
-              deploymentId={DEPLOYMENT_ID} 
-              userCookie={userCookie} 
+            <MemoryPanel
+              deploymentId={DEPLOYMENT_ID}
+              userCookie={userCookie}
               queryLogs={queryLogs}
             />
           </div>

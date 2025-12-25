@@ -31,16 +31,16 @@ export function MemoryPanel({ deploymentId, userCookie, queryLogs = [] }: Memory
 
   const fetchMemories = useCallback(async () => {
     if (!deploymentId || !userCookie) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(
         `/api/memory?deploymentId=${encodeURIComponent(deploymentId)}&userCookie=${encodeURIComponent(userCookie)}`
       );
       const data = await response.json();
-      
+
       if (data.memories) {
         setMemories(data.memories);
       } else if (data.error) {
@@ -114,11 +114,11 @@ export function MemoryPanel({ deploymentId, userCookie, queryLogs = [] }: Memory
           </button>
         )}
       </div>
-      
+
       {error && (
         <div className="text-red-400 text-sm mb-2">{error}</div>
       )}
-      
+
       {/* Memories Tab */}
       {activeTab === 'memories' && (
         <div className="flex-1 overflow-y-auto space-y-2">
@@ -129,8 +129,8 @@ export function MemoryPanel({ deploymentId, userCookie, queryLogs = [] }: Memory
               <div
                 key={`${memory.key}-${index}`}
                 className={`p-3 rounded-lg ${
-                  memory.isGlobal 
-                    ? 'bg-blue-900/30 border border-blue-700' 
+                  memory.isGlobal
+                    ? 'bg-blue-900/30 border border-blue-700'
                     : 'bg-gray-800 border border-gray-700'
                 }`}
               >
@@ -205,7 +205,7 @@ export function MemoryPanel({ deploymentId, userCookie, queryLogs = [] }: Memory
                     </span>
                   )}
                 </div>
-                
+
                 {log.query && (
                   <div className="mt-2">
                     <span className="text-gray-500 text-xs">Query:</span>
@@ -214,27 +214,27 @@ export function MemoryPanel({ deploymentId, userCookie, queryLogs = [] }: Memory
                     </p>
                   </div>
                 )}
-                
+
                 {log.key && (
                   <div className="mt-2">
                     <span className="text-gray-500 text-xs">Key:</span>
                     <span className="text-green-400 text-sm font-mono ml-2">{log.key}</span>
                   </div>
                 )}
-                
+
                 {log.value && (
                   <div className="mt-1">
                     <span className="text-gray-500 text-xs">Value:</span>
                     <p className="text-gray-300 text-sm mt-1 break-words">{log.value}</p>
                   </div>
                 )}
-                
+
                 {log.reasoning && (
                   <div className="mt-2 text-xs text-gray-500 italic">
                     💭 {log.reasoning}
                   </div>
                 )}
-                
+
                 {log.results && log.results.length > 0 && (
                   <div className="mt-2">
                     <span className="text-gray-500 text-xs">Results ({log.results.length}):</span>
@@ -252,15 +252,15 @@ export function MemoryPanel({ deploymentId, userCookie, queryLogs = [] }: Memory
                     </div>
                   </div>
                 )}
-                
+
                 {log.pipeline && (
                   <details className="mt-2">
                     <summary className="text-xs text-cyan-400 cursor-pointer hover:text-cyan-300 flex items-center gap-1">
                       <span>📋 MQL Pipeline</span>
                       {log.searchType && (
                         <span className={`ml-2 px-1.5 py-0.5 rounded text-[10px] ${
-                          log.searchType === 'hybrid' 
-                            ? 'bg-purple-700 text-purple-100' 
+                          log.searchType === 'hybrid'
+                            ? 'bg-purple-700 text-purple-100'
                             : log.searchType === 'text'
                             ? 'bg-blue-700 text-blue-100'
                             : 'bg-gray-600 text-gray-200'

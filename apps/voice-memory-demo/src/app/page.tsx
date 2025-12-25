@@ -4,7 +4,7 @@ export default function Home() {
   // API key is now handled server-side in /api/session/gemini
   // Check if it's configured
   const isConfigured = !!process.env.GOOGLE_API_KEY && !!process.env.MONGODB_URI;
-  
+
   if (!isConfigured) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">

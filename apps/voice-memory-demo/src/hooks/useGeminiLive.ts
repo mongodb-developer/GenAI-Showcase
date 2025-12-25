@@ -192,7 +192,7 @@ export function useGeminiLive(
             // Handle audio data
             if (message.data) {
               try {
-                const buffer = typeof message.data === 'string' 
+                const buffer = typeof message.data === 'string'
                   ? Buffer.from(message.data, 'base64')
                   : message.data;
                 const int16Array = new Int16Array(buffer.buffer, buffer.byteOffset, buffer.byteLength / 2);
@@ -207,7 +207,7 @@ export function useGeminiLive(
             if (message.serverContent?.inputTranscription?.text) {
               const chunk = message.serverContent.inputTranscription.text;
               userTranscriptionBufferRef.current += chunk;
-              
+
               setConversation(prev => {
                 const existing = prev.find(msg => msg.role === 'user' && !msg.isFinal);
                 if (existing) {
@@ -301,7 +301,7 @@ export function useGeminiLive(
             // Handle tool calls
             if (message.toolCall?.functionCalls && onToolCall) {
               console.log('[Gemini] Tool calls received:', message.toolCall.functionCalls);
-              
+
               // Finalize any existing assistant speech before tool execution
               // This prevents duplicate responses when the AI speaks before and after tool calls
               const existingText = assistantTranscriptionBufferRef.current.trim();
@@ -319,7 +319,7 @@ export function useGeminiLive(
                 });
                 assistantTranscriptionBufferRef.current = '';
               }
-              
+
               const responses = [];
               for (const call of message.toolCall.functionCalls) {
                 try {
@@ -373,7 +373,7 @@ export function useGeminiLive(
           try {
             // Convert ArrayBuffer to Int16Array
             const int16Array = new Int16Array(audioData.data);
-            
+
             // Convert to base64
             const uint8Array = new Uint8Array(int16Array.buffer);
             let binary = '';
