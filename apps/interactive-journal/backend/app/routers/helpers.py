@@ -21,6 +21,28 @@ UPLOADS_DIR = (
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def retrieve_relevant_memories(db, query: str) -> list[str]:
+    """Retrieve relevant memories via vector search."""
+    query_embedding = get_text_embedding(query, input_type="query")
+    pipeline = [
+        {
+            "$vectorSearch": {
+                "index": VECTOR_INDEX_NAME,
+                "path": "embedding",
+                "queryVector": query_embedding,
+                "numCandidates": VECTOR_NUM_CANDIDATES,
+                "limit": 10,
+                "filter": {"user_id": USER_ID},
+            }
+        },
+        {"$project": {"content": 1, "score": {"$meta": "vectorSearchScore"}}},
+    ]
+    results = list(db.memories.aggregate(pipeline))
+    memories = [r["content"] for r in results]
+    logger.info(f"Retrieved {len(memories)} memories for context")
+    return memories
+
+
 def save_user_message(
     db, entry_id: str, content: str | Path, version: int, msg_date: datetime
 ) -> None:
@@ -71,28 +93,6 @@ def extract_and_save_memories(
         ]
         db.memories.insert_many(memory_docs)
         logger.info(f"Extracted and saved {len(memories)} memories: {memories}")
-
-
-def retrieve_relevant_memories(db, query: str) -> list[str]:
-    """Retrieve relevant memories via vector search."""
-    query_embedding = get_text_embedding(query, input_type="query")
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": VECTOR_INDEX_NAME,
-                "path": "embedding",
-                "queryVector": query_embedding,
-                "numCandidates": VECTOR_NUM_CANDIDATES,
-                "limit": 10,
-                "filter": {"user_id": USER_ID},
-            }
-        },
-        {"$project": {"content": 1, "score": {"$meta": "vectorSearchScore"}}},
-    ]
-    results = list(db.memories.aggregate(pipeline))
-    memories = [r["content"] for r in results]
-    logger.info(f"Retrieved {len(memories)} memories for context")
-    return memories
 
 
 def get_conversation_history(
