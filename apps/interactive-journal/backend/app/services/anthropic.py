@@ -85,7 +85,7 @@ def generate_response(messages: list[dict], memories: Optional[list[str]] = None
     system_prompt = JOURNAL_SYSTEM_PROMPT
     if memories:
         memory_context = "\n".join(f"- {m}" for m in memories)
-        system_prompt += f"\n\nRelevant memories about this user:\n{memory_context}\n\nUse these memories to provide more personalized and contextual responses when relevant."
+        system_prompt += f"\n\nMemories about this user:\n{memory_context}"
 
     with client.messages.stream(
         model=ANTHROPIC_MODEL,
