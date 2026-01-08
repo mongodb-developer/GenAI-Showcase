@@ -7,18 +7,19 @@
 }
 
 :root {
-  /* MongoDB Light Theme Color Palette */
+  /* MongoDB Dark Theme Color Palette */
   --mongodb-green: #00ED64;
-  --mongodb-dark-green: #00684A;
-  --mongodb-forest: #00AA57;
-  --mongodb-slate: #001E2B;
-  --mongodb-slate-light: #21313C;
-  --mongodb-gray: #5D6C74;
-  --mongodb-gray-light: #B8C4C2;
-  --mongodb-off-white: #E7EEEC;
-  --mongodb-white: #FFFFFF;
+  --mongodb-dark-green: #00ED64;
+  --mongodb-forest: #00ED64;
+  --mongodb-slate: #FFFFFF;
+  --mongodb-slate-light: #E7EEEC;
+  --mongodb-gray: #E7EEEC;
+  --mongodb-gray-light: #9CA3A0;
+  --mongodb-off-white: #1C2D35;
+  --mongodb-white: #001E2B;
   --mongodb-lime: #B1FF05;
-  --mongodb-blue: #006CFA;
+  --mongodb-blue: #4D9CFF;
+  --mongodb-btn-text: #001E2B;
 
   font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;

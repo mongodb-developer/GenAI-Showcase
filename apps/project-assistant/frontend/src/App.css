@@ -52,7 +52,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
   font-weight: 600;
   font-size: 14px;
 }
@@ -99,7 +99,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2.5px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   padding: 0 4px 12px;
   font-family: 'Source Code Pro', monospace;
 }
@@ -108,7 +108,7 @@
   width: 100%;
   padding: 14px 16px;
   background: var(--mongodb-green);
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
   border: 1px solid var(--mongodb-dark-green);
   border-radius: 4px;
   font-family: inherit;
@@ -124,7 +124,7 @@
 .new-entry-icon {
   font-size: 18px;
   font-weight: 400;
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
 }
 
 .new-entry-btn:hover {
@@ -134,7 +134,7 @@
 
 .empty-state {
   padding: 16px 4px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   font-size: 13px;
 }
 
@@ -188,7 +188,7 @@
   padding: 4px 6px;
   cursor: pointer;
   font-size: 14px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   border-radius: 4px;
   transition: all 0.15s ease;
   line-height: 1;
@@ -223,7 +223,7 @@
   background: none;
   font-family: inherit;
   font-size: 13px;
-  font-weight: 300;
+  font-weight: 400;
   text-align: left;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -262,7 +262,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   font-size: 17px;
   font-weight: 500;
 }
@@ -312,7 +312,7 @@
   text-transform: uppercase;
   letter-spacing: 2.5px;
   margin-bottom: 8px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   font-family: 'Source Code Pro', monospace;
 }
 
@@ -354,20 +354,20 @@
   border: none;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 300;
+  font-weight: 400;
   outline: none;
   background: transparent;
   color: var(--mongodb-slate);
 }
 
 .entry-input input::placeholder {
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
 }
 
 .send-btn {
   padding: 10px 16px;
   background: var(--mongodb-green);
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
   border: 1px solid var(--mongodb-dark-green);
   border-radius: 4px;
   cursor: pointer;
@@ -397,7 +397,7 @@
 .version-label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   transition: color 0.2s ease;
 }
 
@@ -456,7 +456,7 @@
   border-radius: 4px;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--mongodb-slate-light);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -475,7 +475,7 @@
 
 .nav-item svg {
   flex-shrink: 0;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
 }
 
 /* Search form */
@@ -491,8 +491,9 @@
   border-radius: 4px;
   font-family: inherit;
   font-size: 13px;
-  font-weight: 300;
+  font-weight: 400;
   background: var(--mongodb-white);
+  color: var(--mongodb-slate);
   outline: none;
   transition: all 0.2s ease;
 }
@@ -503,7 +504,7 @@
 }
 
 .search-input::placeholder {
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
 }
 
 .search-clear {
@@ -514,7 +515,7 @@
   background: none;
   border: none;
   font-size: 18px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
@@ -532,7 +533,7 @@
 .photo-btn {
   padding: 10px;
   background: transparent;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -580,8 +581,9 @@
   border-radius: 4px;
   font-family: inherit;
   font-size: 16px;
-  font-weight: 300;
+  font-weight: 400;
   background: var(--mongodb-white);
+  color: var(--mongodb-slate);
   outline: none;
   transition: all 0.2s ease;
 }
@@ -592,7 +594,7 @@
 }
 
 .search-input-main::placeholder {
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
 }
 
 .search-clear-main {
@@ -603,7 +605,7 @@
   background: none;
   border: none;
   font-size: 24px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
@@ -621,7 +623,7 @@
 
 .no-results {
   text-align: center;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   font-size: 15px;
 }
 
@@ -656,7 +658,7 @@
 .result-score {
   font-size: 11px;
   font-family: 'Source Code Pro', monospace;
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
   background: var(--mongodb-lime);
   padding: 2px 8px;
   border-radius: 999px;
@@ -807,7 +809,7 @@
   margin: 12px 0;
   padding: 8px 16px;
   background: rgba(0, 237, 100, 0.05);
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
 }
 
 .message-image {
@@ -833,7 +835,7 @@
   border-radius: 4px;
   font-family: inherit;
   font-size: 13px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -867,7 +869,7 @@
   border-radius: 0 0 4px 4px;
   font-size: 13px;
   line-height: 1.6;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   white-space: pre-wrap;
   max-height: 300px;
   overflow-y: auto;
@@ -909,7 +911,7 @@
   border-radius: 4px;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 300;
+  font-weight: 400;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -950,7 +952,7 @@
 .date-confirm-btn {
   background: var(--mongodb-green);
   border: 1px solid var(--mongodb-dark-green);
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
 }
 
 .date-confirm-btn:hover {
@@ -988,7 +990,7 @@
 .generate-prompt-btn:disabled {
   background: var(--mongodb-gray-light);
   border-color: var(--mongodb-gray-light);
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   cursor: not-allowed;
 }
 
@@ -1027,7 +1029,7 @@
 }
 
 .task-item.completed .task-text {
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   text-decoration: line-through;
 }
 
@@ -1060,7 +1062,7 @@
   border-radius: 4px;
   font-family: inherit;
   font-size: 13px;
-  color: var(--mongodb-gray);
+  color: var(--mongodb-slate);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1085,7 +1087,7 @@
   background: var(--mongodb-green);
   border: 1px solid var(--mongodb-dark-green);
   border-radius: 4px;
-  color: var(--mongodb-slate);
+  color: var(--mongodb-btn-text);
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;

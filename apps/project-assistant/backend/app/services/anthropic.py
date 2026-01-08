@@ -42,7 +42,7 @@ def extract_memories(user_message: str) -> list[dict]:
             {"type": m.type, "content": m.content}
             for m in response.parsed_output.memories
         ]
-        logger.info(f"Extracted {len(memories)}memories: {memories}")
+        logger.info(f"Extracted {len(memories)} memories: {memories}")
         return memories
     except Exception as e:
         logger.error(f"Failed to extract memories: {e}")
