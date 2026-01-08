@@ -2,7 +2,7 @@
 
 A Next.js demo showcasing persistent memory for voice AI agents using **Gemini Live** and **MongoDB**.
 
-Based on the article: [Building Persistent Memory for Voice AI Agents with MongoDB](../article.md)
+Based on the article: [Building Persistent Memory for Voice AI Agents with MongoDB](https://dev.to/mongodb/building-persistent-memory-for-voice-ai-agents-with-mongodb-1obe)
 
 ## Features
 
@@ -51,7 +51,7 @@ Edit `.env.local` with your credentials:
 GOOGLE_API_KEY=your_gemini_api_key
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=voice_memory_demo
-VOYAGE_AI_API_KEY=your_voyage_ai_key  # Optional, for semantic search
+VOYAGE_AI_API_KEY=your_voyage_ai_key
 ```
 
 ### 3. Run the Development Server
@@ -64,13 +64,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### 4. Create MongoDB Indexes
 
-For hybrid search (vector + text) with `$rankFusion`, you need to create two Atlas Search indexes on the `memories` collection:
+For hybrid search (vector + text) with `$rankFusion` (require latest Atlas version cluster), the code creates on startup two Atlas Search indexes on the `memories` collection:
 
 #### Vector Search Index
 
 **Index Name:** `memory_vector_index`
 
-In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Vector Search**
+Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Vector Search**
 
 ```json
 {
@@ -101,7 +101,7 @@ In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Vector S
 
 **Index Name:** `memory_text_index`
 
-In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Search**
+Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Search**
 
 ```json
 {
