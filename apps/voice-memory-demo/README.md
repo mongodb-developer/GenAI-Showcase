@@ -51,7 +51,7 @@ Edit `.env.local` with your credentials:
 GOOGLE_API_KEY=your_gemini_api_key
 MONGODB_URI=mongodb+srv://...
 MONGODB_DB=voice_memory_demo
-VOYAGE_AI_API_KEY=your_voyage_ai_key  
+VOYAGE_AI_API_KEY=your_voyage_ai_key
 ```
 
 ### 3. Run the Development Server
