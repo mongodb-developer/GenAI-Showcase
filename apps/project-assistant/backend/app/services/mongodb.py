@@ -27,7 +27,7 @@ def connect_db():
 
 
 def setup_collections():
-    for name in ["entries", "messages", "memories"]:
+    for name in ["projects", "messages", "memories"]:
         try:
             db.create_collection(name)
             logger.info(f"Created collection: {name}")
@@ -37,7 +37,7 @@ def setup_collections():
 
 def setup_indexes():
     create_vector_index("messages", filter_paths=["user_id", "version"])
-    create_vector_index("memories", filter_paths=["user_id"])
+    create_vector_index("memories", filter_paths=["user_id", "type"])
 
 
 def create_vector_index(collection_name: str, filter_paths: list[str]):

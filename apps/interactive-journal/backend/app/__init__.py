@@ -1,1 +1,0 @@
-# Memoir - Interactive Journaling App

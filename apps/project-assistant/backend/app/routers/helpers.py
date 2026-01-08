@@ -1,7 +1,7 @@
 import base64
 import logging
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 
@@ -22,7 +22,7 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def retrieve_relevant_memories(db, query: str) -> list[str]:
-    """Retrieve relevant memories via vector search."""
+    """Retrieve relevant procedural and semantic memories via vector search."""
     query_embedding = get_text_embedding(query, input_type="query")
     pipeline = [
         {
@@ -32,7 +32,7 @@ def retrieve_relevant_memories(db, query: str) -> list[str]:
                 "queryVector": query_embedding,
                 "numCandidates": VECTOR_NUM_CANDIDATES,
                 "limit": 10,
-                "filter": {"user_id": USER_ID},
+                "filter": {"user_id": USER_ID, "type": {"$in": ["procedural", "semantic"]}},
             }
         },
         {"$project": {"content": 1, "score": {"$meta": "vectorSearchScore"}}},
@@ -44,11 +44,12 @@ def retrieve_relevant_memories(db, query: str) -> list[str]:
 
 
 def save_user_message(
-    db, entry_id: str, content: str | Path, version: int, msg_date: datetime
+    db, project_id: str, project_title: str, content: str | Path, version: int, msg_date: datetime
 ) -> None:
     """Save a user message (text or image) with its embedding."""
     message = {
-        "entry_id": entry_id,
+        "project_id": project_id,
+        "project_title": project_title,
         "user_id": USER_ID,
         "role": "user",
         "version": version,
@@ -70,38 +71,42 @@ def save_user_message(
         message["content"] = content
 
     db.messages.insert_one(message)
-    logger.info(f"Saved message for entry {entry_id}")
+    logger.info(f"Saved message for project {project_id}")
 
 
 def extract_and_save_memories(
-    db, entry_id: str, conversation: list[dict], entry_date: datetime
+    db, project_id: str, project_title: str, conversation: list[dict], created_at: datetime
 ) -> None:
-    """Extract memories from conversation and save them."""
+    """Extract memories from conversation: todos, preferences, and procedures."""
     context = "\n".join(f"{msg['role']}: {msg['content']}" for msg in conversation)
     memories = extract_memories(context)
 
     if memories:
-        memory_docs = [
-            {
+        memory_docs = []
+        for memory in memories:
+            doc = {
                 "user_id": USER_ID,
-                "entry_id": entry_id,
-                "content": memory_content,
-                "embedding": get_text_embedding(memory_content, input_type="document"),
-                "created_at": entry_date,
+                "project_id": project_id,
+                "project_title": project_title,
+                "type": memory["type"],
+                "content": memory["content"],
+                "created_at": created_at,
             }
-            for memory_content in memories
-        ]
+            if memory["type"] != "todo":
+                doc["embedding"] = get_text_embedding(memory["content"], input_type="document")
+            memory_docs.append(doc)
+
         db.memories.insert_many(memory_docs)
-        logger.info(f"Extracted and saved {len(memories)} memories: {memories}")
+        logger.info(f"Extracted and saved {len(memories)} items")
 
 
 def get_conversation_history(
-    db, entry_id: str, include_images: bool = True
+    db, project_id: str, include_images: bool = True
 ) -> list[dict]:
-    """Get conversation history for an entry."""
+    """Get conversation history for a project."""
     history = list(
         db.messages.find(
-            {"entry_id": entry_id}, {"role": 1, "content": 1, "image": 1, "_id": 0}
+            {"project_id": project_id}, {"role": 1, "content": 1, "image": 1, "_id": 0}
         ).sort("created_at", 1)
     )
 
@@ -125,6 +130,9 @@ def image_to_base64(image_path: Path) -> dict:
     """Convert an image file to Claude's base64 format, resizing to fit limits."""
     with Image.open(image_path) as img:
         img = img.resize(IMAGE_SIZE, Image.Resampling.LANCZOS)
+        # Convert RGBA to RGB (JPEG doesn't support transparency)
+        if img.mode == "RGBA":
+            img = img.convert("RGB")
         buffer = BytesIO()
         img.save(buffer, format="JPEG", quality=85)
         data = base64.standard_b64encode(buffer.getvalue()).decode("utf-8")
@@ -135,17 +143,18 @@ def image_to_base64(image_path: Path) -> dict:
     }
 
 
-def save_assistant_message(db, entry_id: str, content: str, msg_date: datetime) -> None:
+def save_assistant_message(db, project_id: str, project_title: str, content: str, msg_date: datetime) -> None:
     """Save an assistant response message."""
     db.messages.insert_one(
         {
-            "entry_id": entry_id,
+            "project_id": project_id,
+            "project_title": project_title,
             "role": "assistant",
             "content": content,
             "created_at": msg_date,
         }
     )
-    logger.info(f"Saved AI response for entry {entry_id}")
+    logger.info(f"Saved AI response for project {project_id}")
 
 
 def save_image_file(image_file: UploadFile) -> Path:
@@ -157,73 +166,14 @@ def save_image_file(image_file: UploadFile) -> Path:
     return image_path
 
 
-def get_monthly_filter(user_id: str) -> dict:
-    """Get common filter for monthly v2 entries."""
-    thirty_days_ago = datetime.now() - timedelta(days=30)
-    return {
-        "user_id": user_id,
-        "version": 2,
-        "created_at": {"$gte": thirty_days_ago},
-    }
-
-
-def get_total_entries(db, user_id: str) -> int:
-    """Get total entries count for past 30 days."""
-    return db.entries.count_documents(get_monthly_filter(user_id))
-
-
-def get_longest_streak(db, user_id: str) -> int:
-    """Get longest consecutive days streak in past 30 days."""
-    pipeline = [
-        {"$match": get_monthly_filter(user_id)},
-        {"$project": {"date": {"$dateTrunc": {"date": "$created_at", "unit": "day"}}}},
-        {"$group": {"_id": "$date"}},
-        {"$sort": {"_id": 1}},
-    ]
-    dates = [doc["_id"] for doc in db.entries.aggregate(pipeline)]
-
-    if not dates:
-        return 0
-
-    longest = current = 1
-    for i in range(1, len(dates)):
-        if (dates[i] - dates[i - 1]).days == 1:
-            current += 1
-            longest = max(longest, current)
-        else:
-            current = 1
-
-    return longest
-
-
-def get_mood_distribution(db, user_id: str) -> dict:
-    """Get sentiment distribution for past 30 days."""
-    filter = get_monthly_filter(user_id)
-    filter["sentiment"] = {"$exists": True}
-    pipeline = [
-        {"$match": filter},
-        {"$group": {"_id": "$sentiment", "count": {"$sum": 1}}},
-    ]
-    results = list(db.entries.aggregate(pipeline))
-    counts = {r["_id"]: r["count"] for r in results}
-    total = sum(counts.values()) or 1
-    return {
-        "positive": round(counts.get("positive", 0) / total * 100),
-        "neutral": round(counts.get("neutral", 0) / total * 100),
-        "mixed": round(counts.get("mixed", 0) / total * 100),
-        "negative": round(counts.get("negative", 0) / total * 100),
-    }
-
-
-def get_themes(db, user_id: str) -> list[dict]:
-    """Get all themes with counts for past 30 days."""
-    filter = get_monthly_filter(user_id)
-    filter["themes"] = {"$exists": True}
-    pipeline = [
-        {"$match": filter},
-        {"$unwind": "$themes"},
-        {"$group": {"_id": "$themes", "count": {"$sum": 1}}},
-        {"$sort": {"count": -1}},
-    ]
-    results = list(db.entries.aggregate(pipeline))
-    return [{"theme": r["_id"], "count": r["count"]} for r in results]
+def get_todos(db, user_id: str) -> list[dict]:
+    """Get all todos with their project titles."""
+    todos = list(
+        db.memories.find(
+            {"user_id": user_id, "type": "todo"},
+            {"_id": 1, "content": 1, "status": 1, "project_title": 1},
+        ).sort("created_at", -1)
+    )
+    for todo in todos:
+        todo["_id"] = str(todo["_id"])
+    return todos

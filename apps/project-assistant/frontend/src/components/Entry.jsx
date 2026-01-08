@@ -1,51 +1,42 @@
 import { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
 
-function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, onRefreshMessages, isV2, activeSection, onSelectEntry }) {
+function Entry({ messages, onSendMessage, hasActiveProject, activeProject, projects, onRefreshMessages, isV2, activeSection, onSelectProject }) {
   const [input, setInput] = useState('')
   const [selectedImages, setSelectedImages] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
-  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false)
-  const [insights, setInsights] = useState(null)
+  const [todos, setTodos] = useState(null)
   const [saveStatus, setSaveStatus] = useState(null)
+  const [expandedThinking, setExpandedThinking] = useState({})
+  const [expandedProjects, setExpandedProjects] = useState({})
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
-  const handleGeneratePrompt = async () => {
-    setIsGeneratingPrompt(true)
-    try {
-      const activeEntryObj = entries.find(e => e._id === activeEntry)
-      const formData = new FormData()
-      formData.append('entry_id', activeEntry)
-      formData.append('entry_date', activeEntryObj?.created_at || new Date().toISOString())
-
-      await fetch('http://localhost:8000/api/entries/generate-prompt', {
-        method: 'POST',
-        body: formData
-      })
-      onRefreshMessages()
-    } catch (error) {
-      console.error('Failed to generate prompt:', error)
-    }
-    setIsGeneratingPrompt(false)
+  const toggleThinking = (msgId) => {
+    setExpandedThinking(prev => ({
+      ...prev,
+      [msgId]: !prev[msgId]
+    }))
   }
 
-  const handleSaveEntry = async () => {
+  const handleSaveProject = async () => {
     setSaveStatus('saving')
     try {
-      const activeEntryObj = entries.find(e => e._id === activeEntry)
+      const activeProjectObj = projects.find(p => p._id === activeProject)
       const formData = new FormData()
-      formData.append('entry_date', activeEntryObj?.created_at || new Date().toISOString())
+      formData.append('project_date', activeProjectObj?.created_at || new Date().toISOString())
+      formData.append('project_title', activeProjectObj?.title || 'Unknown')
 
-      await fetch(`http://localhost:8000/api/entries/${activeEntry}/analyze`, {
+      await fetch(`http://localhost:8000/api/projects/${activeProject}/save`, {
         method: 'POST',
         body: formData
       })
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus(null), 2000)
     } catch (error) {
-      console.error('Failed to save entry:', error)
+      console.error('Failed to save project:', error)
       setSaveStatus(null)
     }
   }
@@ -59,11 +50,11 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
   }, [messages])
 
   useEffect(() => {
-    if (isV2 && activeSection === 'insights') {
-      fetch('http://localhost:8000/api/entries/insights')
+    if (isV2 && activeSection === 'todos') {
+      fetch('http://localhost:8000/api/projects/todos')
         .then(res => res.json())
-        .then(data => setInsights(data))
-        .catch(err => console.error('Failed to fetch insights:', err))
+        .then(data => setTodos(data))
+        .catch(err => console.error('Failed to fetch todos:', err))
     }
   }, [isV2, activeSection])
 
@@ -75,7 +66,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if ((input.trim() || selectedImages.length > 0) && hasActiveEntry) {
+    if ((input.trim() || selectedImages.length > 0) && hasActiveProject) {
       onSendMessage(input, selectedImages)
       setInput('')
       setSelectedImages([])
@@ -112,7 +103,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     setIsSearching(true)
     try {
       const version = isV2 ? 2 : 1
-      const res = await fetch(`http://localhost:8000/api/entries/search?q=${encodeURIComponent(searchQuery)}&version=${version}`)
+      const res = await fetch(`http://localhost:8000/api/projects/search?q=${encodeURIComponent(searchQuery)}&version=${version}`)
       const data = await res.json()
       setSearchResults(data)
     } catch (error) {
@@ -126,12 +117,12 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     setSearchResults(null)
   }
 
-  // Show search interface when Entries tab is clicked and no entry selected
-  if (activeSection === 'entries' && !hasActiveEntry) {
+  // Show search interface when Projects tab is clicked and no project selected
+  if (activeSection === 'projects' && !hasActiveProject) {
     return (
       <div className="entry">
         <div className="entry-search">
-          <h2 className="search-title">Search your entries</h2>
+          <h2 className="search-title">Search your projects</h2>
           <form className="search-form-main" onSubmit={handleSearch}>
             <input
               type="text"
@@ -155,15 +146,11 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
                   <div
                     key={result._id}
                     className="search-result-item"
-                    onClick={() => onSelectEntry(result._id)}
+                    onClick={() => onSelectProject(result._id)}
                   >
                     <div className="result-header">
-                      <span className="result-date">
-                        {new Date(result.created_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
+                      <span className="result-title">
+                        {result.project_title || 'Unknown Project'}
                       </span>
                       <span className="result-score">
                         {(result.score * 100).toFixed(0)}% match
@@ -184,78 +171,75 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     )
   }
 
-  // Show insights when V2 Insights tab is active and no entry selected
-  if (isV2 && activeSection === 'insights' && !hasActiveEntry) {
+  const handleToggleTask = async (todoId, isDone) => {
+    try {
+      await fetch(`http://localhost:8000/api/projects/todos/${todoId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: isDone ? 'done' : 'todo' })
+      })
+      const res = await fetch('http://localhost:8000/api/projects/todos')
+      const data = await res.json()
+      setTodos(data)
+    } catch (error) {
+      console.error('Failed to update task:', error)
+    }
+  }
+
+  // Group todos by project
+  const todosByProject = todos ? todos.reduce((acc, todo) => {
+    const projectTitle = todo.project_title || 'Unknown'
+    if (!acc[projectTitle]) acc[projectTitle] = []
+    acc[projectTitle].push(todo)
+    return acc
+  }, {}) : {}
+
+  // Show Task Lists when V2 Tasks tab is active
+  if (isV2 && activeSection === 'todos' && !hasActiveProject) {
     return (
       <div className="entry">
         <div className="entry-search">
-          <h2 className="search-title">Your month in review</h2>
-          {insights ? (
-            <>
-              <div className="insights-grid">
-                <div className="insight-card">
-                  <span className="insight-value">{insights.total_entries}</span>
-                  <span className="insight-label">Entries</span>
-                </div>
-                <div className="insight-card">
-                  <span className="insight-value">{insights.longest_streak}</span>
-                  <span className="insight-label">Longest streak</span>
-                </div>
+          <h2 className="search-title">Task Lists</h2>
+          {todos ? (
+            Object.keys(todosByProject).length === 0 ? (
+              <p className="no-results">No tasks yet. Save a project conversation to extract tasks.</p>
+            ) : (
+              <div className="task-cards">
+                {Object.entries(todosByProject).map(([projectTitle, projectTodos]) => {
+                  const isExpanded = expandedProjects[projectTitle]
+                  const visibleTodos = isExpanded ? projectTodos : projectTodos.slice(0, 5)
+                  const hasMore = projectTodos.length > 5
+
+                  return (
+                    <div key={projectTitle} className="task-card">
+                      <h3 className="task-card-title">{projectTitle}</h3>
+                      <ul className="task-list">
+                        {visibleTodos.map((todo) => (
+                          <li key={todo._id} className={`task-item ${todo.status === 'done' ? 'completed' : ''}`}>
+                            <label className="task-checkbox">
+                              <input
+                                type="checkbox"
+                                checked={todo.status === 'done'}
+                                onChange={(e) => handleToggleTask(todo._id, e.target.checked)}
+                              />
+                              <span className="task-text">{todo.content}</span>
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                      {hasMore && (
+                        <button
+                          className="show-more-btn"
+                          onClick={() => setExpandedProjects(prev => ({ ...prev, [projectTitle]: !prev[projectTitle] }))}
+                        >
+                          {isExpanded ? 'Show less' : `Show ${projectTodos.length - 5} more`}
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-
-              {(insights.mood.positive > 0 || insights.mood.neutral > 0 || insights.mood.mixed > 0 || insights.mood.negative > 0) && (
-                <div className="mood-section">
-                  <h3 className="section-title">Mood</h3>
-                  <div className="mood-bars">
-                    <div className="mood-row">
-                      <span className="mood-emoji">😊</span>
-                      <div className="mood-bar-track">
-                        <div className="mood-bar-fill positive" style={{ width: `${insights.mood.positive}%` }} />
-                      </div>
-                      <span className="mood-percent">{insights.mood.positive}%</span>
-                    </div>
-                    <div className="mood-row">
-                      <span className="mood-emoji">😐</span>
-                      <div className="mood-bar-track">
-                        <div className="mood-bar-fill neutral" style={{ width: `${insights.mood.neutral}%` }} />
-                      </div>
-                      <span className="mood-percent">{insights.mood.neutral}%</span>
-                    </div>
-                    <div className="mood-row">
-                      <span className="mood-emoji">🤔</span>
-                      <div className="mood-bar-track">
-                        <div className="mood-bar-fill mixed" style={{ width: `${insights.mood.mixed}%` }} />
-                      </div>
-                      <span className="mood-percent">{insights.mood.mixed}%</span>
-                    </div>
-                    <div className="mood-row">
-                      <span className="mood-emoji">😔</span>
-                      <div className="mood-bar-track">
-                        <div className="mood-bar-fill negative" style={{ width: `${insights.mood.negative}%` }} />
-                      </div>
-                      <span className="mood-percent">{insights.mood.negative}%</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {insights.themes.length > 0 && (
-                <div className="themes-section">
-                  <h3 className="section-title">Themes</h3>
-                  <div className="word-cloud">
-                    {insights.themes.map((item, i) => (
-                      <span
-                        key={i}
-                        className="theme-word"
-                        style={{ fontSize: `${Math.max(14, Math.min(32, 14 + item.count * 4))}px` }}
-                      >
-                        {item.theme}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
+            )
           ) : (
             <p className="no-results">Loading...</p>
           )}
@@ -264,11 +248,11 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
     )
   }
 
-  if (!hasActiveEntry) {
+  if (!hasActiveProject) {
     return (
       <div className="entry">
         <div className="entry-empty">
-          <p className="greeting">How was your day, Apoorva?</p>
+          <p className="greeting">What are you building today?</p>
         </div>
       </div>
     )
@@ -281,9 +265,33 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
           <div key={msg._id} className={`message ${msg.role}`}>
             <div className="message-content">
               <div className="message-label">
-                {msg.role === 'user' ? 'You' : 'Memoir'}
+                {msg.role === 'user' ? 'You' : 'Assistant'}
               </div>
-              {msg.content && <p className="message-text">{msg.content}</p>}
+              {msg.thinking && (
+                <div className="thinking-section">
+                  <button
+                    className={`thinking-toggle ${expandedThinking[msg._id] ? 'expanded' : ''}`}
+                    onClick={() => toggleThinking(msg._id)}
+                  >
+                    <span className="thinking-icon">
+                      {expandedThinking[msg._id] ? '▼' : '▶'}
+                    </span>
+                    <span className="thinking-label">
+                      {expandedThinking[msg._id] ? 'Thinking' : 'Show thinking'}
+                    </span>
+                  </button>
+                  {expandedThinking[msg._id] && (
+                    <div className="thinking-content">
+                      {msg.thinking}
+                    </div>
+                  )}
+                </div>
+              )}
+              {msg.content && (
+                <div className="message-text">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              )}
               {msg.image && (
                 <img src={msg.image.startsWith('blob:') ? msg.image : `/uploads/${msg.image}`} alt="Uploaded" className="message-image" />
               )}
@@ -294,10 +302,10 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
           <div className="save-entry">
             <button
               className={`save-btn ${saveStatus || ''}`}
-              onClick={handleSaveEntry}
+              onClick={handleSaveProject}
               disabled={saveStatus === 'saving'}
             >
-              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved ✓' : 'Save'}
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save'}
             </button>
           </div>
         )}
@@ -319,18 +327,6 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
               </button>
             </div>
           ))}
-        </div>
-      )}
-
-      {isV2 && messages.length === 0 && (
-        <div className="prompt-generator">
-          <button
-            className="generate-prompt-btn"
-            onClick={handleGeneratePrompt}
-            disabled={isGeneratingPrompt}
-          >
-            {isGeneratingPrompt ? 'Generating...' : "Need inspiration? Generate a prompt"}
-          </button>
         </div>
       )}
 
@@ -364,7 +360,7 @@ function Entry({ messages, onSendMessage, hasActiveEntry, activeEntry, entries, 
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="What's on your mind?"
+            placeholder="What are you working on?"
           />
           <button type="submit" className="send-btn" aria-label="Send">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
