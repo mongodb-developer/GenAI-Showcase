@@ -83,7 +83,7 @@ function Sidebar({ projects, activeProject, onSelectProject, onNewProject, onDel
       <div className="sidebar-header">
         <div className="logo-container">
           <img src="/mongodb-logo.png" alt="MongoDB" className="logo-icon" />
-          <h1 className="logo">MongoDB Projects</h1>
+          <h1 className="logo">DevAssist</h1>
         </div>
         <div className="version-toggle">
           <span className={`version-label ${!isV2 ? 'active' : ''}`}>V1</span>

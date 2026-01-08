@@ -1,1 +1,1 @@
-# MongoDB Projects - Developer Productivity Assistant
+# DevAssist - Developer Productivity Assistant

@@ -20,17 +20,17 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Starting MongoDB Projects API...")
+    logger.info("Starting DevAssist API...")
     connect_db()
-    logger.info("MongoDB Projects API started successfully")
+    logger.info("DevAssist API started successfully")
     yield
     # Shutdown
-    logger.info("Shutting down MongoDB Projects API...")
+    logger.info("Shutting down DevAssist API...")
     close_db()
 
 
 app = FastAPI(
-    title="MongoDB Projects",
+    title="DevAssist",
     description="AI-powered developer productivity assistant for project planning",
     version="1.0.0",
     lifespan=lifespan,
@@ -51,7 +51,7 @@ app.include_router(routes.router, prefix="/api/projects", tags=["projects"])
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to MongoDB Projects API"}
+    return {"message": "Welcome to DevAssist API"}
 
 
 @app.get("/health")

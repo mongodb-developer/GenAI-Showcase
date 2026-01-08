@@ -208,12 +208,12 @@
 .dropdown-menu {
   position: fixed;
   background: var(--mongodb-white);
-  border-radius: 16px;
-  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
   min-width: 120px;
   z-index: 9999;
   overflow: hidden;
-  border: none;
+  border: 1px solid var(--mongodb-gray-light);
 }
 
 .dropdown-item {
@@ -236,11 +236,11 @@
 }
 
 .dropdown-item.delete {
-  color: #dc2626;
+  color: #f87171;
 }
 
 .dropdown-item.delete:hover {
-  background: #fef2f2;
+  background: rgba(220, 38, 38, 0.2);
 }
 
 /* Entry area */
@@ -255,6 +255,7 @@
   border-radius: 16px;
   border: 1px solid var(--mongodb-gray-light);
   box-shadow: 0 3px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .entry-empty {
@@ -882,7 +883,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 30, 43, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -891,10 +892,11 @@
 
 .date-picker-modal {
   background: var(--mongodb-white);
-  border-radius: 16px;
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
   padding: 24px;
   min-width: 300px;
-  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
 }
 
 .date-picker-modal h3 {
@@ -912,6 +914,8 @@
   font-family: inherit;
   font-size: 15px;
   font-weight: 400;
+  background: var(--mongodb-white);
+  color: var(--mongodb-slate);
   outline: none;
   transition: all 0.2s ease;
 }
