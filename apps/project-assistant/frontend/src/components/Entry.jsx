@@ -7,7 +7,7 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
-  const [todos, setTodos] = useState(null)
+  const [todos, setTodos] = useState([])
   const [saveStatus, setSaveStatus] = useState(null)
   const [expandedThinking, setExpandedThinking] = useState({})
   const [expandedProjects, setExpandedProjects] = useState({})
@@ -202,7 +202,7 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
           <h2 className="search-title">Task Lists</h2>
           {todos ? (
             Object.keys(todosByProject).length === 0 ? (
-              <p className="no-results">No tasks yet. Save a project conversation to extract tasks.</p>
+              <p className="no-results">No tasks yet.</p>
             ) : (
               <div className="task-cards">
                 {Object.entries(todosByProject).map(([projectTitle, projectTodos]) => {

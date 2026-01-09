@@ -215,9 +215,6 @@ def delete_project(project_id: str):
     db = get_database()
     db.projects.delete_one({"_id": ObjectId(project_id)})
     messages = db.messages.delete_many({"project_id": project_id})
-    memories = db.memories.delete_many({"project_id": project_id})
-    logger.info(
-        f"Deleted project {project_id}: "
-        f"{messages.deleted_count} messages, {memories.deleted_count} memories"
-    )
+    todos = db.memories.delete_many({"project_id": project_id, "type": "todo"})
+    logger.info(f"Deleted project {project_id}: {messages.deleted_count} messages, {todos.deleted_count} todos")
     return {"deleted": True}
