@@ -63,6 +63,7 @@ def generate_response(messages: list[dict], memories: Optional[list[str]] = None
     with client.messages.stream(
         model=ANTHROPIC_MODEL,
         max_tokens=16000,
+        temperature=1,
         thinking={
             "type": "enabled",
             "budget_tokens": 8000,
