@@ -137,14 +137,6 @@ function Sidebar({ projects, activeProject, onSelectProject, onNewProject, onDel
         >
           Projects
         </button>
-        {isV2 && (
-          <button
-            className={`nav-item ${activeSection === 'todos' ? 'active' : ''}`}
-            onClick={() => onSectionChange('todos')}
-          >
-            To-Dos
-          </button>
-        )}
       </div>
 
       <div className="sidebar-section">

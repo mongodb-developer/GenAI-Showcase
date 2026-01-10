@@ -7,10 +7,8 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
-  const [todos, setTodos] = useState([])
   const [saveStatus, setSaveStatus] = useState(null)
   const [expandedThinking, setExpandedThinking] = useState({})
-  const [expandedProjects, setExpandedProjects] = useState({})
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -48,15 +46,6 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
   useEffect(() => {
     scrollToBottom()
   }, [messages])
-
-  useEffect(() => {
-    if (isV2 && activeSection === 'todos') {
-      fetch('http://localhost:8000/api/projects/todos')
-        .then(res => res.json())
-        .then(data => setTodos(data))
-        .catch(err => console.error('Failed to fetch todos:', err))
-    }
-  }, [isV2, activeSection])
 
   useEffect(() => {
     setSearchQuery('')
@@ -165,83 +154,6 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
                 ))
               )}
             </div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  const handleToggleTask = async (todoId, isDone) => {
-    try {
-      await fetch(`http://localhost:8000/api/projects/todos/${todoId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: isDone ? 'done' : 'todo' })
-      })
-      const res = await fetch('http://localhost:8000/api/projects/todos')
-      const data = await res.json()
-      setTodos(data)
-    } catch (error) {
-      console.error('Failed to update task:', error)
-    }
-  }
-
-  // Group todos by project
-  const todosByProject = todos ? todos.reduce((acc, todo) => {
-    const projectTitle = todo.project_title || 'Unknown'
-    if (!acc[projectTitle]) acc[projectTitle] = []
-    acc[projectTitle].push(todo)
-    return acc
-  }, {}) : {}
-
-  // Show Task Lists when V2 Tasks tab is active
-  if (isV2 && activeSection === 'todos' && !hasActiveProject) {
-    return (
-      <div className="entry">
-        <div className="entry-search">
-          <h2 className="search-title">Task Lists</h2>
-          {todos ? (
-            Object.keys(todosByProject).length === 0 ? (
-              <p className="no-results">No tasks yet.</p>
-            ) : (
-              <div className="task-cards">
-                {Object.entries(todosByProject).map(([projectTitle, projectTodos]) => {
-                  const isExpanded = expandedProjects[projectTitle]
-                  const visibleTodos = isExpanded ? projectTodos : projectTodos.slice(0, 5)
-                  const hasMore = projectTodos.length > 5
-
-                  return (
-                    <div key={projectTitle} className="task-card">
-                      <h3 className="task-card-title">{projectTitle}</h3>
-                      <ul className="task-list">
-                        {visibleTodos.map((todo) => (
-                          <li key={todo._id} className={`task-item ${todo.status === 'done' ? 'completed' : ''}`}>
-                            <label className="task-checkbox">
-                              <input
-                                type="checkbox"
-                                checked={todo.status === 'done'}
-                                onChange={(e) => handleToggleTask(todo._id, e.target.checked)}
-                              />
-                              <span className="task-text">{todo.content}</span>
-                            </label>
-                          </li>
-                        ))}
-                      </ul>
-                      {hasMore && (
-                        <button
-                          className="show-more-btn"
-                          onClick={() => setExpandedProjects(prev => ({ ...prev, [projectTitle]: !prev[projectTitle] }))}
-                        >
-                          {isExpanded ? 'Show less' : `Show ${projectTodos.length - 5} more`}
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            )
-          ) : (
-            <p className="no-results">Loading...</p>
           )}
         </div>
       </div>

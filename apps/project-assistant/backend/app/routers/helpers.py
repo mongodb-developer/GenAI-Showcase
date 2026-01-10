@@ -32,7 +32,7 @@ def retrieve_relevant_memories(db, query: str) -> list[str]:
                 "queryVector": query_embedding,
                 "numCandidates": VECTOR_NUM_CANDIDATES,
                 "limit": 10,
-                "filter": {"user_id": USER_ID, "type": {"$in": ["procedural", "semantic"]}},
+                "filter": {"user_id": USER_ID},
             }
         },
         {"$project": {"content": 1, "score": {"$meta": "vectorSearchScore"}}},
@@ -166,14 +166,3 @@ def save_image_file(image_file: UploadFile) -> Path:
     return image_path
 
 
-def get_todos(db, user_id: str) -> list[dict]:
-    """Get all todos with their project titles."""
-    todos = list(
-        db.memories.find(
-            {"user_id": user_id, "type": "todo"},
-            {"_id": 1, "content": 1, "status": 1, "project_title": 1},
-        ).sort("created_at", -1)
-    )
-    for todo in todos:
-        todo["_id"] = str(todo["_id"])
-    return todos

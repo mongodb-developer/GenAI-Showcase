@@ -22,15 +22,11 @@ MEMORY_EXTRACTION_PROMPT = """You are a developer context extraction system. Ana
 
 Extract and categorize into these types:
 
-1. "todo": Individual tasks or action items to implement
-   - Specific, actionable tasks from this project
-   - Example: "Set up CI/CD pipeline", "Design database schema"
-
-2. "semantic": User's technical preferences and decisions that apply broadly
+1. "semantic": User's technical preferences and decisions that apply broadly
    - Technology choices, coding patterns, architectural preferences
    - Example: "Prefers TypeScript over JavaScript", "Uses MongoDB for document storage"
 
-3. "procedural": A complete step-by-step implementation guide
+2. "procedural": A complete step-by-step implementation guide
    - Synthesize the discussed approach into a reusable recipe
    - Include a descriptive title followed by numbered steps
    - Only create ONE procedural memory if a substantial implementation was discussed
@@ -41,8 +37,6 @@ If nothing meaningful can be extracted, return an empty array.
 
 Example output:
 [
-  {"type": "todo", "content": "Set up FastAPI project structure"},
-  {"type": "todo", "content": "Create webhook endpoint"},
   {"type": "semantic", "content": "Prefers Python with FastAPI for backend APIs"},
   {"type": "semantic", "content": "Uses environment variables for secrets"},
   {"type": "procedural", "content": "Building a Slack Webhook Integration:\\n1. Create a Slack app in the developer portal and enable incoming webhooks\\n2. Generate a webhook URL and store it securely in environment variables\\n3. Create an API endpoint that formats messages using Slack's Block Kit format\\n4. Implement retry logic with exponential backoff for failed deliveries\\n5. Add request signature verification using Slack's signing secret\\n6. Set up ngrok for local development testing\\n7. Configure event subscriptions for the specific events you need"}

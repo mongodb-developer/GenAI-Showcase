@@ -16,7 +16,7 @@ client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
 class MemoryItem(BaseModel):
-    type: Literal["todo", "semantic", "procedural"]
+    type: Literal["semantic", "procedural"]
     content: str
 
 

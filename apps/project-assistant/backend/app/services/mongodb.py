@@ -37,7 +37,7 @@ def setup_collections():
 
 def setup_indexes():
     create_vector_index("messages", filter_paths=["user_id", "version"])
-    create_vector_index("memories", filter_paths=["user_id", "type"])
+    create_vector_index("memories", filter_paths=["user_id"])
 
 
 def create_vector_index(collection_name: str, filter_paths: list[str]):

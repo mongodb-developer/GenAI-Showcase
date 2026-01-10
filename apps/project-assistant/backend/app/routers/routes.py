@@ -12,7 +12,6 @@ from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES
 from app.routers.helpers import (
     extract_and_save_memories,
     get_conversation_history,
-    get_todos,
     image_to_base64,
     retrieve_relevant_memories,
     save_assistant_message,
@@ -181,40 +180,10 @@ def get_messages(project_id: str):
     return messages
 
 
-@router.get("/todos")
-def get_all_todos():
-    """Get all todos for the user."""
-    db = get_database()
-    return get_todos(db, USER_ID)
-
-
-@router.patch("/todos/{todo_id}")
-def update_todo(todo_id: str, update: dict = Body(...)):
-    """Update a todo's status."""
-    db = get_database()
-    logger.info(f"Updating todo {todo_id} with: {update}")
-
-    if "status" not in update:
-        logger.warning(f"No status field in update request for todo {todo_id}")
-        return {"error": "No valid fields to update"}
-
-    result = db.memories.update_one(
-        {"_id": ObjectId(todo_id)},
-        {"$set": {"status": update["status"]}},
-    )
-    if result.modified_count == 0:
-        logger.warning(f"Todo {todo_id} not found or not modified")
-        return {"error": "Todo not found"}
-
-    logger.info(f"Updated todo {todo_id} status to: {update['status']}")
-    return {"success": True}
-
-
 @router.delete("/{project_id}")
 def delete_project(project_id: str):
     db = get_database()
     db.projects.delete_one({"_id": ObjectId(project_id)})
     messages = db.messages.delete_many({"project_id": project_id})
-    todos = db.memories.delete_many({"project_id": project_id, "type": "todo"})
-    logger.info(f"Deleted project {project_id}: {messages.deleted_count} messages, {todos.deleted_count} todos")
+    logger.info(f"Deleted project {project_id}: {messages.deleted_count} messages")
     return {"deleted": True}
