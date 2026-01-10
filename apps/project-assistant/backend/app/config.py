@@ -5,7 +5,7 @@ USER_ID = "Apoorva"
 
 # MongoDB config
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "mongodb_projects")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "dev_assist")
 
 # Anthropic config
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
