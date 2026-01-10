@@ -1,34 +1,35 @@
 import { useState, useEffect } from 'react'
 
-function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntry, isV2, onToggleVersion, activeSection, onSectionChange }) {
+function Sidebar({ projects, activeProject, onSelectProject, onNewProject, onDeleteProject, isV2, onToggleVersion, activeSection, onSectionChange }) {
   const [openMenu, setOpenMenu] = useState(null)
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
-  const [showDatePicker, setShowDatePicker] = useState(false)
-  const [selectedDate, setSelectedDate] = useState('')
+  const [showNewProject, setShowNewProject] = useState(false)
+  const [projectTitle, setProjectTitle] = useState('')
 
-  const handleNewEntryClick = () => {
-    setSelectedDate(new Date().toISOString().split('T')[0])
-    setShowDatePicker(true)
+  const handleNewProjectClick = () => {
+    setProjectTitle('')
+    setShowNewProject(true)
   }
 
-  const handleDateConfirm = () => {
-    if (selectedDate) {
-      onNewEntry(selectedDate)
-      setShowDatePicker(false)
+  const handleCreateProject = () => {
+    if (projectTitle.trim()) {
+      onNewProject(projectTitle.trim())
+      setShowNewProject(false)
+      setProjectTitle('')
     }
   }
 
-  // Filter entries to only show recent ones (last 7 days) in V2
-  const recentEntries = entries.filter(entry => {
-    const entryDate = new Date(entry.created_at)
+  // Filter projects to only show recent ones (last 7 days) in V2
+  const recentProjects = projects.filter(project => {
+    const projectDate = new Date(project.created_at)
     const oneWeekAgo = new Date()
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    return entryDate >= oneWeekAgo
+    return projectDate >= oneWeekAgo
   })
 
-  const handleMenuClick = (e, entryId) => {
+  const handleMenuClick = (e, projectId) => {
     e.stopPropagation()
-    if (openMenu === entryId) {
+    if (openMenu === projectId) {
       setOpenMenu(null)
     } else {
       const rect = e.currentTarget.getBoundingClientRect()
@@ -36,13 +37,13 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
         top: rect.bottom + 4,
         left: rect.left
       })
-      setOpenMenu(entryId)
+      setOpenMenu(projectId)
     }
   }
 
-  const handleDelete = (e, entryId) => {
+  const handleDelete = (e, projectId) => {
     e.stopPropagation()
-    onDeleteEntry(entryId)
+    onDeleteProject(projectId)
     setOpenMenu(null)
   }
 
@@ -55,18 +56,18 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
     }
   }, [openMenu])
 
-  // Ensure active entry is always included, sorted chronologically
-  const getDisplayEntries = () => {
-    if (!isV2) return entries
-    const activeEntryObj = entries.find(e => e._id === activeEntry)
-    if (!activeEntryObj || recentEntries.find(e => e._id === activeEntry)) {
-      return recentEntries
+  // Ensure active project is always included, sorted chronologically
+  const getDisplayProjects = () => {
+    if (!isV2) return projects
+    const activeProjectObj = projects.find(p => p._id === activeProject)
+    if (!activeProjectObj || recentProjects.find(p => p._id === activeProject)) {
+      return recentProjects
     }
-    return [...recentEntries, activeEntryObj].sort(
+    return [...recentProjects, activeProjectObj].sort(
       (a, b) => new Date(b.created_at) - new Date(a.created_at)
     )
   }
-  const displayEntries = getDisplayEntries()
+  const displayProjects = getDisplayProjects()
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -80,7 +81,10 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h1 className="logo">Memoir</h1>
+        <div className="logo-container">
+          <img src="/mongodb-logo.png" alt="MongoDB" className="logo-icon" />
+          <h1 className="logo">DevAssist</h1>
+        </div>
         <div className="version-toggle">
           <span className={`version-label ${!isV2 ? 'active' : ''}`}>V1</span>
           <button
@@ -95,28 +99,31 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
       </div>
 
       <div className="sidebar-section">
-        <button className="new-entry-btn" onClick={handleNewEntryClick}>
+        <button className="new-entry-btn" onClick={handleNewProjectClick}>
           <span className="new-entry-icon">+</span>
-          New Entry
+          New Project
         </button>
       </div>
 
-      {showDatePicker && (
-        <div className="date-picker-overlay" onClick={() => setShowDatePicker(false)}>
+      {showNewProject && (
+        <div className="date-picker-overlay" onClick={() => setShowNewProject(false)}>
           <div className="date-picker-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Select entry date</h3>
+            <h3>New Project</h3>
             <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              type="text"
+              value={projectTitle}
+              onChange={(e) => setProjectTitle(e.target.value)}
               className="date-input"
+              placeholder="Project name"
+              autoFocus
+              onKeyDown={(e) => e.key === 'Enter' && handleCreateProject()}
             />
             <div className="date-picker-actions">
-              <button className="date-cancel-btn" onClick={() => setShowDatePicker(false)}>
+              <button className="date-cancel-btn" onClick={() => setShowNewProject(false)}>
                 Cancel
               </button>
-              <button className="date-confirm-btn" onClick={handleDateConfirm}>
-                Create Entry
+              <button className="date-confirm-btn" onClick={handleCreateProject}>
+                Create
               </button>
             </div>
           </div>
@@ -125,37 +132,29 @@ function Sidebar({ entries, activeEntry, onSelectEntry, onNewEntry, onDeleteEntr
 
       <div className="sidebar-nav">
         <button
-          className={`nav-item ${activeSection === 'entries' ? 'active' : ''}`}
-          onClick={() => onSectionChange('entries')}
+          className={`nav-item ${activeSection === 'projects' ? 'active' : ''}`}
+          onClick={() => onSectionChange('projects')}
         >
-          Entries
+          Projects
         </button>
-        {isV2 && (
-          <button
-            className={`nav-item ${activeSection === 'insights' ? 'active' : ''}`}
-            onClick={() => onSectionChange('insights')}
-          >
-            Insights
-          </button>
-        )}
       </div>
 
       <div className="sidebar-section">
         <div className="section-header">Recent</div>
         <div className="entry-list">
-          {displayEntries.length === 0 ? (
-            <div className="empty-state">No recent entries</div>
+          {displayProjects.length === 0 ? (
+            <div className="empty-state">No projects yet</div>
           ) : (
-            displayEntries.map((entry) => (
+            displayProjects.map((project) => (
               <div
-                key={entry._id}
-                className={`entry-item ${activeEntry === entry._id ? 'active' : ''} ${openMenu === entry._id ? 'menu-open' : ''}`}
-                onClick={() => onSelectEntry(entry._id)}
+                key={project._id}
+                className={`entry-item ${activeProject === project._id ? 'active' : ''} ${openMenu === project._id ? 'menu-open' : ''}`}
+                onClick={() => onSelectProject(project._id)}
               >
-                <span className="entry-title">{formatDate(entry.created_at)}</span>
+                <span className="entry-title">{project.title}</span>
                 <button
-                  className={`menu-btn ${openMenu === entry._id ? 'open' : ''}`}
-                  onClick={(e) => handleMenuClick(e, entry._id)}
+                  className={`menu-btn ${openMenu === project._id ? 'open' : ''}`}
+                  onClick={(e) => handleMenuClick(e, project._id)}
                 >
                   ⋯
                 </button>

@@ -27,7 +27,7 @@ def connect_db():
 
 
 def setup_collections():
-    for name in ["entries", "messages", "memories"]:
+    for name in ["projects", "messages", "memories"]:
         try:
             db.create_collection(name)
             logger.info(f"Created collection: {name}")
