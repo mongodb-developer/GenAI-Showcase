@@ -1,11 +1,10 @@
+import json
 import logging
 from datetime import datetime
 from typing import Optional
 
-import json
-
 from bson import ObjectId
-from fastapi import APIRouter, Body, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import StreamingResponse
 
 from app.config import USER_ID, VECTOR_INDEX_NAME, VECTOR_NUM_CANDIDATES

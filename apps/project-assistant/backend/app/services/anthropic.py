@@ -6,8 +6,8 @@ from pydantic import BaseModel
 
 from app.config import ANTHROPIC_API_KEY, ANTHROPIC_MODEL
 from app.services.prompts import (
-    SYSTEM_PROMPT,
     MEMORY_EXTRACTION_PROMPT,
+    SYSTEM_PROMPT,
 )
 
 logger = logging.getLogger(__name__)

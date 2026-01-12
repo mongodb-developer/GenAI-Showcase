@@ -44,7 +44,12 @@ def retrieve_relevant_memories(db, query: str) -> list[str]:
 
 
 def save_user_message(
-    db, project_id: str, project_title: str, content: str | Path, version: int, msg_date: datetime
+    db,
+    project_id: str,
+    project_title: str,
+    content: str | Path,
+    version: int,
+    msg_date: datetime,
 ) -> None:
     """Save a user message (text or image) with its embedding."""
     message = {
@@ -75,7 +80,11 @@ def save_user_message(
 
 
 def extract_and_save_memories(
-    db, project_id: str, project_title: str, conversation: list[dict], created_at: datetime
+    db,
+    project_id: str,
+    project_title: str,
+    conversation: list[dict],
+    created_at: datetime,
 ) -> None:
     """Extract memories from conversation: todos, preferences, and procedures."""
     context = "\n".join(f"{msg['role']}: {msg['content']}" for msg in conversation)
@@ -93,7 +102,9 @@ def extract_and_save_memories(
                 "created_at": created_at,
             }
             if memory["type"] != "todo":
-                doc["embedding"] = get_text_embedding(memory["content"], input_type="document")
+                doc["embedding"] = get_text_embedding(
+                    memory["content"], input_type="document"
+                )
             memory_docs.append(doc)
 
         db.memories.insert_many(memory_docs)
@@ -143,7 +154,9 @@ def image_to_base64(image_path: Path) -> dict:
     }
 
 
-def save_assistant_message(db, project_id: str, project_title: str, content: str, msg_date: datetime) -> None:
+def save_assistant_message(
+    db, project_id: str, project_title: str, content: str, msg_date: datetime
+) -> None:
     """Save an assistant response message."""
     db.messages.insert_one(
         {
@@ -164,5 +177,3 @@ def save_image_file(image_file: UploadFile) -> Path:
     with open(image_path, "wb") as f:
         f.write(image_file.file.read())
     return image_path
-
-
