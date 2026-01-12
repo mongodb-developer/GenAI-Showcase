@@ -349,6 +349,11 @@
   box-shadow: 0 0 0 3px rgba(0, 108, 250, 0.1);
 }
 
+.entry-input.dragging .entry-input-wrapper {
+  border-color: var(--mongodb-green);
+  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.2);
+}
+
 .entry-input input {
   flex: 1;
   padding: 12px 0;
