@@ -27,20 +27,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.post("/")
-def create_project(version: int = Form(1), title: str = Form(...)):
-    db = get_database()
-    project_data = {
-        "user_id": USER_ID,
-        "title": title,
-        "version": version,
-        "created_at": datetime.now(),
-    }
-    result = db.projects.insert_one(project_data)
-    logger.info(f"Created project '{title}' for user {USER_ID}")
-    return {"_id": str(result.inserted_id)}
-
-
 @router.post("/{project_id}/messages")
 def send_message(
     project_id: str,
@@ -84,7 +70,9 @@ def send_message(
             save_user_message(db, project_id, project_title, content, version, msg_date)
         for path in image_paths:
             save_user_message(db, project_id, project_title, path, version, msg_date)
-        save_assistant_message(db, project_id, project_title, response_content, msg_date)
+        save_assistant_message(
+            db, project_id, project_title, response_content, msg_date
+        )
 
     return StreamingResponse(stream_and_save(), media_type="application/x-ndjson")
 
@@ -144,8 +132,24 @@ def search_projects(q: str, version: int = 1):
     return results
 
 
+@router.post("/")
+def create_project(version: int = Form(1), title: str = Form(...)):
+    db = get_database()
+    project_data = {
+        "user_id": USER_ID,
+        "title": title,
+        "version": version,
+        "created_at": datetime.now(),
+    }
+    result = db.projects.insert_one(project_data)
+    logger.info(f"Created project '{title}' for user {USER_ID}")
+    return {"_id": str(result.inserted_id)}
+
+
 @router.post("/{project_id}/save")
-def save_project(project_id: str, project_date: str = Form(...), project_title: str = Form(...)):
+def save_project(
+    project_id: str, project_date: str = Form(...), project_title: str = Form(...)
+):
     """Extract and save memories from the conversation."""
     db = get_database()
     conversation = get_conversation_history(db, project_id, include_images=False)
@@ -154,7 +158,11 @@ def save_project(project_id: str, project_date: str = Form(...), project_title: 
         return {"error": "No messages in project"}
 
     extract_and_save_memories(
-        db, project_id, project_title, conversation, datetime.fromisoformat(project_date)
+        db,
+        project_id,
+        project_title,
+        conversation,
+        datetime.fromisoformat(project_date),
     )
 
     return {"success": True}
