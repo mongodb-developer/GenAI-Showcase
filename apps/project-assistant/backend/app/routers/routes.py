@@ -1,4 +1,3 @@
-import json
 import logging
 from datetime import datetime
 from typing import Optional
@@ -59,10 +58,9 @@ def send_message(
 
     def stream_and_save():
         response_content = ""
-        for chunk in generate_response(conversation, memories=memories):
-            yield json.dumps(chunk) + "\n"
-            if chunk["type"] == "response":
-                response_content += chunk["content"]
+        for text in generate_response(conversation, memories=memories):
+            yield text
+            response_content += text
 
         # Save messages to DB after streaming completes
         if content:
@@ -73,7 +71,7 @@ def send_message(
             db, project_id, project_title, response_content, version, msg_date
         )
 
-    return StreamingResponse(stream_and_save(), media_type="application/x-ndjson")
+    return StreamingResponse(stream_and_save(), media_type="text/plain")
 
 
 @router.get("/search")

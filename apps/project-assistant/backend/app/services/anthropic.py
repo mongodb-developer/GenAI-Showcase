@@ -32,7 +32,7 @@ def extract_memories(user_message: str) -> list[dict]:
         response = client.beta.messages.parse(
             model=ANTHROPIC_MODEL,
             max_tokens=2000,
-            temperature=1,
+            temperature=0,
             betas=["structured-outputs-2025-11-13"],
             system=MEMORY_EXTRACTION_PROMPT,
             messages=[{"role": "user", "content": user_message}],
@@ -50,7 +50,7 @@ def extract_memories(user_message: str) -> list[dict]:
 
 
 def generate_response(messages: list[dict], memories: Optional[list[str]] = None):
-    """Generate a response with extended thinking."""
+    """Generate a streaming response."""
     logger.info(
         f"Generating response using {ANTHROPIC_MODEL} with {len(memories) if memories else 0} memories"
     )
@@ -62,18 +62,9 @@ def generate_response(messages: list[dict], memories: Optional[list[str]] = None
 
     with client.messages.stream(
         model=ANTHROPIC_MODEL,
-        max_tokens=16000,
-        temperature=1,
-        thinking={
-            "type": "enabled",
-            "budget_tokens": 8000,
-        },
+        max_tokens=4096,
+        temperature=0,
         system=system_prompt,
         messages=messages,
     ) as stream:
-        for event in stream:
-            if event.type == "content_block_delta":
-                if hasattr(event.delta, "thinking"):
-                    yield {"type": "thinking", "content": event.delta.thinking}
-                elif hasattr(event.delta, "text"):
-                    yield {"type": "response", "content": event.delta.text}
+        yield from stream.text_stream

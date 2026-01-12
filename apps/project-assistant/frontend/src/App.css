@@ -821,61 +821,6 @@
   display: block;
 }
 
-/* Thinking section */
-.thinking-section {
-  margin-bottom: 12px;
-}
-
-.thinking-toggle {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: var(--mongodb-off-white);
-  border: 1px solid var(--mongodb-gray-light);
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 13px;
-  color: var(--mongodb-slate);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.thinking-toggle:hover {
-  background: var(--mongodb-white);
-  border-color: var(--mongodb-dark-green);
-  color: var(--mongodb-slate);
-}
-
-.thinking-toggle.expanded {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom-color: transparent;
-}
-
-.thinking-icon {
-  font-size: 10px;
-  transition: transform 0.15s ease;
-}
-
-.thinking-label {
-  font-weight: 500;
-}
-
-.thinking-content {
-  padding: 12px 16px;
-  background: var(--mongodb-off-white);
-  border: 1px solid var(--mongodb-gray-light);
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--mongodb-slate);
-  white-space: pre-wrap;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
 /* Date picker modal */
 .date-picker-overlay {
   position: fixed;

@@ -118,43 +118,21 @@ function App() {
       body: formData
     })
 
-    // Read newline-delimited JSON stream
+    // Read text stream
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
-    let buffer = ''
-    let thinkingContent = ''
     let responseContent = ''
 
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
 
-      buffer += decoder.decode(value, { stream: true })
-
-      // Process complete JSON lines
-      const lines = buffer.split('\n')
-      buffer = lines.pop() // Keep incomplete line in buffer
-
-      for (const line of lines) {
-        if (!line.trim()) continue
-        try {
-          const chunk = JSON.parse(line)
-          if (chunk.type === 'thinking') {
-            thinkingContent += chunk.content
-          } else if (chunk.type === 'response') {
-            responseContent += chunk.content
-          }
-
-          // Update message with current state
-          setMessages(prev => prev.map(msg =>
-            msg._id === aiMessageId
-              ? { ...msg, thinking: thinkingContent, content: responseContent }
-              : msg
-          ))
-        } catch (e) {
-          console.error('Failed to parse chunk:', e)
-        }
-      }
+      responseContent += decoder.decode(value, { stream: true })
+      setMessages(prev => prev.map(msg =>
+        msg._id === aiMessageId
+          ? { ...msg, content: responseContent }
+          : msg
+      ))
     }
   }
 
