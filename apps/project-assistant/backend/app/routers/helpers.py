@@ -155,14 +155,21 @@ def image_to_base64(image_path: Path) -> dict:
 
 
 def save_assistant_message(
-    db, project_id: str, project_title: str, content: str, msg_date: datetime
+    db,
+    project_id: str,
+    project_title: str,
+    content: str,
+    version: int,
+    msg_date: datetime,
 ) -> None:
     """Save an assistant response message."""
     db.messages.insert_one(
         {
             "project_id": project_id,
             "project_title": project_title,
+            "user_id": USER_ID,
             "role": "assistant",
+            "version": version,
             "content": content,
             "created_at": msg_date,
         }

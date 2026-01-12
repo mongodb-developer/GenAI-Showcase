@@ -70,7 +70,7 @@ def send_message(
         for path in image_paths:
             save_user_message(db, project_id, project_title, path, version, msg_date)
         save_assistant_message(
-            db, project_id, project_title, response_content, msg_date
+            db, project_id, project_title, response_content, version, msg_date
         )
 
     return StreamingResponse(stream_and_save(), media_type="application/x-ndjson")
