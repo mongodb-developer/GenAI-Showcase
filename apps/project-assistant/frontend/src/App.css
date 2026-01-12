@@ -3,10 +3,10 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #fafafa;
+  background: var(--mongodb-white);
 }
 
-/* Mesh gradient background */
+/* Clean MongoDB-style background with subtle accent */
 .app::before {
   content: '';
   position: fixed;
@@ -15,33 +15,10 @@
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.4) 0%, transparent 50%),
-    radial-gradient(at 50% 0%, rgba(168, 85, 247, 0.35) 0%, transparent 45%),
-    radial-gradient(at 100% 0%, rgba(251, 146, 60, 0.5) 0%, transparent 50%),
-    radial-gradient(at 0% 50%, rgba(34, 197, 94, 0.3) 0%, transparent 40%),
-    radial-gradient(at 50% 50%, rgba(236, 72, 153, 0.25) 0%, transparent 50%),
-    radial-gradient(at 100% 50%, rgba(234, 179, 8, 0.4) 0%, transparent 45%),
-    radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.35) 0%, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(20, 184, 166, 0.3) 0%, transparent 45%),
-    radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.35) 0%, transparent 50%);
-  animation: meshMove 30s ease-in-out infinite alternate;
+    linear-gradient(135deg, rgba(0, 237, 100, 0.03) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(0, 104, 74, 0.02) 0%, transparent 50%);
   z-index: 0;
   pointer-events: none;
-}
-
-@keyframes meshMove {
-  0% {
-    filter: blur(60px) saturate(150%);
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    filter: blur(80px) saturate(130%);
-    transform: scale(1.1) rotate(2deg);
-  }
-  100% {
-    filter: blur(60px) saturate(150%);
-    transform: scale(1) rotate(-2deg);
-  }
 }
 
 /* Sidebar */
@@ -70,12 +47,12 @@
 .user-avatar {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  background: var(--mongodb-green);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--mongodb-btn-text);
   font-weight: 600;
   font-size: 14px;
 }
@@ -83,16 +60,27 @@
 .user-name {
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--mongodb-slate);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .logo {
-  font-family: 'Sacramento', cursive;
-  font-size: 2.5rem;
-  font-weight: 400;
-  color: #1a1a1a;
-  letter-spacing: 0.08em;
-  -webkit-text-stroke: 0.5px #1a1a1a;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--mongodb-slate);
+  letter-spacing: -0.02em;
 }
 
 .sidebar-section {
@@ -107,26 +95,27 @@
 }
 
 .section-header {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #6b7280;
+  letter-spacing: 2.5px;
+  color: var(--mongodb-slate);
   padding: 0 4px 12px;
+  font-family: 'Source Code Pro', monospace;
 }
 
 .new-entry-btn {
   width: 100%;
-  padding: 12px 16px;
-  background: transparent;
-  color: #374151;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--mongodb-green);
+  color: var(--mongodb-btn-text);
+  border: 1px solid var(--mongodb-dark-green);
+  border-radius: 4px;
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -135,17 +124,17 @@
 .new-entry-icon {
   font-size: 18px;
   font-weight: 400;
-  color: #6b7280;
+  color: var(--mongodb-btn-text);
 }
 
 .new-entry-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.25);
+  border-radius: 40px;
+  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.2);
 }
 
 .empty-state {
   padding: 16px 4px;
-  color: #9ca3af;
+  color: var(--mongodb-slate);
   font-size: 13px;
 }
 
@@ -156,12 +145,12 @@
 
 .entry-item {
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
   font-weight: 400;
-  color: #374151;
+  color: var(--mongodb-slate-light);
   transition: all 0.15s ease;
   margin-bottom: 2px;
   display: flex;
@@ -171,17 +160,18 @@
 }
 
 .entry-item:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--mongodb-off-white);
 }
 
 .entry-item.active {
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--mongodb-off-white);
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--mongodb-slate);
+  border-left: 3px solid var(--mongodb-green);
 }
 
 .entry-item.menu-open {
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--mongodb-off-white);
 }
 
 .entry-title {
@@ -198,7 +188,7 @@
   padding: 4px 6px;
   cursor: pointer;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--mongodb-slate);
   border-radius: 4px;
   transition: all 0.15s ease;
   line-height: 1;
@@ -211,19 +201,19 @@
 
 .menu-btn:hover,
 .menu-btn.open {
-  color: #374151;
-  background: rgba(0, 0, 0, 0.08);
+  color: var(--mongodb-slate);
+  background: var(--mongodb-off-white);
 }
 
 .dropdown-menu {
   position: fixed;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: var(--mongodb-white);
+  border-radius: 4px;
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
   min-width: 120px;
   z-index: 9999;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--mongodb-gray-light);
 }
 
 .dropdown-item {
@@ -233,22 +223,24 @@
   background: none;
   font-family: inherit;
   font-size: 13px;
+  font-weight: 400;
   text-align: left;
   cursor: pointer;
   transition: background 0.15s ease;
   display: block;
+  color: var(--mongodb-slate);
 }
 
 .dropdown-item:hover {
-  background: #f3f4f6;
+  background: var(--mongodb-off-white);
 }
 
 .dropdown-item.delete {
-  color: #dc2626;
+  color: #f87171;
 }
 
 .dropdown-item.delete:hover {
-  background: #fef2f2;
+  background: rgba(220, 38, 38, 0.2);
 }
 
 /* Entry area */
@@ -259,11 +251,11 @@
   position: relative;
   z-index: 1;
   margin: 24px 24px 24px 0;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(30px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.06);
+  background: var(--mongodb-white);
+  border-radius: 16px;
+  border: 1px solid var(--mongodb-gray-light);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
 .entry-empty {
@@ -271,7 +263,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: var(--mongodb-slate);
   font-size: 17px;
   font-weight: 500;
 }
@@ -279,7 +271,7 @@
 .greeting {
   font-size: 28px;
   font-weight: 400;
-  color: #374151;
+  color: var(--mongodb-slate);
   text-align: center;
   margin-bottom: 32px;
 }
@@ -297,17 +289,17 @@
   padding: 24px 48px;
   font-size: 15px;
   line-height: 1.75;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--mongodb-off-white);
 }
 
 .message.user {
   background: transparent;
-  color: #1f2937;
+  color: var(--mongodb-slate);
 }
 
 .message.assistant {
-  background: rgba(139, 92, 246, 0.04);
-  color: #1f2937;
+  background: var(--mongodb-off-white);
+  color: var(--mongodb-slate);
 }
 
 .message-content {
@@ -319,17 +311,18 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 2.5px;
   margin-bottom: 8px;
-  color: #6b7280;
+  color: var(--mongodb-slate);
+  font-family: 'Source Code Pro', monospace;
 }
 
 .message.user .message-label {
-  color: #8b5cf6;
+  color: var(--mongodb-dark-green);
 }
 
 .message.assistant .message-label {
-  color: #ec4899;
+  color: var(--mongodb-blue);
 }
 
 /* Entry input */
@@ -345,15 +338,15 @@
   align-items: center;
   gap: 12px;
   padding: 8px 8px 8px 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
+  background: var(--mongodb-white);
+  transition: all 0.2s ease;
 }
 
 .entry-input-wrapper:focus-within {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.08);
+  border-color: var(--mongodb-blue);
+  box-shadow: 0 0 0 3px rgba(0, 108, 250, 0.1);
 }
 
 .entry-input input {
@@ -362,30 +355,32 @@
   border: none;
   font-family: inherit;
   font-size: 15px;
+  font-weight: 400;
   outline: none;
   background: transparent;
+  color: var(--mongodb-slate);
 }
 
 .entry-input input::placeholder {
-  color: #9ca3af;
+  color: var(--mongodb-slate);
 }
 
 .send-btn {
-  padding: 10px;
-  background: transparent;
-  color: #374151;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
+  padding: 10px 16px;
+  background: var(--mongodb-green);
+  color: var(--mongodb-btn-text);
+  border: 1px solid var(--mongodb-dark-green);
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .send-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.25);
+  border-radius: 40px;
+  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.2);
 }
 
 .send-btn svg {
@@ -403,18 +398,18 @@
 .version-label {
   font-size: 12px;
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--mongodb-slate);
   transition: color 0.2s ease;
 }
 
 .version-label.active {
-  color: #1a1a1a;
+  color: var(--mongodb-slate);
 }
 
 .toggle-switch {
   width: 44px;
   height: 24px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--mongodb-gray-light);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -424,7 +419,7 @@
 }
 
 .toggle-switch.on {
-  background: #8b5cf6;
+  background: var(--mongodb-green);
 }
 
 .toggle-knob {
@@ -459,28 +454,29 @@
   padding: 10px 12px;
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
   font-family: inherit;
   font-size: 14px;
   font-weight: 400;
-  color: #374151;
+  color: var(--mongodb-slate-light);
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: left;
 }
 
 .nav-item:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--mongodb-off-white);
 }
 
 .nav-item.active {
-  background: rgba(0, 0, 0, 0.08);
+  background: var(--mongodb-off-white);
   font-weight: 500;
+  color: var(--mongodb-slate);
 }
 
 .nav-item svg {
   flex-shrink: 0;
-  color: #6b7280;
+  color: var(--mongodb-slate);
 }
 
 /* Search form */
@@ -492,22 +488,24 @@
 .search-input {
   width: 100%;
   padding: 10px 32px 10px 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
   font-family: inherit;
   font-size: 13px;
-  background: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
+  background: var(--mongodb-white);
+  color: var(--mongodb-slate);
   outline: none;
   transition: all 0.2s ease;
 }
 
 .search-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+  border-color: var(--mongodb-blue);
+  box-shadow: 0 0 0 2px rgba(0, 108, 250, 0.1);
 }
 
 .search-input::placeholder {
-  color: #9ca3af;
+  color: var(--mongodb-slate);
 }
 
 .search-clear {
@@ -518,14 +516,14 @@
   background: none;
   border: none;
   font-size: 18px;
-  color: #9ca3af;
+  color: var(--mongodb-slate);
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
 }
 
 .search-clear:hover {
-  color: #6b7280;
+  color: var(--mongodb-slate);
 }
 
 .search-results {
@@ -536,9 +534,9 @@
 .photo-btn {
   padding: 10px;
   background: transparent;
-  color: #6b7280;
+  color: var(--mongodb-slate);
   border: none;
-  border-radius: 10px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -547,8 +545,8 @@
 }
 
 .photo-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-  color: #374151;
+  background: var(--mongodb-off-white);
+  color: var(--mongodb-slate);
 }
 
 /* Main area search */
@@ -567,7 +565,7 @@
 .search-title {
   font-size: 24px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--mongodb-slate);
   margin-bottom: 24px;
 }
 
@@ -580,22 +578,24 @@
 .search-input-main {
   width: 100%;
   padding: 16px 48px 16px 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
   font-family: inherit;
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+  background: var(--mongodb-white);
+  color: var(--mongodb-slate);
   outline: none;
   transition: all 0.2s ease;
 }
 
 .search-input-main:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  border-color: var(--mongodb-blue);
+  box-shadow: 0 0 0 3px rgba(0, 108, 250, 0.1);
 }
 
 .search-input-main::placeholder {
-  color: #9ca3af;
+  color: var(--mongodb-slate);
 }
 
 .search-clear-main {
@@ -606,14 +606,14 @@
   background: none;
   border: none;
   font-size: 24px;
-  color: #9ca3af;
+  color: var(--mongodb-slate);
   cursor: pointer;
   padding: 0 4px;
   line-height: 1;
 }
 
 .search-clear-main:hover {
-  color: #6b7280;
+  color: var(--mongodb-slate);
 }
 
 .search-results-main {
@@ -624,23 +624,23 @@
 
 .no-results {
   text-align: center;
-  color: #9ca3af;
+  color: var(--mongodb-slate);
   font-size: 15px;
 }
 
 .search-result-item {
   padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 12px;
+  background: var(--mongodb-white);
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
   margin-bottom: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .search-result-item:hover {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: var(--mongodb-dark-green);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.08);
 }
 
 .result-header {
@@ -650,23 +650,24 @@
   margin-bottom: 8px;
 }
 
-.result-date {
-  font-size: 12px;
-  font-weight: 500;
-  color: #8b5cf6;
+.result-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mongodb-slate);
 }
 
 .result-score {
   font-size: 11px;
-  color: #6b7280;
-  background: #f3f4f6;
+  font-family: 'Source Code Pro', monospace;
+  color: var(--mongodb-btn-text);
+  background: var(--mongodb-lime);
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 999px;
 }
 
 .result-content {
   font-size: 14px;
-  color: #374151;
+  color: var(--mongodb-slate-light);
   line-height: 1.6;
   margin: 0;
 }
@@ -725,6 +726,91 @@
 /* Message text and images */
 .message-text {
   margin: 0;
+  line-height: 1.6;
+}
+
+.message-text h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mongodb-slate);
+  margin: 20px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--mongodb-gray-light);
+}
+
+.message-text h2:first-child {
+  margin-top: 0;
+}
+
+.message-text h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mongodb-slate);
+  margin: 16px 0 8px;
+}
+
+.message-text p {
+  margin: 0 0 12px;
+}
+
+.message-text p:last-child {
+  margin-bottom: 0;
+}
+
+.message-text ul,
+.message-text ol {
+  margin: 8px 0 12px;
+  padding-left: 24px;
+}
+
+.message-text li {
+  margin: 4px 0;
+}
+
+.message-text strong {
+  font-weight: 600;
+  color: var(--mongodb-slate);
+}
+
+.message-text code {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  background: var(--mongodb-off-white);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--mongodb-dark-green);
+}
+
+.message-text pre {
+  background: var(--mongodb-slate);
+  color: var(--mongodb-off-white);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.message-text pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.message-text a {
+  color: var(--mongodb-dark-green);
+  text-decoration: none;
+}
+
+.message-text a:hover {
+  text-decoration: underline;
+}
+
+.message-text blockquote {
+  border-left: 3px solid var(--mongodb-green);
+  margin: 12px 0;
+  padding: 8px 16px;
+  background: rgba(0, 237, 100, 0.05);
+  color: var(--mongodb-slate);
 }
 
 .message-image {
@@ -735,6 +821,61 @@
   display: block;
 }
 
+/* Thinking section */
+.thinking-section {
+  margin-bottom: 12px;
+}
+
+.thinking-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--mongodb-off-white);
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--mongodb-slate);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.thinking-toggle:hover {
+  background: var(--mongodb-white);
+  border-color: var(--mongodb-dark-green);
+  color: var(--mongodb-slate);
+}
+
+.thinking-toggle.expanded {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
+}
+
+.thinking-icon {
+  font-size: 10px;
+  transition: transform 0.15s ease;
+}
+
+.thinking-label {
+  font-weight: 500;
+}
+
+.thinking-content {
+  padding: 12px 16px;
+  background: var(--mongodb-off-white);
+  border: 1px solid var(--mongodb-gray-light);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--mongodb-slate);
+  white-space: pre-wrap;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 /* Date picker modal */
 .date-picker-overlay {
   position: fixed;
@@ -742,7 +883,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -750,34 +891,38 @@
 }
 
 .date-picker-modal {
-  background: white;
-  border-radius: 16px;
+  background: var(--mongodb-white);
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
   padding: 24px;
   min-width: 300px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
 }
 
 .date-picker-modal h3 {
   margin: 0 0 20px;
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--mongodb-slate);
 }
 
 .date-input {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
+  border: 1px solid var(--mongodb-gray-light);
+  border-radius: 4px;
   font-family: inherit;
   font-size: 15px;
+  font-weight: 400;
+  background: var(--mongodb-white);
+  color: var(--mongodb-slate);
   outline: none;
   transition: all 0.2s ease;
 }
 
 .date-input:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  border-color: var(--mongodb-blue);
+  box-shadow: 0 0 0 3px rgba(0, 108, 250, 0.1);
 }
 
 .date-picker-actions {
@@ -790,32 +935,33 @@
 .date-cancel-btn,
 .date-confirm-btn {
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: 4px;
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .date-cancel-btn {
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  color: #374151;
+  border: 1px solid var(--mongodb-gray-light);
+  color: var(--mongodb-slate);
 }
 
 .date-cancel-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--mongodb-off-white);
 }
 
 .date-confirm-btn {
-  background: #8b5cf6;
-  border: none;
-  color: white;
+  background: var(--mongodb-green);
+  border: 1px solid var(--mongodb-dark-green);
+  color: var(--mongodb-btn-text);
 }
 
 .date-confirm-btn:hover {
-  background: #7c3aed;
+  border-radius: 40px;
+  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.2);
 }
 
 /* Prompt generator */
@@ -830,60 +976,28 @@
 
 .generate-prompt-btn {
   padding: 12px 16px;
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 10px;
-  color: #374151;
+  background: var(--mongodb-slate);
+  border: 1px solid var(--mongodb-slate);
+  border-radius: 4px;
+  color: var(--mongodb-white);
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .generate-prompt-btn:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.25);
+  border-radius: 40px;
 }
 
 .generate-prompt-btn:disabled {
-  opacity: 0.6;
+  background: var(--mongodb-gray-light);
+  border-color: var(--mongodb-gray-light);
+  color: var(--mongodb-slate);
   cursor: not-allowed;
 }
 
-/* Insights */
-.insights-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  width: 100%;
-}
-
-.insight-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 16px;
-  padding: 32px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.insight-value {
-  font-size: 48px;
-  font-weight: 600;
-  color: #1a1a1a;
-  line-height: 1;
-  margin-bottom: 8px;
-}
-
-.insight-label {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-}
 
 /* Save Entry */
 .save-entry {
@@ -897,19 +1011,20 @@
 
 .save-btn {
   padding: 12px 24px;
-  background: #8b5cf6;
-  border: none;
-  border-radius: 10px;
-  color: white;
+  background: var(--mongodb-green);
+  border: 1px solid var(--mongodb-dark-green);
+  border-radius: 4px;
+  color: var(--mongodb-btn-text);
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .save-btn:hover {
-  background: #7c3aed;
+  border-radius: 40px;
+  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.2);
 }
 
 .save-btn:active {
@@ -917,114 +1032,22 @@
 }
 
 .save-btn.saved {
-  background: #bbf7d0;
-  color: #166534;
-}
-
-/* Insights Sections */
-.section-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1a1a1a;
-  margin-bottom: 16px;
-}
-
-.mood-section,
-.themes-section {
-  width: 100%;
-  margin-top: 32px;
-}
-
-/* Mood Bars */
-.mood-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.mood-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.mood-emoji {
-  font-size: 20px;
-  width: 28px;
-}
-
-.mood-bar-track {
-  flex: 1;
-  height: 16px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.mood-bar-fill {
-  height: 100%;
-  border-radius: 8px;
-  transition: width 0.3s ease;
-}
-
-.mood-bar-fill.positive {
-  background: #22c55e;
-}
-
-.mood-bar-fill.neutral {
-  background: #94a3b8;
-}
-
-.mood-bar-fill.mixed {
-  background: #f59e0b;
-}
-
-.mood-bar-fill.negative {
-  background: #ef4444;
-}
-
-.mood-percent {
-  font-size: 14px;
-  color: #6b7280;
-  width: 40px;
-  text-align: right;
-}
-
-/* Word Cloud */
-.word-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  justify-content: center;
-  align-items: baseline;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.theme-word {
-  color: #6b7280;
-  font-weight: 500;
-  transition: color 0.2s ease;
-  cursor: default;
-}
-
-.theme-word:hover {
-  color: #7c3aed;
+  background: var(--mongodb-lime);
+  border-color: var(--mongodb-forest);
+  color: var(--mongodb-dark-green);
 }
 
 /* Hidden Scrollbar */
 .entry-list,
 .messages,
 .entry-search,
-.search-results-main,
-.word-cloud {
+.search-results-main {
   scrollbar-width: none;
 }
 
 .entry-list::-webkit-scrollbar,
 .messages::-webkit-scrollbar,
 .entry-search::-webkit-scrollbar,
-.search-results-main::-webkit-scrollbar,
-.word-cloud::-webkit-scrollbar {
+.search-results-main::-webkit-scrollbar {
   display: none;
 }

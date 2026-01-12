@@ -20,18 +20,18 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Starting Memoir API...")
+    logger.info("Starting DevAssist API...")
     connect_db()
-    logger.info("Memoir API started successfully")
+    logger.info("DevAssist API started successfully")
     yield
     # Shutdown
-    logger.info("Shutting down Memoir API...")
+    logger.info("Shutting down DevAssist API...")
     close_db()
 
 
 app = FastAPI(
-    title="Memoir",
-    description="AI-powered interactive journaling application",
+    title="DevAssist",
+    description="AI-powered developer productivity assistant for project planning",
     version="1.0.0",
     lifespan=lifespan,
 )
@@ -46,12 +46,12 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(routes.router, prefix="/api/entries", tags=["entries"])
+app.include_router(routes.router, prefix="/api/projects", tags=["projects"])
 
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to Memoir API"}
+    return {"message": "Welcome to DevAssist API"}
 
 
 @app.get("/health")

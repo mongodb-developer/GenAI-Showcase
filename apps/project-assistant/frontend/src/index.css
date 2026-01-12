@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* MongoDB Dark Theme Color Palette */
+  --mongodb-green: #00ED64;
+  --mongodb-dark-green: #00ED64;
+  --mongodb-forest: #00ED64;
+  --mongodb-slate: #FFFFFF;
+  --mongodb-slate-light: #E7EEEC;
+  --mongodb-gray: #E7EEEC;
+  --mongodb-gray-light: #9CA3A0;
+  --mongodb-off-white: #1C2D35;
+  --mongodb-white: #001E2B;
+  --mongodb-lime: #B1FF05;
+  --mongodb-blue: #4D9CFF;
+  --mongodb-btn-text: #001E2B;
+
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--mongodb-slate);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--mongodb-white);
+}
+
+#root {
+  height: 100vh;
+}
