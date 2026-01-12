@@ -8,16 +8,8 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
   const [saveStatus, setSaveStatus] = useState(null)
-  const [expandedThinking, setExpandedThinking] = useState({})
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
-
-  const toggleThinking = (msgId) => {
-    setExpandedThinking(prev => ({
-      ...prev,
-      [msgId]: !prev[msgId]
-    }))
-  }
 
   const handleSaveProject = async () => {
     setSaveStatus('saving')
@@ -179,26 +171,6 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
               <div className="message-label">
                 {msg.role === 'user' ? 'You' : 'Assistant'}
               </div>
-              {msg.thinking && (
-                <div className="thinking-section">
-                  <button
-                    className={`thinking-toggle ${expandedThinking[msg._id] ? 'expanded' : ''}`}
-                    onClick={() => toggleThinking(msg._id)}
-                  >
-                    <span className="thinking-icon">
-                      {expandedThinking[msg._id] ? '▼' : '▶'}
-                    </span>
-                    <span className="thinking-label">
-                      {expandedThinking[msg._id] ? 'Thinking' : 'Show thinking'}
-                    </span>
-                  </button>
-                  {expandedThinking[msg._id] && (
-                    <div className="thinking-content">
-                      {msg.thinking}
-                    </div>
-                  )}
-                </div>
-              )}
               {msg.content && (
                 <div className="message-text">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
