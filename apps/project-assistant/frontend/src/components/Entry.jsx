@@ -8,6 +8,7 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
   const [searchResults, setSearchResults] = useState(null)
   const [isSearching, setIsSearching] = useState(false)
   const [saveStatus, setSaveStatus] = useState(null)
+  const [isDragging, setIsDragging] = useState(false)
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -60,17 +61,37 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files || [])
-
-    files.forEach(file => {
-      setSelectedImages(prev => [...prev, {
-        file,
-        preview: URL.createObjectURL(file),
-        name: file.name
-      }])
-    })
-
-    // Reset input so same file can be selected again
+    addFiles(files)
     e.target.value = ''
+  }
+
+  const addFiles = (files) => {
+    files.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        setSelectedImages(prev => [...prev, {
+          file,
+          preview: URL.createObjectURL(file),
+          name: file.name
+        }])
+      }
+    })
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    setIsDragging(false)
+    if (!isV2) return
+    const files = Array.from(e.dataTransfer.files)
+    addFiles(files)
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    if (isV2) setIsDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragging(false)
   }
 
   const removeImage = (index) => {
@@ -214,7 +235,13 @@ function Entry({ messages, onSendMessage, hasActiveProject, activeProject, proje
         </div>
       )}
 
-      <form className="entry-input" onSubmit={handleSubmit}>
+      <form
+        className={`entry-input ${isDragging ? 'dragging' : ''}`}
+        onSubmit={handleSubmit}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+      >
         <div className="entry-input-wrapper">
           {isV2 && (
             <>
