@@ -4,4 +4,4 @@ langchain_ollama
 langchain_community
 langchain-mongodb
 pymongo
-pypdf
+pymupdf
