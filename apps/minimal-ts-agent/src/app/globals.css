@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --mdb-green: #00ed64;
+  --mdb-dark-green: #001e2b;
+  --mdb-light-green: #e3fcef;
+  --card-bg: #161616;
+  --border-color: #2a2a2a;
+  --muted: #888888;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-mdb-green: var(--mdb-green);
+  --color-mdb-dark-green: var(--mdb-dark-green);
+  --color-card-bg: var(--card-bg);
+  --color-border-color: var(--border-color);
+  --color-muted: var(--muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+/* Markdown content styling */
+.prose h1, .prose h2, .prose h3 {
+  color: var(--foreground);
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+.prose h2 { font-size: 1.25rem; font-weight: 700; }
+.prose h3 { font-size: 1.1rem; font-weight: 600; }
+.prose p { margin-bottom: 0.75em; line-height: 1.6; }
+.prose ul, .prose ol { margin-left: 1.5em; margin-bottom: 0.75em; }
+.prose li { margin-bottom: 0.25em; }
+.prose strong { color: #00ed64; }
+.prose code {
+  background: #1e1e1e;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.prose pre {
+  background: #1e1e1e;
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 0.75em;
+}
