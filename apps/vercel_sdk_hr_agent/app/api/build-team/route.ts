@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { openai } from '@ai-sdk/openai';
 import { generateText, tool } from 'ai';
 import { z } from 'zod';
 import {
@@ -9,6 +8,7 @@ import {
   saveTeamToDatabase,
   generateTeamRecommendation
 } from '../../../utils/tools';
+import { getLLMModel } from '../../../utils/llm-provider';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
 async function buildTeam(projectDescription: string) {
   const { steps ,  toolCalls } = await generateText({
-    model: openai('o3-mini', { structuredOutputs: true }),
+    model: getLLMModel(),
     tools: {
       analyzeProjectRequirements,
       searchEmployeesBySkill,

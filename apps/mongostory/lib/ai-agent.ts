@@ -1,7 +1,7 @@
-import { xai } from "@ai-sdk/xai"
 import { generateText, generateObject } from "ai"
 import { z } from "zod"
 import clientPromise from "@/lib/mongodb"
+import { getLLMModel } from "@/lib/llm-provider"
 
 // Helper function to clamp number within range
 const clamp = (num: number, min: number, max: number) => Math.min(Math.max(num, min), max)
@@ -68,7 +68,7 @@ async function getEnabledFeatures() {
 }
 
 export async function analyzeContent(content: string, title: string, selectedFeatures: string[]) {
-  const model = xai("grok-2-1212")
+  const model = getLLMModel()
   const enabledFeatures = await getEnabledFeatures()
   const analysisPromises = []
 
