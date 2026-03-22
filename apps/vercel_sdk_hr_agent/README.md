@@ -18,7 +18,8 @@ The HR Team Matcher is built with the following technologies:
 - **MongoDB**: Database with Vector Search for semantic skill matching
 - **Vercel AI SDK**: Agentic AI capabilities with multi-step reasoning
 - **Voyage AI**: Generation of text embeddings for semantic search
-- **OpenAI**: Language model for team analysis and recommendations
+- **OpenAI**: Language model for team analysis and recommendations (default)
+- **MiniMax**: Alternative LLM provider via OpenAI-compatible API ([MiniMax-M2.7](https://platform.minimax.io/docs/api-reference/text-openai-api))
 - **Tailwind CSS**: Styling
 
 ## How It Works
@@ -35,7 +36,7 @@ The HR Team Matcher is built with the following technologies:
 
 - Node.js 18.x or higher
 - MongoDB Atlas account (with Vector Search capability)
-- OpenAI API key
+- OpenAI API key (or MiniMax API key)
 - Voyage AI API key
 
 ### Environment Setup
@@ -51,6 +52,19 @@ The HR Team Matcher is built with the following technologies:
    OPENAI_API_KEY=your_openai_api_key
    VOYAGE_API_KEY=your_voyage_api_key
    ```
+
+#### Using MiniMax as the LLM Provider
+
+To use [MiniMax](https://platform.minimax.io/) instead of OpenAI, set the following environment variables:
+
+```
+LLM_PROVIDER=minimax
+MINIMAX_API_KEY=your_minimax_api_key
+VOYAGE_API_KEY=your_voyage_api_key
+MONGODB_URI=your_mongodb_connection_string
+```
+
+Supported MiniMax models: `MiniMax-M2.7` (default), `MiniMax-M2.7-highspeed`.
 
 ### Database Setup
 

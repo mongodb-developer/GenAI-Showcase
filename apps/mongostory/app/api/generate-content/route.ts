@@ -1,6 +1,6 @@
 import { generateText } from "ai"
-import { xai } from "@ai-sdk/xai"
 import { NextResponse } from "next/server"
+import { getLLMModel } from "@/lib/llm-provider"
 
 type ExpertiseLevel = "student" | "mid-level" | "expert"
 
@@ -40,7 +40,7 @@ const topicSuggestions = {
 export async function POST(req: Request) {
   try {
     const { topic, expertiseLevel } = await req.json()
-    const model = xai("grok-2-1212")
+    const model = getLLMModel()
 
     // Generate title with a specific prompt for concise titles
     const { text: titleResponse } = await generateText({

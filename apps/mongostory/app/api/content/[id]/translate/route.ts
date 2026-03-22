@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { generateText } from "ai"
-import { xai } from "@ai-sdk/xai"
 import clientPromise from "@/lib/mongodb"
+import { getLLMModel } from "@/lib/llm-provider"
 import { ObjectId } from "mongodb"
 
 const SUPPORTED_LANGUAGES = {
@@ -35,7 +35,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return NextResponse.json({ message: "Translation already exists" }, { status: 200 })
     }
 
-    const model = xai("grok-2-1212")
+    const model = getLLMModel()
 
     // Translate title
     const { text: translatedTitle } = await generateText({

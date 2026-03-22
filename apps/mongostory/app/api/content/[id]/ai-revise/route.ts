@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
-import { xai } from "@ai-sdk/xai"
 import { generateText } from "ai"
 import clientPromise from "@/lib/mongodb"
+import { getLLMModel } from "@/lib/llm-provider"
 import { ObjectId } from "mongodb"
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
@@ -29,7 +29,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       )
     }
 
-    const model = xai("grok-2-1212")
+    const model = getLLMModel()
 
     // Generate revised content based on analysis
     const { text: revisedContent } = await generateText({
