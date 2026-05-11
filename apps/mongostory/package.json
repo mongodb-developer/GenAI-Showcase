@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/openai": "latest",
     "@ai-sdk/xai": "latest",
     "@aws-sdk/credential-providers": "latest",
     "@hookform/resolvers": "^3.9.1",

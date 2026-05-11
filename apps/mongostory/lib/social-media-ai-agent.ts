@@ -1,5 +1,5 @@
-import { xai } from "@ai-sdk/xai"
 import { generateText } from "ai"
+import { getLLMModel } from "@/lib/llm-provider"
 
 interface SocialMediaPost {
   content: string
@@ -11,7 +11,7 @@ export async function generateSocialMediaPost(
   platform: string,
   articleUrl?: string, // Add articleUrl parameter
 ): Promise<SocialMediaPost> {
-  const model = xai("grok-2-1212")
+  const model = getLLMModel()
 
   const prompt = `Generate a social media post for ${platform} based on this article:
 Title: ${title}

@@ -1,6 +1,6 @@
-import { xai } from "@ai-sdk/xai"
 import { generateText } from "ai"
 import { NextResponse } from "next/server"
+import { getLLMModel } from "@/lib/llm-provider"
 
 export async function POST(req: Request) {
   try {
@@ -8,31 +8,31 @@ export async function POST(req: Request) {
 
     // Generate content summary
     const { text: summary } = await generateText({
-      model: xai("grok-2-1212"),
+      model: getLLMModel(),
       prompt: `Summarize the following content in 2-3 sentences: ${content}`,
     })
 
     // Generate SEO optimized title
     const { text: seoTitle } = await generateText({
-      model: xai("grok-2-1212"),
+      model: getLLMModel(),
       prompt: `Generate an SEO-optimized title for this content: ${content}`,
     })
 
     // Generate SEO description
     const { text: seoDescription } = await generateText({
-      model: xai("grok-2-1212"),
+      model: getLLMModel(),
       prompt: `Write a compelling meta description (under 160 characters) for this content: ${content}`,
     })
 
     // Analyze sentiment
     const { text: sentiment } = await generateText({
-      model: xai("grok-2-1212"),
+      model: getLLMModel(),
       prompt: `Analyze the sentiment and emotional tone of this content. Include percentage breakdowns of detected emotions: ${content}`,
     })
 
     // Generate tag recommendations
     const { text: tagSuggestions } = await generateText({
-      model: xai("grok-2-1212"),
+      model: getLLMModel(),
       prompt: `Suggest 5-7 relevant tags for this content, separated by commas: ${content}`,
     })
 

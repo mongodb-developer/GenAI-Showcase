@@ -3,8 +3,8 @@ import clientPromise from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { generateEmbedding } from "@/lib/embeddings"
 import { performVectorSearch } from "@/lib/vector-search"
-import { xai } from "@ai-sdk/xai"
 import { generateText } from "ai"
+import { getLLMModel } from "@/lib/llm-provider"
 
 export async function POST() {
   try {
@@ -131,7 +131,7 @@ async function generateClusterLabel(keywords: string[], contentSamples: string[]
     // Take a sample of content to provide context
     const contentSample = contentSamples.slice(0, 3).join("\n\n").substring(0, 1000)
 
-    const model = xai("grok-2-1212")
+    const model = getLLMModel()
     const { text } = await generateText({
       model,
       prompt: `Generate a concise, descriptive label (3-5 words) for a content cluster with these keywords: ${keywords.join(", ")}.
