@@ -64,13 +64,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### 4. Create MongoDB Indexes
 
-For hybrid search (vector + text) with `$rankFusion` (require latest Atlas version cluster), the code creates on startup two Atlas Search indexes on the `memories` collection:
+For hybrid search (vector + text) with `$rankFusion` (require latest Atlas version cluster), the code creates on startup two MongoDB Search indexes on the `memories` collection:
 
 #### Vector Search Index
 
 **Index Name:** `memory_vector_index`
 
-Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Vector Search**
+Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **MongoDB Vector Search**
 
 ```json
 {
@@ -97,11 +97,11 @@ Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **Atla
 }
 ```
 
-#### Atlas Search Index (Text)
+#### MongoDB Search Index (Text)
 
 **Index Name:** `memory_text_index`
 
-Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **Atlas Search**
+Optional: In Atlas UI: **Search Indexes** → **Create Search Index** → **MongoDB Search**
 
 ```json
 {
