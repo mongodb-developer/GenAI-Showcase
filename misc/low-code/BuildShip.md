@@ -63,7 +63,7 @@ This workflow serves as a versatile template for creating various types of AI ag
 
 ### Extend MongoDB Integration
 - Implement complex aggregation pipelines for advanced queries
-- Add MongoDB Atlas Search for full-text search capabilities
+- Add MongoDB Search for full-text search capabilities
 - Utilize MongoDB Change Streams for real-time updates
 - Incorporate MongoDB Charts for data visualization
 
