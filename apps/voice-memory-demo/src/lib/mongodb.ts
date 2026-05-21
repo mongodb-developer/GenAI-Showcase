@@ -39,7 +39,7 @@ const VECTOR_INDEX_DEFINITION = {
   },
 };
 
-// Atlas Search (text) index definition
+// MongoDB Search (text) index definition
 const TEXT_INDEX_DEFINITION = {
   name: 'memory_text_index',
   type: 'search' as const,
@@ -70,7 +70,7 @@ const TEXT_INDEX_DEFINITION = {
 };
 
 /**
- * Ensures Atlas Search indexes exist on the memories collection.
+ * Ensures MongoDB Search indexes exist on the memories collection.
  * Creates them if they don't exist.
  * Note: Indexes take 1-5 minutes to build after creation.
  */
