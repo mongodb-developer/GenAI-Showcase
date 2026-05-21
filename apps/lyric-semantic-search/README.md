@@ -3,7 +3,7 @@ This repo is support the [Building a Semantic Search Service With Spring AI and 
 
 Spring AI is an application framework from [Spring](https://spring.io/) that allows you to combine various AI services and plugins with your applications. With support for many chat, text-to-image, and embedding models, you can get your AI powered Java application set up for a variety of AI use cases.
 
-With Spring AI, MongoDB Atlas is supported as a vector database, all with [Atlas Vector Search](https://www.mongodb.com/products/platform/atlas-vector-search) to power your semantic search and implement your RAG applications. To learn more about RAG and other key concepts in AI, check out the [MongoDB AI integration docs](https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/#std-label-ai-key-concepts).
+With Spring AI, MongoDB Atlas is supported as a vector database, all with [MongoDB Vector Search](https://www.mongodb.com/products/platform/atlas-vector-search) to power your semantic search and implement your RAG applications. To learn more about RAG and other key concepts in AI, check out the [MongoDB AI integration docs](https://www.mongodb.com/docs/atlas/atlas-vector-search/ai-integrations/#std-label-ai-key-concepts).
 
 In this tutorial, we’ll go through what you need to get started with Spring AI and MongoDB. Adding documents to your database with the vectorised content (embeddings), and searching this content with semantic search. The full code for this tutorial is available in this [Github repository](https://github.com/timotheekelly/lyric-semantic-search).
 
@@ -75,7 +75,7 @@ curl -X GET "http://localhost:8080/search?query=small%20celestial%20bodie&topK=5
 
 ### Filter by Metadata
 
-In order to filter our data, we need to head over to our index in MongoDB. You can do this through the Atlas UI by selecting the collection where your data is stored, and going to the search indexes. You can edit this index by selecting the three dots on the right of the index name and we will add our filter for the artist.
+In order to filter our data, we need to head over to our index in MongoDB. You can do this through the  UI by selecting the collection where your data is stored, and going to the search indexes. You can edit this index by selecting the three dots on the right of the index name and we will add our filter for the artist.
 
 ```json
 {
