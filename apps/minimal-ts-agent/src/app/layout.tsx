@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MongoDB RAG Agent — Brand Book Expert",
   description:
-    "A fully autonomous RAG agent powered by Vercel AI SDK ToolLoopAgent and MongoDB Atlas Vector Search",
+    "A fully autonomous RAG agent powered by Vercel AI SDK ToolLoopAgent and MongoDB Vector Search",
 };
 
 export default function RootLayout({
