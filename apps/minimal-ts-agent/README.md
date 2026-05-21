@@ -1,6 +1,6 @@
 # RAG Agent Demo — How to Create an AI Agent with Minimal Coding
 
-Companion project for the **"How to Create an AI Agent with Minimal Coding"** video. This demo builds a fully functional RAG (Retrieval-Augmented Generation) agent that answers questions about the MongoDB Brand Book using MongoDB Atlas Vector Search, Voyage AI embeddings, and the Vercel AI SDK's `ToolLoopAgent`.
+Companion project for the **"How to Create an AI Agent with Minimal Coding"** video. This demo builds a fully functional RAG (Retrieval-Augmented Generation) agent that answers questions about the MongoDB Brand Book using MongoDB Vector Search, Voyage AI embeddings, and the Vercel AI SDK's `ToolLoopAgent`.
 
 ## What It Does
 
@@ -23,7 +23,7 @@ flowchart TD
     D -->|Reasoning step| E{Need more context?}
     E -->|Yes| F[searchDocumentation tool]
     F -->|Embed query| G[Voyage AI]
-    G -->|Query vector| H[MongoDB Atlas Vector Search]
+    G -->|Query vector| H[MongoDB Vector Search]
     H -->|Top 5 results| D
     E -->|No| I[Generate final response]
     I -->|Stream| B
@@ -92,7 +92,7 @@ VOYAGE_AI_API_KEY=your-voyage-ai-api-key
 npx ts-node scripts/ingest.ts
 ```
 
-This embeds 14 brand book sections with Voyage AI, inserts them into the `brand_demo.brand_book` collection, and automatically creates the Atlas Vector Search index. The index may take a minute to become ready after creation.
+This embeds 14 brand book sections with Voyage AI, inserts them into the `brand_demo.brand_book` collection, and automatically creates the MongoDB Vector Search index. The index may take a minute to become ready after creation.
 
 ### 4. Run the app
 
