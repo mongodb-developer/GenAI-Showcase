@@ -1,4 +1,4 @@
-Jupyter Notebooks demonstrating various Retrieval Augmented Generation (RAG) implementations using LLM providers, frameworks and MongoDB Atlas Vector Search.
+Jupyter Notebooks demonstrating various Retrieval Augmented Generation (RAG) implementations using LLM providers, frameworks and MongoDB Vector Search.
 
 | Title | Stack | Notebook |
 |-------|-------|----------|
@@ -8,7 +8,7 @@ Jupyter Notebooks demonstrating various Retrieval Augmented Generation (RAG) imp
 | RAG Chunking Strategies | MongoDB Atlas, LangChain | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/rag_chunking_strategies.ipynb) |
 | OpenAI Text Embeddings | MongoDB Atlas, OpenAI | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/openai_text_3_emebdding.ipynb) |
 | Naive RAG Implementation | MongoDB Atlas, LlamaIndex | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/naive_rag_implemenation_llamaindex.ipynb) |
-| LangChain.js Memory | MongoDB Atlas, LangChain.js | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/mongodb-langchain-js-memory.ipynb) |
+| LangChain.js Memory | MongoDB , LangChain.js | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/mongodb-langchain-js-memory.ipynb) |
 | DeepSeek RAG Pipeline | MongoDB Atlas, DeepSeek | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/deepseek_r1_rag_pipeline_with_mongodb.ipynb) |
 | LangChain Cache Memory | MongoDB Atlas, LangChain | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/mongodb-langchain-cache-memory.ipynb) |
 | RAG with LlamaIndex | MongoDB Atlas, LlamaIndex | [![View Notebook](https://img.shields.io/badge/view-notebook-orange?logo=jupyter)](https://github.com/mongodb-developer/GenAI-Showcase/blob/main/notebooks/rag/building_RAG_with_LlamaIndex_and_MongoDB_Vector_Database.ipynb) |
