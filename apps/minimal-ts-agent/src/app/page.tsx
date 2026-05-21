@@ -64,7 +64,7 @@ export default function ChatPage() {
         <div>
           <h1 className="text-lg font-semibold">MongoDB Brand Expert</h1>
           <p className="text-sm text-muted">
-            RAG Agent powered by ToolLoopAgent + Atlas Vector Search
+            RAG Agent powered by ToolLoopAgent + MongoDB Vector Search
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2 text-xs text-muted">
@@ -84,7 +84,7 @@ export default function ChatPage() {
                 Ask me about the MongoDB Brand Book
               </h2>
               <p className="text-muted max-w-md">
-                I use an agentic reasoning loop to search MongoDB Atlas Vector
+                I use an agentic reasoning loop to search MongoDB Vector
                 Search and deliver precise answers from the official brand
                 guidelines.
               </p>
@@ -257,7 +257,7 @@ export default function ChatPage() {
           </button>
         </form>
         <p className="text-xs text-muted text-center mt-2">
-          Powered by Vercel AI SDK ToolLoopAgent • Gemini Flash • MongoDB Atlas
+          Powered by Vercel AI SDK ToolLoopAgent • Gemini Flash • MongoDB
           Vector Search
         </p>
       </div>
