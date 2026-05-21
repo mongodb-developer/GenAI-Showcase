@@ -78,7 +78,7 @@ async function createSearchIndex(client) {
       }]
     });
 
-    console.log("Successfully created Atlas Search index");
+    console.log("Successfully created MongoDB Search index");
   } catch (e) {
     console.error('Failed to create search index:', e);
   }
