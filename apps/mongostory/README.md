@@ -40,7 +40,7 @@ MongoStory is a cloud-native platform designed to empower content creators, edit
 ### Backend
 - **API Routes**: Next.js API routes for server-side functionality
 - **Database**: MongoDB for flexible document storage
-- **Vector Search**: MongoDB Atlas Vector Search for semantic content operations
+- **Vector Search**: MongoDB Vector Search for semantic content operations
 - **AI Integration**: Integration with AI models via AI SDK - xAI (Grok)
 
 ### AI Integration
@@ -60,7 +60,7 @@ MongoStory leverages MongoDB's document model for flexible content storage and i
   - `clusters`: AI-generated content clusters
   - `socialMediaPosts`: Generated social media content
 
-- **Vector Search**: Uses MongoDB Atlas Vector Search for semantic operations:
+- **Vector Search**: Uses MongoDB Vector Search for semantic operations:
   - Content similarity detection
   - Semantic search functionality
   - Automatic content clustering
