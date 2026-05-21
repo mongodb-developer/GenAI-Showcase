@@ -1,6 +1,6 @@
 # Step-by-Step Guide: Building a Local Chatbot with Streamlit, LangChain, Ollama, and MongoDB Atlas
 
-In this tutorial, we'll set up a local chatbot using **Streamlit**, **LangChain**, **Ollama**, and **MongoDB Atlas Search**. This bot will leverage MongoDB's powerful Atlas Search capabilities alongside local LLMs (Large Language Models) via Ollama, allowing you to enhance user queries with context from chat history.
+In this tutorial, we'll set up a local chatbot using **Streamlit**, **LangChain**, **Ollama**, and **MongoDB Search**. This bot will leverage MongoDB's powerful MongoDB Search capabilities alongside local LLMs (Large Language Models) via Ollama, allowing you to enhance user queries with context from chat history.
 
 ## Prerequisites
 Before starting, make sure you have the following installed:
@@ -40,7 +40,7 @@ Here’s a quick rundown of the tools we’re using in this project:
 *	*[Streamlit](https://streamlit.io)*: A Python library for easily creating data-based web applications. We'll use it to create a local chatbot interface.
 *	*[LangChain](https://langchain.com)*: A framework that simplifies working with LLMs and document processing. It will assist processing user queries and generate responses.
 *	*[Ollama](https://ollama.com)*: A solution for deploying LLMs locally without external API dependency. It to host our models.
-*	*[MongoDB Atlas Search](https://www.mongodb.com/products/platform/atlas-search)*: Adds a powerful, flexible vector search functionality to our app. It will store user queries and responses in MongoDB.
+*	*[MongoDB Search](https://www.mongodb.com/products/platform/atlas-search)*: Adds a powerful, flexible vector search functionality to our app. It will store user queries and responses in MongoDB.
 
 ### Setting Up `requirements.txt`
 
@@ -173,7 +173,7 @@ except Exception as e:
 
 ### Step 3.2: Loading Documents and Creating a Vector Search Index
 
-Now, load documents, process them with LangChain, and store them as vector embeddings in MongoDB. This setup allows MongoDB Atlas to perform fast vector-based searches.
+Now, load documents, process them with LangChain, and store them as vector embeddings in MongoDB. This setup allows MongoDB to perform fast vector-based searches.
 
 ```python
 from langchain_ollama import OllamaEmbeddings
@@ -268,7 +268,7 @@ At this point, you can start prompting with inputs like “Who started AT&T?” 
 
 ## Conclusion and Next Steps
 
-In this tutorial, we built a local chatbot setup using MongoDB Atlas Search and local LLMs via Ollama, integrated through Streamlit. This project forms a robust foundation for further development and deployment.
+In this tutorial, we built a local chatbot setup using MongoDB Search and local LLMs via Ollama, integrated through Streamlit. This project forms a robust foundation for further development and deployment.
 
 Possible Extensions:
 
