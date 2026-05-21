@@ -1,6 +1,6 @@
 # MongoDB Gen AI Partners Showcase
 
-This directory contains collaborative AI projects and showcases developed in partnership with leading AI and technology companies. These partnerships demonstrate real-world applications of MongoDB's AI capabilities across various industries and use cases, showcasing how MongoDB's vector search, Atlas Search, and other AI-powered features can be integrated with cutting-edge AI platforms and frameworks.
+This directory contains collaborative AI projects and showcases developed in partnership with leading AI and technology companies. These partnerships demonstrate real-world applications of MongoDB's AI capabilities across various industries and use cases, showcasing how MongoDB's vector search, MongoDB Search, and other AI-powered features can be integrated with cutting-edge AI platforms and frameworks.
 
 Each partner brings their unique expertise and technology stack to create comprehensive solutions that address specific industry challenges. From regulatory compliance and supply chain management to AI safety and knowledge discovery, these collaborations highlight the versatility and power of MongoDB's AI ecosystem.
 
