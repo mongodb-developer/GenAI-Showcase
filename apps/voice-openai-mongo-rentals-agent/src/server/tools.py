@@ -37,7 +37,7 @@ class Booking(BaseModel):
 @tool
 def rentlas_search_tool(query: str, k: int = 5):
     """
-    Perform a vector similarity search using MongoDB Atlas Vector Search to find rentals.
+    Perform a vector similarity search using MongoDB Vector Search to find rentals.
 
     Args:
         query (str): The search query string.
@@ -48,7 +48,7 @@ def rentlas_search_tool(query: str, k: int = 5):
               and score is the similarity score (lower is more similar).
 
     Note:
-        Uses MongoDB Atlas Vector Search for semantic search capabilities.
+        Uses MongoDB Vector Search for semantic search capabilities.
     """
     vector_store = MongoDBAtlasVectorSearch.from_connection_string(
         connection_string=os.environ["MONGODB_ATLAS_URI"],
