@@ -1,12 +1,12 @@
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { MongoDBAtlasVectorSearch } from "@langchain/mongodb";
+import { MongoDBVectorSearch } from "@langchain/mongodb";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { MongoClient } from "mongodb";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import dotenv from "dotenv";
 dotenv.config();
 
-const client = new MongoClient(process.env.ATLAS_CONNECTION_STRING, appname="devrel.showcase.apps.graph_rag_demo");
+const client = new MongoClient(process.env._CONNECTION_STRING, appname="devrel.showcase.apps.graph_rag_demo");
 process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY1;
 
 async function run() {
@@ -17,7 +17,7 @@ async function run() {
         const collection = database.collection("knowledge_graph");
         const dbConfig = {
             collection: collection,
-            indexName: "vector_index", // The name of the Atlas search index to use.
+            indexName: "vector_index", // The name of the MongoDB search index to use.
             textKey: "chunks", // Field name for the raw text content. Defaults to "text".
             embeddingKey: "embedding", // Field name for the vector embeddings. Defaults to "embedding".
         };
@@ -44,7 +44,7 @@ async function run() {
                 chunkOverlap: 200,
             });
             const docs = await textSplitter.splitDocuments(data);
-            await MongoDBAtlasVectorSearch.fromDocuments(docs, new OpenAIEmbeddings(), dbConfig);
+            await MongoDBVectorSearch.fromDocuments(docs, new OpenAIEmbeddings(), dbConfig);
             console.log("Ending sync...", pdfname);
         })
     } catch (error){
