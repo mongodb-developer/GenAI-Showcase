@@ -52,7 +52,7 @@ export function PastAnalysis() {
               <InfoIcon className="h-4 w-4 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>Past analysis results are stored in MongoDB and can be quickly retrieved using Atlas vector search.</p>
+              <p>Past analysis results are stored in MongoDB and can be quickly retrieved using MongoDB vector search.</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 Potential query: "Find similar analyses to the most recent customer feedback report"
               </p>
