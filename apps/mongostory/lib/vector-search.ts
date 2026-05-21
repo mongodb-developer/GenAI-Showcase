@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/mongodb"
 
 /**
- * Performs a vector search in MongoDB Atlas using the vector_index
+ * Performs a MongoDB vector search in MongoDB using the vector_index
  * @param queryVector The embedding vector to search with
  * @param options Additional options for the search
  * @returns Array of documents with similarity scores
