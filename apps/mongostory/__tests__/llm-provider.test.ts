@@ -79,7 +79,7 @@ describe('getLLMModel', () => {
     );
   });
 
-  it('uses MiniMax-M2.7 as default model for minimax provider', async () => {
+  it('uses MiniMax-M3 as default model for minimax provider', async () => {
     process.env.LLM_PROVIDER = 'minimax';
     process.env.MINIMAX_API_KEY = 'test-key';
     const { getLLMModel } = await import('../lib/llm-provider');
@@ -88,7 +88,7 @@ describe('getLLMModel', () => {
     getLLMModel();
 
     const providerFn = (createOpenAI as any).mock.results[0].value;
-    expect(providerFn).toHaveBeenCalledWith('MiniMax-M2.7');
+    expect(providerFn).toHaveBeenCalledWith('MiniMax-M3');
   });
 
   it('uses custom modelId when provided for minimax', async () => {

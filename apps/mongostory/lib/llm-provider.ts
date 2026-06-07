@@ -10,7 +10,7 @@ const LLM_PROVIDER = (process.env.LLM_PROVIDER as LLMProvider) || "xai"
  *
  * Supported providers:
  * - xai (default): Uses xAI/Grok models (grok-2-1212)
- * - minimax: Uses MiniMax models (MiniMax-M2.7, MiniMax-M2.7-highspeed)
+ * - minimax: Uses MiniMax models (MiniMax-M3 default, MiniMax-M2.7, MiniMax-M2.7-highspeed)
  *   via OpenAI-compatible API at https://api.minimax.io/v1
  */
 export function getLLMModel(options?: { modelId?: string }) {
@@ -20,7 +20,7 @@ export function getLLMModel(options?: { modelId?: string }) {
         baseURL: process.env.MINIMAX_BASE_URL || "https://api.minimax.io/v1",
         apiKey: process.env.MINIMAX_API_KEY,
       })
-      return minimax(options?.modelId || "MiniMax-M2.7")
+      return minimax(options?.modelId || "MiniMax-M3")
     }
     case "xai":
     default:

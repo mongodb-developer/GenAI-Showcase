@@ -19,7 +19,7 @@ The HR Team Matcher is built with the following technologies:
 - **Vercel AI SDK**: Agentic AI capabilities with multi-step reasoning
 - **Voyage AI**: Generation of text embeddings for semantic search
 - **OpenAI**: Language model for team analysis and recommendations (default)
-- **MiniMax**: Alternative LLM provider via OpenAI-compatible API ([MiniMax-M2.7](https://platform.minimax.io/docs/api-reference/text-openai-api))
+- **MiniMax**: Alternative LLM provider via OpenAI-compatible API ([MiniMax-M3](https://platform.minimax.io/docs/api-reference/text-openai-api))
 - **Tailwind CSS**: Styling
 
 ## How It Works
@@ -64,7 +64,7 @@ VOYAGE_API_KEY=your_voyage_api_key
 MONGODB_URI=your_mongodb_connection_string
 ```
 
-Supported MiniMax models: `MiniMax-M2.7` (default), `MiniMax-M2.7-highspeed`.
+Supported MiniMax models: `MiniMax-M3` (default, 512K context, up to 128K output, image input), `MiniMax-M2.7`, `MiniMax-M2.7-highspeed`.
 
 ### Database Setup
 

@@ -4,7 +4,7 @@ const API_KEY = process.env.MINIMAX_API_KEY;
 const BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimax.io/v1';
 
 describe.skipIf(!API_KEY)('MiniMax Integration', () => {
-  it('completes a basic chat request with MiniMax-M2.7', async () => {
+  it('completes a basic chat request with MiniMax-M3', async () => {
     const response = await fetch(`${BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -12,7 +12,7 @@ describe.skipIf(!API_KEY)('MiniMax Integration', () => {
         'Authorization': `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'MiniMax-M2.7',
+        model: 'MiniMax-M3',
         messages: [{ role: 'user', content: 'Say "test passed" and nothing else.' }],
         max_tokens: 20,
         temperature: 1.0,
@@ -26,7 +26,7 @@ describe.skipIf(!API_KEY)('MiniMax Integration', () => {
     expect(data.choices[0].message.content).toBeTruthy();
   }, 30000);
 
-  it('supports tool calling with MiniMax-M2.7', async () => {
+  it('supports tool calling with MiniMax-M3', async () => {
     const response = await fetch(`${BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -34,7 +34,7 @@ describe.skipIf(!API_KEY)('MiniMax Integration', () => {
         'Authorization': `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'MiniMax-M2.7',
+        model: 'MiniMax-M3',
         messages: [{ role: 'user', content: 'What is the weather in San Francisco?' }],
         tools: [
           {

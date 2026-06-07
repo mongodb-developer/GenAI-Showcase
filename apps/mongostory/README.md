@@ -41,7 +41,7 @@ MongoStory is a cloud-native platform designed to empower content creators, edit
 - **API Routes**: Next.js API routes for server-side functionality
 - **Database**: MongoDB for flexible document storage
 - **Vector Search**: MongoDB Atlas Vector Search for semantic content operations
-- **AI Integration**: Integration with AI models via AI SDK - xAI (Grok) or [MiniMax](https://platform.minimax.io/) (M2.7)
+- **AI Integration**: Integration with AI models via AI SDK - xAI (Grok) or [MiniMax](https://platform.minimax.io/) (M3)
 
 ### AI Integration
 - **Content Generation**: AI-powered content creation and suggestions
@@ -103,7 +103,7 @@ LLM_PROVIDER=minimax
 MINIMAX_API_KEY=your_minimax_api_key
 ```
 
-Supported MiniMax models: `MiniMax-M2.7` (default), `MiniMax-M2.7-highspeed`.
+Supported MiniMax models: `MiniMax-M3` (default, 512K context, up to 128K output, image input), `MiniMax-M2.7`, `MiniMax-M2.7-highspeed`.
 
 ### Trigger for content embedding:
 

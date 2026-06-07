@@ -96,7 +96,7 @@ describe('getLLMModel', () => {
     expect(providerFn).toHaveBeenCalledWith('MiniMax-M2.7-highspeed');
   });
 
-  it('uses default MiniMax-M2.7 model when no modelId for minimax', async () => {
+  it('uses default MiniMax-M3 model when no modelId for minimax', async () => {
     process.env.LLM_PROVIDER = 'minimax';
     process.env.MINIMAX_API_KEY = 'test-key';
     const { getLLMModel } = await import('../utils/llm-provider');
@@ -105,7 +105,7 @@ describe('getLLMModel', () => {
     getLLMModel();
 
     const providerFn = (createOpenAI as any).mock.results[0].value;
-    expect(providerFn).toHaveBeenCalledWith('MiniMax-M2.7');
+    expect(providerFn).toHaveBeenCalledWith('MiniMax-M3');
   });
 
   it('uses default o3-mini model for openai provider', async () => {
@@ -132,7 +132,7 @@ describe('getLLMModel', () => {
     getLLMModel();
 
     // MiniMax should be called with just the model name, no structuredOutputs
-    expect(providerFn).toHaveBeenCalledWith('MiniMax-M2.7');
+    expect(providerFn).toHaveBeenCalledWith('MiniMax-M3');
     expect(providerFn).toHaveBeenCalledTimes(1);
   });
 });
