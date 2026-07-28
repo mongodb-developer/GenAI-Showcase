@@ -109,7 +109,7 @@ class InventoryRepository:
         )
         return iso_document(alert) if alert else None
 
-    def _next_purchase_order_id(self) -> str:
+    def next_purchase_order_id(self) -> str:
         """Next id in the same sequence as the existing orders, e.g. PO-1029.
 
         The seeded orders are PO-1027 and PO-1028, so a new one should continue the
@@ -237,7 +237,7 @@ class InventoryRepository:
 
         now = utc_now()
         return {
-            "_id": self._next_purchase_order_id(),
+            "_id": self.next_purchase_order_id(),
             "session_id": session_id,
             "alert_id": alert_id,
             "sweep_id": alert.get("sweep_id"),

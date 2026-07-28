@@ -33,7 +33,8 @@ def product_cover(products: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         if daily_demand <= 0:
             continue
         units = float(product.get("finished_units_on_hand") or 0)
-        cover[product["_id"]] = {"days_of_cover": round(units / daily_demand, 1)}
+        # Whole days: a tenth of a day of coffee is not a number anyone acts on.
+        cover[product["_id"]] = {"days_of_cover": int(units // daily_demand)}
     return cover
 
 

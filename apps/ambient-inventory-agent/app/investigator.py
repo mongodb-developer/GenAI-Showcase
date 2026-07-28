@@ -368,6 +368,7 @@ class AlertInvestigator:
         """Sweep, diagnose, and file the alert over MCP. Returns the alert, or None."""
         self._session_id = session_id
         self._sweep_id = sweep_id
+        # The alert document is built by the repository, `_id` included.
         self.session.write_defaults = {"session_id": session_id}
         agent = await self._build()
         task = (

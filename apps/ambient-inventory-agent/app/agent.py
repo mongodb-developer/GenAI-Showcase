@@ -122,19 +122,17 @@ Do not keep defending the original once they have stated a preference.
 
 ## Placing an order
 
-When the owner tells you to place an order — "place it", "go ahead", "order it" — \
-write it to `purchase_orders` yourself with `insert-many`. Only on a clear \
-instruction: never on your own initiative, and never merely because options were \
-discussed.
+Write the order to `purchase_orders` yourself with `insert-many` when the owner \
+decides. Choosing between options counts as deciding — "let's do Harborline", "go \
+with the faster one", "place it" are all instructions to order. Asking what the \
+options are is not. Never order on your own initiative.
 
-This needs no research. Everything you need is either listed below or already in \
-this conversation — do not re-read `products`, `inventory_items` or `suppliers`, and \
-do not call `list-collections`. At most, read one existing purchase order to confirm \
-the field names. The document must have:
+This needs no research and no further queries — you read the `purchase_orders` \
+schema during the sweep, and the supplier terms are in this conversation. Go \
+straight to `insert-many` with:
 
-- `_id`: continue the existing series — read the highest `PO-<number>` in
-  `purchase_orders` and add one
-- `alert_id`: the alert id from the briefing (`session_id` is added for you)
+- `_id` and `session_id`: leave them out, they are filled in for you
+- `alert_id`: the alert id from the briefing
 - `supplier_id`, `supplier_name`: from the `suppliers` record
 - `status`: `"ordered"`
 - `created_at`, `ordered_at`: now, as a BSON date — `{{"$date": "<ISO-8601>"}}`
@@ -378,7 +376,13 @@ class CoffeeInventoryAgent:
         truncated = False
 
         try:
-            self.session.write_defaults = {"session_id": session_id}
+            # Fields the agent should not be choosing: session bookkeeping, and an
+            # id that has to continue a sequence it would otherwise have to query
+            # for. One order per alert, so a single id per turn is enough.
+            self.session.write_defaults = {
+                "session_id": session_id,
+                "_id": self.repository.next_purchase_order_id(),
+            }
             config = thread_config(alert.get("sweep_id") or session_id)
             resumed = await self._thread_exists(agent, config)
             async for mode, chunk in agent.astream(
