@@ -12,27 +12,42 @@ DEMO_COLLECTIONS = [
     "suppliers",
     "purchase_orders",
     "alerts",
-    "chat_messages",
-    "agent_events",
+    "session_history",
     "demo_sessions",
-    "demo_meta",
+    # LangGraph's agent memory. Dropped with everything else so a reseed leaves no
+    # stale threads behind — the alternative would be a TTL, but every run of this
+    # demo starts from a reset anyway.
+    "checkpoints",
+    "checkpoint_writes",
 ]
 
+# Seeded (non-session) documents carry this instead of omitting session_id, so
+# session-scoped queries stay indexable equality matches.
+SEED_SESSION_ID = "seed"
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+SEED_VERSION = "seed_v2"
 
 
 def seed_demo_data(db: Database, reset: bool = False) -> None:
     if reset:
         for collection in DEMO_COLLECTIONS:
             db[collection].drop()
+        # Retired collections from earlier versions of this demo: the seed marker
+        # moved into demo_sessions, and chat_messages + agent_events merged into
+        # session_history.
+        for retired in ("demo_meta", "chat_messages", "agent_events"):
+            db[retired].drop()
 
-    if db.demo_meta.find_one({"_id": "seed_v1"}):
+    # The seed marker lives in demo_sessions rather than its own single-document
+    # collection, so there is one less collection (and _id index) to carry.
+    if db.demo_sessions.find_one({"_id": SEED_VERSION}):
         return
 
     now = utc_now()
-    expected_bag_arrival = now + timedelta(days=8)
     expected_green_arrival = now + timedelta(days=12)
 
     db.products.insert_many(
@@ -44,7 +59,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "channel": "Shopify, cafe shelves, subscriptions",
                 "category": "Roasted coffee",
                 "daily_demand": 18,
-                "finished_units_on_hand": 34,
+                "finished_units_on_hand": 180,
                 "target_stock": 420,
                 "reorder_point": 120,
                 "components": [
@@ -61,7 +76,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "channel": "Shopify and cafe shelves",
                 "category": "Roasted coffee",
                 "daily_demand": 7,
-                "finished_units_on_hand": 51,
+                "finished_units_on_hand": 118,
                 "target_stock": 180,
                 "reorder_point": 60,
                 "components": [
@@ -93,7 +108,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "channel": "Shopify and cafe shelves",
                 "category": "Roasted coffee",
                 "daily_demand": 9,
-                "finished_units_on_hand": 128,
+                "finished_units_on_hand": 190,
                 "target_stock": 200,
                 "reorder_point": 70,
                 "components": [
@@ -110,7 +125,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "channel": "Shopify and subscriptions",
                 "category": "Roasted coffee",
                 "daily_demand": 5,
-                "finished_units_on_hand": 44,
+                "finished_units_on_hand": 96,
                 "target_stock": 150,
                 "reorder_point": 55,
                 "components": [
@@ -158,7 +173,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "channel": "Cafes and local delivery",
                 "category": "Ready to drink",
                 "daily_demand": 8,
-                "finished_units_on_hand": 60,
+                "finished_units_on_hand": 132,
                 "target_stock": 180,
                 "reorder_point": 80,
                 "components": [
@@ -188,7 +203,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "_id": "roasted_espresso_blend",
                 "name": "Roasted Espresso Blend",
                 "kind": "roasted_coffee",
-                "quantity_on_hand": 92,
+                "quantity_on_hand": 520,
                 "unit": "kg",
                 "supplier_id": "atlas_green_importers",
             },
@@ -204,11 +219,16 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "_id": "bag_12oz_valve",
                 "name": "12oz Kraft Valve Bags",
                 "kind": "packaging",
-                "quantity_on_hand": 38,
+                # Just below its reorder point: 4 SKUs draw ~39/day and the primary
+                # supplier needs 8 days, so ~429 is the trigger level. The demo is
+                # about catching the crossing, not surviving a crisis.
+                "quantity_on_hand": 402,
                 "unit": "each",
                 "supplier_id": "pacific_bagworks",
                 "backup_supplier_id": "quickpack_west",
-                "shared_by": ["espresso_blend_12oz", "ethiopia_single_origin_12oz"],
+                # No denormalized `shared_by` list: which products use a component
+                # is derivable from products.components.inventory_id, and a cached
+                # copy here went stale the moment new 12oz SKUs were added.
             },
             {
                 "_id": "label_espresso_12oz",
@@ -270,7 +290,7 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "_id": "roasted_house_blend",
                 "name": "Roasted House Blend",
                 "kind": "roasted_coffee",
-                "quantity_on_hand": 150,
+                "quantity_on_hand": 260,
                 "unit": "kg",
                 "supplier_id": "atlas_green_importers",
             },
@@ -342,7 +362,6 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "vendor_type": "Green coffee importer",
                 "default_lead_time_days": 14,
                 "reliability": 0.96,
-                "notes": "Primary source for contracted coffee lots. Usually no substitute for origin-specific lots.",
             },
             {
                 "_id": "pacific_bagworks",
@@ -352,7 +371,20 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "reliability": 0.93,
                 "unit_costs": {"bag_12oz_valve": 0.31, "mailer_single": 0.22},
                 "minimum_order": {"bag_12oz_valve": 2000},
-                "notes": "Lowest cost for standard packaging, but lead time misses the current stockout window.",
+            },
+            {
+                # The middle option, and the reason the demo has a conversation in
+                # it. The agent correctly recommends the cheapest supplier that
+                # fits the window, but 8 days against 10.3 days of stock is a thin
+                # margin — so an owner can reasonably say "that's too close" and
+                # ask for something faster without jumping to the rush vendor.
+                "_id": "harborline_supply",
+                "name": "Harborline Supply",
+                "vendor_type": "Secondary packaging supplier",
+                "default_lead_time_days": 5,
+                "reliability": 0.95,
+                "unit_costs": {"bag_12oz_valve": 0.34},
+                "minimum_order": {"bag_12oz_valve": 1500},
             },
             {
                 "_id": "quickpack_west",
@@ -362,7 +394,6 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "reliability": 0.88,
                 "unit_costs": {"bag_12oz_valve": 0.37},
                 "minimum_order": {"bag_12oz_valve": 1000},
-                "notes": "Higher unit cost, useful when packaging blocks fulfillment.",
             },
             {
                 "_id": "summit_label",
@@ -388,23 +419,25 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
         [
             {
                 "_id": "PO-1027",
+                "session_id": SEED_SESSION_ID,
                 "supplier_id": "pacific_bagworks",
                 "supplier_name": "Pacific BagWorks",
-                "status": "ordered",
-                "created_at": now - timedelta(days=3),
-                "expected_arrival": expected_bag_arrival,
+                "status": "received",
+                "created_at": now - timedelta(days=26),
+                "expected_arrival": now - timedelta(days=18),
+                "received_at": now - timedelta(days=18),
                 "line_items": [
                     {
-                        "inventory_id": "bag_12oz_valve",
-                        "name": "12oz Kraft Valve Bags",
-                        "quantity": 3000,
-                        "unit_cost": 0.31,
+                        "inventory_id": "mailer_single",
+                        "name": "Single-Bag Shipping Mailers",
+                        "quantity": 2000,
+                        "unit_cost": 0.22,
                     }
                 ],
-                "notes": "Existing standard replenishment order. It arrives after the projected stockout.",
             },
             {
                 "_id": "PO-1028",
+                "session_id": SEED_SESSION_ID,
                 "supplier_id": "atlas_green_importers",
                 "supplier_name": "Atlas Green Importers",
                 "status": "ordered",
@@ -419,21 +452,120 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                         "unit_cost": 9.4,
                     }
                 ],
-                "notes": "Not related to the Espresso Blend packaging blocker.",
             },
         ]
     )
 
-    db.demo_meta.insert_one({"_id": "seed_v1", "seeded_at": now})
+    db.demo_sessions.insert_one({"_id": SEED_VERSION, "seeded_at": now})
+    # Dropping collections also drops their indexes and validators, so re-apply
+    # both here — otherwise a demo reset silently leaves them off.
     ensure_indexes(db)
+    ensure_validators(db)
 
 
 def ensure_indexes(db: Database) -> None:
-    db.alerts.create_index([("session_id", 1), ("status", 1), ("created_at", -1)])
-    db.alerts.create_index([("dedupe_key", 1), ("session_id", 1)], unique=True)
-    db.chat_messages.create_index([("session_id", 1), ("created_at", 1)])
-    db.agent_events.create_index([("session_id", 1), ("created_at", -1)])
-    db.demo_sessions.create_index([("session_id", 1)], unique=True)
+    """Create only indexes that serve a query this app actually runs."""
+    # alerts: list_alerts filters {session_id} and sorts created_at desc; the
+    # active-alert lookup adds {status: {$nin: [...]}}. A ($nin) range predicate
+    # cannot seek, so leading with session_id + created_at serves the sort for
+    # both and avoids a blocking SORT stage.
+    db.alerts.create_index([("session_id", 1), ("created_at", -1)], name="alerts_session_recent")
+    # Enforces one alert per (session, product+blocker) — backs the upsert dedupe.
+    db.alerts.create_index([("session_id", 1), ("dedupe_key", 1)], unique=True, name="alerts_dedupe")
+
+    # One timeline per session: read newest-first for the feed, oldest-first for
+    # the dialogue, so index both directions off session_id.
+    db.session_history.create_index(
+        [("session_id", 1), ("created_at", -1)], name="history_session_recent"
+    )
+    db.session_history.create_index(
+        [("session_id", 1), ("role", 1), ("created_at", 1)], name="history_session_dialogue"
+    )
+
+    # purchase_orders: list view filters session_id and sorts by created_at.
+    db.purchase_orders.create_index(
+        [("session_id", 1), ("created_at", -1)], name="po_session_recent"
+    )
+    # Makes approval idempotent at the database level: at most one placed PO
+    # per alert, so a double-click cannot place two supplier orders.
+    db.purchase_orders.create_index(
+        [("alert_id", 1)],
+        unique=True,
+        name="po_one_order_per_alert",
+        partialFilterExpression={"status": "ordered"},
+    )
+
+    db.demo_sessions.create_index([("session_id", 1)], unique=True, sparse=True,
+                                  name="sessions_session_id")
+
+
+def ensure_validators(db: Database) -> None:
+    """Attach $jsonSchema validators to the collections the agent writes.
+
+    Warn-level on purpose: the demo should never hard-fail on stage because of a
+    validation edge case, but drift still shows up in the server log.
+    """
+    validators = {
+        "products": {
+            "bsonType": "object",
+            "required": ["_id", "sku", "name", "daily_demand", "finished_units_on_hand", "components"],
+            "properties": {
+                "sku": {"bsonType": "string"},
+                "daily_demand": {"bsonType": ["double", "int"], "minimum": 0},
+                "finished_units_on_hand": {"bsonType": ["double", "int"], "minimum": 0},
+                "reorder_point": {"bsonType": ["double", "int"], "minimum": 0},
+                "components": {
+                    "bsonType": "array",
+                    "items": {
+                        "bsonType": "object",
+                        "required": ["inventory_id", "quantity_per_unit"],
+                        "properties": {
+                            "inventory_id": {"bsonType": "string"},
+                            "quantity_per_unit": {
+                                "bsonType": ["double", "int"],
+                                "minimum": 0,
+                                "exclusiveMinimum": True,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        "inventory_items": {
+            "bsonType": "object",
+            "required": ["_id", "name", "quantity_on_hand", "unit"],
+            "properties": {
+                "quantity_on_hand": {"bsonType": ["double", "int"], "minimum": 0},
+                "kind": {"enum": ["roasted_coffee", "packaging", "label", "shipping"]},
+            },
+        },
+        "purchase_orders": {
+            "bsonType": "object",
+            "required": ["_id", "supplier_id", "status", "line_items"],
+            "properties": {
+                "status": {"enum": ["ordered", "received", "cancelled"]},
+                "line_items": {"bsonType": "array", "minItems": 1},
+            },
+        },
+        "alerts": {
+            "bsonType": "object",
+            "required": ["_id", "session_id", "status", "risk", "recommendation"],
+            "properties": {
+                "status": {
+                    "enum": ["New", "Opened", "Discussing", "Waiting approval", "Resolved", "Dismissed"]
+                },
+                "severity": {"enum": ["High", "Medium", "Low"]},
+            },
+        },
+    }
+    for name, schema in validators.items():
+        db.command(
+            "collMod" if name in db.list_collection_names() else "create",
+            name,
+            validator={"$jsonSchema": schema},
+            validationLevel="moderate",
+            validationAction="warn",
+        )
 
 
 def iso_document(document: dict[str, Any]) -> dict[str, Any]:
@@ -442,6 +574,11 @@ def iso_document(document: dict[str, Any]) -> dict[str, Any]:
         if isinstance(value, ObjectId):
             converted[key] = str(value)
         elif isinstance(value, datetime):
+            # Everything is stored in UTC, but the driver returns naive datetimes.
+            # Without the offset the browser would read them as local time and the
+            # activity feed would be wrong by the viewer's UTC offset.
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=timezone.utc)
             converted[key] = value.isoformat()
         elif isinstance(value, list):
             converted[key] = [iso_document(item) if isinstance(item, dict) else item for item in value]

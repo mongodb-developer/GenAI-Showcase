@@ -36,6 +36,9 @@
   --shadow-md: 0 4px 16px rgba(0, 30, 43, 0.08);
   --radius: 12px;
   --radius-sm: 8px;
+  /* Buttons read softer than panels; kept as its own token so they stay
+     consistent with each other rather than tracking card corners. */
+  --radius-btn: 10px;
 
   font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -200,30 +203,11 @@ input {
   }
 }
 
-.monitor-strip {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 11px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface-subtle);
-  color: var(--muted);
-  font-size: 12.5px;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--warning);
-  flex-shrink: 0;
-}
-
-.status-dot.ready {
-  background: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.18);
+@media (prefers-reduced-motion: reduce) {
+  .nav-badge.pulse,
+  .stream-wait::after {
+    animation: none;
+  }
 }
 
 /* ---------- Content ---------- */
@@ -247,32 +231,6 @@ input {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.01em;
-}
-
-.page-sub {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 13.5px;
-}
-
-.sync-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface-subtle);
-  color: var(--muted);
-  font-size: 12.5px;
-  font-weight: 500;
-}
-
-.sync-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--accent);
 }
 
 .view {
@@ -315,52 +273,6 @@ input {
   text-transform: uppercase;
   color: var(--subtle);
   font-family: "Source Code Pro", monospace;
-}
-
-/* ---------- Stat tiles ---------- */
-.stat-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.stat {
-  flex: 0 1 240px;
-  padding: 16px 18px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--subtle);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  font-family: "Source Code Pro", monospace;
-}
-
-.stat-value {
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.stat-value.alarm {
-  color: var(--danger);
-}
-
-.stat-hint {
-  display: block;
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 12.5px;
 }
 
 /* ---------- Layout helpers ---------- */
@@ -476,7 +388,7 @@ input {
   min-height: 38px;
   padding: 0 16px;
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-btn);
   background: var(--surface);
   color: var(--ink);
   font-size: 14px;
@@ -492,16 +404,21 @@ input {
 
 .btn--primary {
   width: 100%;
-  border-color: var(--accent);
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-btn);
   background: var(--accent);
   color: var(--mongodb-slate);
+  font-size: 14px;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .btn--primary:hover {
-  background: var(--accent);
-  border-radius: 40px;
-  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.22);
+  border-color: #00d557;
+  background: #00d557;
 }
 
 .btn--primary:disabled {
@@ -510,7 +427,7 @@ input {
   color: var(--subtle);
   cursor: not-allowed;
   box-shadow: none;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-btn);
 }
 
 /* ---------- Inbox ---------- */
@@ -599,6 +516,18 @@ input {
   border-bottom: 2px solid var(--subtle);
   transform: rotate(45deg);
   transition: transform 0.2s ease;
+}
+
+/* What closed the alert. Shown whether or not the card is expanded. */
+.alert-resolved {
+  display: block;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--success-soft);
+  color: var(--success);
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
 .alert-card.open .alert-chevron {
@@ -692,9 +621,11 @@ input {
   font-family: "Source Code Pro", monospace;
 }
 
+/* The agent decides how many stats matter (3-5), so the grid flows rather than
+   assuming a fixed count. */
 .risk-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -702,9 +633,29 @@ input {
 .risk-tile {
   padding: 13px 15px;
   border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
   border-radius: var(--radius-sm);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
+}
+
+/* Emphasis marks why the alert exists, so the eye lands there first. */
+.risk-tile.critical {
+  border-left-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.risk-tile.critical strong {
+  color: #8c1d18;
+}
+
+.risk-tile.warning {
+  border-left-color: var(--warning);
+  background: var(--warning-soft);
+}
+
+.risk-tile.neutral {
+  border-left-color: var(--accent);
 }
 
 .risk-tile span {
@@ -776,6 +727,57 @@ input {
   color: var(--accent-strong);
 }
 
+/* Streaming: the live agent message shows MCP tool calls above the answer as it
+   is generated. */
+.message.agent.live:empty {
+  display: none;
+}
+
+.stream-wait {
+  color: var(--subtle);
+  font-style: italic;
+}
+
+.stream-wait::after {
+  content: "";
+  animation: stream-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes stream-dots {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+}
+
+.stream-error {
+  color: #b3261e;
+}
+
+.risk-note {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-subtle);
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.banner {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.banner.danger {
+  background: #fdecea;
+  border: 1px solid #f5c6c2;
+  color: #8c1d18;
+}
+
 .quick-prompts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -801,7 +803,8 @@ input {
   min-height: 38px;
   padding: 0 12px;
   border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
+  /* Matches the Send button beside it. */
+  border-radius: var(--radius-btn);
   background: var(--surface);
   color: var(--ink);
   outline: none;
@@ -907,7 +910,7 @@ input {
   color: var(--muted);
 }
 
-.event-tag.think {
+.event-tag.db {
   background: #eef4ff;
   color: #3b62b5;
 }
@@ -917,6 +920,7 @@ input {
   color: #6d43c9;
 }
 
+/* Reserved for real Remote MCP tool calls made by the agent. */
 .event-tag.mcp {
   background: var(--accent-soft);
   color: var(--accent-strong);
@@ -925,6 +929,11 @@ input {
 .event-tag.response {
   background: #eaf0f2;
   color: var(--ink);
+}
+
+.event-tag.danger {
+  background: #fdecea;
+  color: #b3261e;
 }
 
 .event-time {
@@ -976,6 +985,213 @@ input {
   background: var(--accent-strong);
 }
 
+/* Activity trace inside a chat bubble: same event rows as the dashboard feed,
+   sized down and tucked above the answer they produced. */
+.chat-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-activity .event {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.chat-activity .event-msg {
+  font-size: 12px;
+}
+
+.chat-activity .event-cmd {
+  font-size: 10.5px;
+}
+
+.event.pending {
+  opacity: 0.6;
+}
+
+/* Shown in the inbox while the sweep is still running, so an empty inbox reads as
+   work in progress rather than nothing to see. */
+.sweep-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.sweep-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: sweep-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes sweep-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sweep-dot {
+    animation: none;
+  }
+}
+
+.proposal-label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--subtle);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-family: "Source Code Pro", monospace;
+}
+
+/* ---------- Start curtain ---------- */
+/* Covers the app until the presenter is ready. Nothing runs behind it, so the
+   laptop can sit on the podium indefinitely without burning the demo. */
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mongodb-slate);
+}
+
+.curtain-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 480px;
+  padding: 48px 44px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.curtain-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.curtain-card h2 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.curtain-card p {
+  color: #b8c4c9;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+/* Startup progress as a vertical timeline: a green track with a dot per step, so
+   completed work stays visible instead of being replaced by the next line. */
+.steps {
+  margin: 6px 0 0;
+  padding: 0 0 0 22px;
+  list-style: none;
+  text-align: left;
+  position: relative;
+}
+
+.steps::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  background: rgba(0, 237, 100, 0.22);
+}
+
+.step {
+  position: relative;
+  padding: 7px 0;
+  color: #6b7d85;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: color 0.25s ease;
+}
+
+.step-dot {
+  position: absolute;
+  left: -22px;
+  top: 11px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(0, 237, 100, 0.3);
+  border-radius: 999px;
+  background: var(--mongodb-slate);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.step.done {
+  color: #9fb2ba;
+}
+
+.step.done .step-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.step.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.step.active .step-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(0, 237, 100, 0.18);
+}
+
+.step.failed {
+  color: #ff8f85;
+}
+
+.step.failed .step-dot {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step,
+  .step-dot {
+    transition: none;
+  }
+}
+
+.curtain-btn:disabled {
+  border-color: rgba(0, 237, 100, 0.35);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.curtain-btn {
+  min-width: 190px;
+  min-height: 46px;
+  font-size: 15px;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1080px) {
   .app {
@@ -983,8 +1199,7 @@ input {
   }
 
   .brand-text,
-  .nav-label,
-  .monitor-strip span:last-child {
+  .nav-label {
     display: none;
   }
 
@@ -1001,11 +1216,7 @@ input {
     position: relative;
   }
 
-  .stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .grid-2,
+    .grid-2,
   .alerts-layout,
   .conversation-layout,
   .risk-grid {

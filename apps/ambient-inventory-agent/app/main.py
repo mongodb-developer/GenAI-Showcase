@@ -1,21 +1,23 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from .agent import CoffeeInventoryAgent
 from .db import get_database
-from .demo_data import ensure_indexes, seed_demo_data
+from .demo_data import ensure_indexes, ensure_validators, seed_demo_data
 from .graph import InventoryMonitorGraph
-from .mcp_client import RemoteMCPProbe
+from .mcp_session import MCPUnavailable, get_mcp_session
+from .memory import close_checkpointer
 from .repository import InventoryRepository
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -58,11 +60,20 @@ async def delayed_monitor(session_id: str, delay_seconds: int) -> None:
 
 
 def schedule_monitor_once(session_id: str) -> None:
+    """Start the sweep for this session, at most once.
+
+    A page reload re-hits this endpoint, so guard on all three states: an alert
+    already raised, a sweep still running, and a sweep that has already completed
+    (including one that failed — re-running it silently would double the MCP work
+    and could produce a second alert).
+    """
     repo = repository()
     if repo.active_alert_for_session(session_id):
         return
     task = scheduled_tasks.get(session_id)
     if task and not task.done():
+        return
+    if repo.monitor_has_run(session_id):
         return
     repo.mark_monitor_scheduled(session_id)
     scheduled_tasks[session_id] = asyncio.create_task(delayed_monitor(session_id, alert_delay_seconds()))
@@ -74,9 +85,26 @@ async def lifespan(app: FastAPI):
     if os.getenv("DEMO_SEED_ON_START", "true").lower() == "true":
         seed_demo_data(db, reset=False)
     ensure_indexes(db)
+    ensure_validators(db)
+
+    # Open the Remote MCP session up front: the OAuth + remote-atlas-connect
+    # handshake takes a few seconds, and paying it on the first chat message
+    # would show up as dead air on stage. Failures are surfaced, not swallowed.
+    try:
+        session = get_mcp_session()
+        await session.ensure()
+        print("[mcp] connected:", session.status()["tools"])
+        await session.warm_discovery(
+            ["products", "inventory_items", "suppliers", "purchase_orders"]
+        )
+        print(f"[mcp] discovery warmed: {len(session.discovery_cache)} entries")
+    except MCPUnavailable as exc:
+        print(f"[mcp] UNAVAILABLE: {exc}")
+
     yield
     for task in scheduled_tasks.values():
         task.cancel()
+    close_checkpointer()
 
 
 app = FastAPI(title="Ambient Inventory Agent", lifespan=lifespan)
@@ -90,9 +118,21 @@ def index() -> FileResponse:
 
 @app.get("/api/health")
 def health() -> dict:
+    """Report component health without throwing: the UI renders this as a banner."""
     db = get_database()
-    db.command("ping")
-    return {"ok": True, "database": db.name}
+    try:
+        db.command("ping")
+        mongodb_ok, mongodb_error = True, None
+    except Exception as exc:
+        mongodb_ok, mongodb_error = False, str(exc)
+
+    mcp = get_mcp_session().status()
+    return {
+        "ok": mongodb_ok and mcp["ready"],
+        "mongodb": {"ok": mongodb_ok, "database": db.name, "error": mongodb_error},
+        "mcp": mcp,
+        "model": os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-sonnet-5"),
+    }
 
 
 @app.post("/api/demo/session")
@@ -100,25 +140,43 @@ async def create_session(payload: SessionRequest) -> dict:
     session_id = payload.session_id or f"session_{uuid4().hex[:10]}"
     repo = repository()
     session = repo.ensure_session(session_id)
-    schedule_monitor_once(session_id)
-    return {"session_id": session_id, "session": session, "delay_seconds": alert_delay_seconds()}
+    return {"session_id": session_id, "session": session}
 
 
-@app.post("/api/demo/reset")
-async def reset_demo() -> dict:
+
+@app.post("/api/demo/start")
+async def start_demo(_: SessionRequest) -> dict:
+    """Start the sweep. Seed separately, before the laptop goes on stage.
+
+    Deliberately does not reseed: `python seed_demo.py --reset` is a pre-flight
+    step, so pressing this is fast and the start screen is on display for seconds
+    rather than minutes.
+
+    The MCP session is re-minted rather than reused: the laptop may have sat on the
+    podium for a long time before anyone spoke, and a stale OAuth token would
+    otherwise surface as a failure on the agent's first query.
+    """
     for task in scheduled_tasks.values():
         task.cancel()
     scheduled_tasks.clear()
-    seed_demo_data(get_database(), reset=True)
+
+    try:
+        await get_mcp_session().reconnect()
+    except MCPUnavailable as exc:
+        raise HTTPException(
+            status_code=503, detail=f"Remote MCP is not available: {exc}"
+        ) from exc
+
+    # A fresh session id, so a previous run's alert and transcript stay behind.
     session_id = f"session_{uuid4().hex[:10]}"
-    repo = repository()
-    repo.ensure_session(session_id)
+    repository().ensure_session(session_id)
     schedule_monitor_once(session_id)
-    return {"session_id": session_id, "delay_seconds": alert_delay_seconds()}
+    return {"session_id": session_id, "started": True}
 
 
 @app.post("/api/monitor/run")
 async def run_monitor(payload: SessionRequest) -> dict:
+    """Run a sweep synchronously — useful for rehearsing without reloading."""
     session_id = payload.session_id or f"session_{uuid4().hex[:10]}"
     repo = repository()
     repo.ensure_session(session_id)
@@ -131,22 +189,9 @@ def get_state(session_id: str) -> dict:
     repo = repository()
     repo.ensure_session(session_id)
     snapshot = repo.state_snapshot(session_id)
-    probe = RemoteMCPProbe()
-    snapshot["mcp"] = {"configured": bool(probe.url), "url": probe.url}
+    snapshot["mcp"] = get_mcp_session().status()
     return snapshot
 
-
-@app.get("/api/mcp/status")
-def mcp_status() -> dict:
-    status = RemoteMCPProbe().status()
-    return {
-        "configured": status.configured,
-        "url": status.url,
-        "reachable": status.reachable,
-        "tools": status.tools,
-        "auth_method": status.auth_method,
-        "error": status.error,
-    }
 
 
 @app.post("/api/alerts/open")
@@ -161,27 +206,42 @@ def open_alert(payload: AlertRequest) -> dict:
 
 
 @app.post("/api/chat")
-def chat(payload: ChatRequest) -> dict:
+async def chat(payload: ChatRequest) -> StreamingResponse:
+    """Stream the agent's reasoning, MCP tool calls, and answer as SSE."""
     if not payload.message.strip():
         raise HTTPException(status_code=400, detail="Message is required")
+
     agent = CoffeeInventoryAgent(repository())
-    try:
-        return agent.respond(payload.session_id, payload.alert_id, payload.message.strip())
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    async def event_stream():
+        try:
+            async for event in agent.stream(
+                payload.session_id, payload.alert_id, payload.message.strip()
+            ):
+                yield f"data: {json.dumps(event)}\n\n"
+        except ValueError as exc:
+            yield f"data: {json.dumps({'type': 'error', 'message': str(exc)})}\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.post("/api/purchase_orders/submit")
 def submit_order(payload: AlertRequest) -> dict:
     repo = repository()
     try:
-        purchase_order = repo.submit_recommended_order(payload.session_id, payload.alert_id)
+        purchase_order, created = repo.place_order_directly(
+            payload.session_id, payload.alert_id
+        )
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-    repo.add_chat_message(
-        payload.session_id,
-        "agent",
-        f"Submitted supplier purchase order {purchase_order['_id']} with confirmation {purchase_order['confirmation_id']}.",
-        payload.alert_id,
-    )
-    return {"purchase_order": purchase_order, "state": repo.state_snapshot(payload.session_id)}
+    # The transcript entry is written by confirm_purchase_order, and only on the
+    # request that actually created the order — so a double-click cannot repeat it.
+    return {
+        "purchase_order": purchase_order,
+        "created": created,
+        "state": repo.state_snapshot(payload.session_id),
+    }
