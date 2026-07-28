@@ -58,10 +58,6 @@ have already run this session appear in the conversation above; do not repeat th
 only when you need grouping, computed totals, `$lookup`, or multi-stage work.
 - Filter server-side. Push the predicate into the query instead of fetching a \
 collection and narrowing it yourself.
-- `find` returns only 10 documents unless you set `limit`. Every collection here \
-holds tens of documents, not thousands, so pass a generous `limit` (say 200) when \
-you want a whole collection — otherwise you get a partial answer and have to page \
-around it.
 - In an aggregation, `$match` first so it can use an index; shape output with \
 `$project` at the end.
 - Project only the fields you need.

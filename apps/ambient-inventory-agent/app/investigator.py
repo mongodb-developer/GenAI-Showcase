@@ -231,10 +231,6 @@ A reorder point is the stock level at which a replacement must be ordered now to
 arrive before stock runs out. You are looking for components that have just crossed \
 it — not for a crisis.
 
-`find` returns only 10 documents unless you set `limit`, and these collections hold \
-tens — pass a generous `limit` (say 200) when you want a whole collection, or you \
-will be reasoning from a partial answer.
-
 Components are shared across products, so a component's real consumption is the \
 combined draw of everything using it. Compute that with ONE `aggregate` on \
 `products` — `$unwind` `components`, `$group` by `components.inventory_id`, sum \
