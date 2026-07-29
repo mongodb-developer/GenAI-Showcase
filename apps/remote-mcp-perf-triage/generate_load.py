@@ -52,8 +52,12 @@ from datetime import datetime
 
 try:
     from pymongo import MongoClient
+    from pymongo.errors import PyMongoError
+    from dotenv import load_dotenv
 except ImportError:
     sys.exit("pymongo not installed. Run: pip install -r requirements.txt")
+
+load_dotenv()
 
 DB_NAME = "ecommerce"
 COLLECTION_NAME = "payments"
@@ -65,6 +69,8 @@ def run_query(coll):
     """Run one checkout status-poll query; return its latency in ms.
 
     A random session_id that has no 'completed' record forces a full COLLSCAN.
+    Raises PyMongoError on connection trouble; the caller decides whether to
+    keep going.
     """
     session_id = f"sess_{secrets.token_hex(12)}"
     t0 = time.perf_counter()
@@ -89,7 +95,12 @@ def main():
 
     client = MongoClient(uri, appname="perf-triage-demo-load")
     coll = client[DB_NAME][COLLECTION_NAME]
-    client.admin.command("ping")
+    # Fail loudly at launch on a bad URI or firewall — that's a config error to fix,
+    # not something to retry. Mid-run failures are handled in the loop below.
+    try:
+        client.admin.command("ping")
+    except PyMongoError as exc:
+        sys.exit(f"ERROR: cannot reach MongoDB — {type(exc).__name__}: {exc}")
 
     mode = "continuous" if args.interval == 0 else f"trickle ({args.burst} queries / {args.interval:.0f}s)"
     limit = "until Ctrl+C" if args.duration == 0 else f"{args.duration:.0f}s"
@@ -98,17 +109,41 @@ def main():
 
     deadline = time.time() + args.duration if args.duration > 0 else None
     total = 0
+    errors = 0
     try:
         while deadline is None or time.time() < deadline:
             cycle_start = time.time()
-            latencies = [run_query(coll) for _ in range(args.burst)]
-            total += len(latencies)
-
-            avg = sum(latencies) / len(latencies)
-            slow = 100 * sum(1 for x in latencies if x > 100) / len(latencies)
             ts = datetime.now().strftime("%H:%M:%S")
-            print(f"  {ts}  burst of {len(latencies)}: avg {avg:7.1f} ms  |  "
-                  f"{slow:3.0f}% over 100 ms  |  {total:,} total", flush=True)
+
+            # Survive transient trouble instead of dying. This process is meant to
+            # run unattended for hours before a demo, across laptop sleep, wifi
+            # handoffs and Atlas blips — any of which raises PyMongoError. Losing
+            # the trickle means Performance Advisor's recommendation goes stale,
+            # so a failed burst is logged and skipped, never fatal. pymongo
+            # reconnects on its own; we just have to keep asking.
+            latencies = []
+            failures = []
+            for _ in range(args.burst):
+                try:
+                    latencies.append(run_query(coll))
+                except PyMongoError as exc:
+                    failures.append(type(exc).__name__)
+
+            total += len(latencies)
+            errors += len(failures)
+
+            if latencies:
+                avg = sum(latencies) / len(latencies)
+                slow = 100 * sum(1 for x in latencies if x > 100) / len(latencies)
+                suffix = f"  |  {len(failures)} failed" if failures else ""
+                print(f"  {ts}  burst of {len(latencies)}: avg {avg:7.1f} ms  |  "
+                      f"{slow:3.0f}% over 100 ms  |  {total:,} total{suffix}",
+                      flush=True)
+            else:
+                # Whole burst failed — almost always a dropped connection.
+                print(f"  {ts}  burst FAILED ({', '.join(sorted(set(failures)))}) — "
+                      f"will retry next cycle  |  {total:,} total, {errors} errors",
+                      flush=True)
 
             if args.interval > 0:
                 sleep_for = args.interval - (time.time() - cycle_start)
@@ -116,9 +151,14 @@ def main():
                     time.sleep(sleep_for)
                 elif deadline is not None:
                     break  # not enough time left for another cycle
+            elif not latencies:
+                # Continuous mode with a dead connection would spin as fast as the
+                # driver can fail. Back off so the log stays readable.
+                time.sleep(5)
     except KeyboardInterrupt:
         pass
-    print(f"\nStopped after {total:,} queries.")
+    tail = f", {errors} errors" if errors else ""
+    print(f"\nStopped after {total:,} queries{tail}.")
 
 
 if __name__ == "__main__":

@@ -8,13 +8,20 @@ status-poll query trips the slow-query log that feeds Performance Advisor, and
 
 Two design constraints, satisfied together:
 
-1. The scan must be reliably slow. Empirically on an M10 (measured), 300,000
-   documents of ~2 KB is the sweet spot: a COLLSCAN runs ~30 s cold and settles
-   to ~3.5-4 s once the cache is warm. That is clearly slow and dramatic in
+1. The scan must be reliably slow. Empirically on an M10 with 2 GB RAM (measured),
+   300,000 documents of ~2 KB is the sweet spot: a COLLSCAN runs ~9 s cold and
+   settles to ~5 s once the cache is warm. That is clearly slow and dramatic in
    explain(), yet stays safely under the MongoDB MCP server's 60 s maxTimeMS cap.
    NOTE: do NOT seed millions here — a scan of that size can exceed the 60 s cap,
    making the agent's explain()/find() ERROR out during the demo instead of
    returning stats. Bigger is worse, not better.
+
+   What makes the scan slow is that the collection (~0.63 GB) OUTGROWS the
+   WiredTiger cache (~50% of host RAM, so ~537 MB on a 2 GB M10), forcing reads
+   from disk. On a bigger tier the collection fits entirely in cache and the same
+   query returns in ~200 ms — measured at 222 ms on a 4 GB host — which kills the
+   demo. If scans come back suspiciously fast, check hostInfo.memSizeMB: the fix
+   is a smaller tier, NOT more documents.
 
    The document bytes live in a realistic `gateway_response` field (an opaque
    base64 payload — exactly what payment processors return and apps store for
@@ -33,6 +40,7 @@ Usage:
     python seed_payments.py                 # defaults: 300,000 docs, ~1.6 KB gateway blob
     python seed_payments.py --docs 300000 --blob-bytes 1600
     python seed_payments.py --drop          # drop the collection first (fresh reseed)
+    python seed_payments.py --drop-index    # light reset: drop the demo index, keep the data
 """
 
 import argparse
@@ -46,11 +54,18 @@ from datetime import datetime, timedelta, timezone
 
 try:
     from pymongo import MongoClient, InsertOne
+    from dotenv import load_dotenv
 except ImportError:
     sys.exit("pymongo not installed. Run: pip install -r requirements.txt")
 
+load_dotenv()
+
 DB_NAME = "ecommerce"
 COLLECTION_NAME = "payments"
+
+# The index the agent creates during the demo, and that --drop-index removes to
+# restore the slow condition. Name is MongoDB's default for { session_id: 1, status: 1 }.
+DEMO_INDEX_NAME = "session_id_1_status_1"
 
 # Realistic reference data. These enum-ish fields are a small fraction of each
 # document, so their compressibility doesn't matter — the bulk is the random blob.
@@ -144,6 +159,9 @@ def main():
                         help="approx size of the gateway_response payload per doc")
     parser.add_argument("--batch", type=int, default=5000, help="insert batch size")
     parser.add_argument("--drop", action="store_true", help="drop the collection before seeding")
+    parser.add_argument("--drop-index", action="store_true",
+                        help="drop the demo index and exit WITHOUT reseeding "
+                             "(the light reset after a demo has created it)")
     args = parser.parse_args()
 
     uri = os.environ.get("MONGODB_URI")
@@ -155,6 +173,24 @@ def main():
 
     # Fail fast on bad credentials / network before the long insert loop.
     client.admin.command("ping")
+
+    if args.drop_index:
+        # Light reset: restore the slow condition on an intact collection. Exits
+        # before the insert loop, so the existing 300k documents are untouched.
+        if args.drop:
+            sys.exit("ERROR: --drop-index and --drop are mutually exclusive. "
+                     "--drop-index keeps the data; --drop destroys it.")
+        existing = list(coll.index_information().keys())
+        if DEMO_INDEX_NAME in existing:
+            print(f"Dropping index {DEMO_INDEX_NAME} from {DB_NAME}.{COLLECTION_NAME} ...")
+            coll.drop_index(DEMO_INDEX_NAME)
+        else:
+            print(f"Index {DEMO_INDEX_NAME} not present — nothing to drop.")
+        print(f"Indexes now: {list(coll.index_information().keys())}  (expect only _id_)")
+        print(f"Documents kept: {coll.estimated_document_count():,}")
+        print("Next: make sure generate_load.py is running so Performance Advisor "
+              "rebuilds its recommendation before the next demo.")
+        return
 
     if args.drop:
         print(f"Dropping {DB_NAME}.{COLLECTION_NAME} ...")
@@ -182,7 +218,7 @@ def main():
     print(f"\nDone. Logical size ~{size_gb:.2f} GB, on-disk storage ~{storage_gb:.2f} GB.")
     print(f"Indexes present: {list(coll.index_information().keys())}  (expect only _id_)")
     print("Next: run generate_load.py to warm the cache and feed Performance Advisor, "
-          "then confirm scan time with an explain() (expect ~30 s cold, ~4 s warm on M10).")
+          "then confirm scan time with an explain() (expect ~9 s cold, ~5 s warm on a 2 GB M10).")
 
 
 if __name__ == "__main__":
