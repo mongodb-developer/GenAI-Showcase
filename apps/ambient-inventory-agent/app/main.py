@@ -76,7 +76,9 @@ def schedule_monitor_once(session_id: str) -> None:
     if repo.monitor_has_run(session_id):
         return
     repo.mark_monitor_scheduled(session_id)
-    scheduled_tasks[session_id] = asyncio.create_task(delayed_monitor(session_id, alert_delay_seconds()))
+    scheduled_tasks[session_id] = asyncio.create_task(
+        delayed_monitor(session_id, alert_delay_seconds())
+    )
 
 
 @asynccontextmanager
@@ -143,7 +145,6 @@ async def create_session(payload: SessionRequest) -> dict:
     return {"session_id": session_id, "session": session}
 
 
-
 @app.post("/api/demo/start")
 async def start_demo(_: SessionRequest) -> dict:
     """Start the sweep. Seed separately, before the laptop goes on stage.
@@ -191,7 +192,6 @@ def get_state(session_id: str) -> dict:
     snapshot = repo.state_snapshot(session_id)
     snapshot["mcp"] = get_mcp_session().status()
     return snapshot
-
 
 
 @app.post("/api/alerts/open")

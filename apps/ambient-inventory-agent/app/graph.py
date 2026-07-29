@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-from math import floor
 from typing import Any, TypedDict
 
 from langgraph.graph import END, StateGraph
@@ -9,13 +8,12 @@ from langgraph.graph import END, StateGraph
 from .memory import new_sweep_id
 from .repository import InventoryRepository
 
+
 class MonitorState(TypedDict, total=False):
     session_id: str
     sweep_id: str
     products: list[dict[str, Any]]
     alert: dict[str, Any] | None
-
-
 
 
 def product_cover(products: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -36,7 +34,6 @@ def product_cover(products: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         # Whole days: a tenth of a day of coffee is not a number anyone acts on.
         cover[product["_id"]] = {"days_of_cover": int(units // daily_demand)}
     return cover
-
 
 
 class InventoryMonitorGraph:
@@ -73,7 +70,8 @@ class InventoryMonitorGraph:
         """
         state["products"] = list(
             self.repository.db.products.find(
-                {}, {"sku": 1, "name": 1, "daily_demand": 1, "finished_units_on_hand": 1}
+                {},
+                {"sku": 1, "name": 1, "daily_demand": 1, "finished_units_on_hand": 1},
             )
         )
         return state
@@ -92,8 +90,9 @@ class InventoryMonitorGraph:
         sweep_id = state["sweep_id"]
         alert = self._investigate(session_id, sweep_id)
         if alert:
-            repo.log_event(session_id, "agent_finding",
-                f"Diagnosis: {alert.get('summary', '')}")
+            repo.log_event(
+                session_id, "agent_finding", f"Diagnosis: {alert.get('summary', '')}"
+            )
             state["alert"] = alert
             return state
 
@@ -116,4 +115,3 @@ class InventoryMonitorGraph:
             return None
 
         return diagnosis or None
-

@@ -58,7 +58,6 @@ class MCPUnavailable(RuntimeError):
     """Raised when the Remote MCP server cannot be used."""
 
 
-
 def _extract_connection_id(payload: Any) -> str | None:
     text = payload if isinstance(payload, str) else str(payload)
     match = CONNECTION_ID_PATTERN.search(text)
@@ -169,9 +168,7 @@ class MCPSession:
                 )
 
             self.connection_id = connection_id
-            self.tools = [
-                tool for tool in all_tools if tool.name in AGENT_TOOL_NAMES
-            ]
+            self.tools = [tool for tool in all_tools if tool.name in AGENT_TOOL_NAMES]
             self.error = None
 
     async def ensure(self) -> None:
@@ -208,12 +205,18 @@ class MCPSession:
         jobs: list[tuple[tuple[str, str | None], Any, dict[str, Any]]] = []
         base = {"connectionId": self.connection_id, "database": self.database}
         if "list-collections" in by_name:
-            jobs.append((("list-collections", None), by_name["list-collections"], dict(base)))
+            jobs.append(
+                (("list-collections", None), by_name["list-collections"], dict(base))
+            )
         for collection in collections:
             for name in ("collection-schema", "collection-indexes"):
                 if name in by_name:
                     jobs.append(
-                        ((name, collection), by_name[name], {**base, "collection": collection})
+                        (
+                            (name, collection),
+                            by_name[name],
+                            {**base, "collection": collection},
+                        )
                     )
 
         async def run(key, tool, payload):
@@ -231,7 +234,6 @@ class MCPSession:
     # Deliberately no `call_tool` helper: MCP tools are for agents to choose, not
     # for application code to invoke directly. Anything the app needs to do itself
     # uses the driver, and says so in the activity feed.
-
 
     def status(self) -> dict[str, Any]:
         return {

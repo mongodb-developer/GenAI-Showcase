@@ -25,6 +25,7 @@ DEMO_COLLECTIONS = [
 # session-scoped queries stay indexable equality matches.
 SEED_SESSION_ID = "seed"
 
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
@@ -63,10 +64,26 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 420,
                 "reorder_point": 120,
                 "components": [
-                    {"inventory_id": "roasted_espresso_blend", "quantity_per_unit": 0.34, "unit": "kg"},
-                    {"inventory_id": "bag_12oz_valve", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "label_espresso_12oz", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "mailer_single", "quantity_per_unit": 0.35, "unit": "each"},
+                    {
+                        "inventory_id": "roasted_espresso_blend",
+                        "quantity_per_unit": 0.34,
+                        "unit": "kg",
+                    },
+                    {
+                        "inventory_id": "bag_12oz_valve",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "label_espresso_12oz",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "mailer_single",
+                        "quantity_per_unit": 0.35,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -80,10 +97,26 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 180,
                 "reorder_point": 60,
                 "components": [
-                    {"inventory_id": "roasted_ethiopia_guji", "quantity_per_unit": 0.34, "unit": "kg"},
-                    {"inventory_id": "bag_12oz_valve", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "label_ethiopia_12oz", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "mailer_single", "quantity_per_unit": 0.25, "unit": "each"},
+                    {
+                        "inventory_id": "roasted_ethiopia_guji",
+                        "quantity_per_unit": 0.34,
+                        "unit": "kg",
+                    },
+                    {
+                        "inventory_id": "bag_12oz_valve",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "label_ethiopia_12oz",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "mailer_single",
+                        "quantity_per_unit": 0.25,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -97,8 +130,16 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 260,
                 "reorder_point": 90,
                 "components": [
-                    {"inventory_id": "cold_brew_cans", "quantity_per_unit": 4, "unit": "each"},
-                    {"inventory_id": "cold_brew_carrier", "quantity_per_unit": 1, "unit": "each"},
+                    {
+                        "inventory_id": "cold_brew_cans",
+                        "quantity_per_unit": 4,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "cold_brew_carrier",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -112,10 +153,26 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 200,
                 "reorder_point": 70,
                 "components": [
-                    {"inventory_id": "roasted_colombia_huila", "quantity_per_unit": 0.34, "unit": "kg"},
-                    {"inventory_id": "bag_12oz_valve", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "label_colombia_12oz", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "mailer_single", "quantity_per_unit": 0.3, "unit": "each"},
+                    {
+                        "inventory_id": "roasted_colombia_huila",
+                        "quantity_per_unit": 0.34,
+                        "unit": "kg",
+                    },
+                    {
+                        "inventory_id": "bag_12oz_valve",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "label_colombia_12oz",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "mailer_single",
+                        "quantity_per_unit": 0.3,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -129,10 +186,26 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 150,
                 "reorder_point": 55,
                 "components": [
-                    {"inventory_id": "roasted_decaf_blend", "quantity_per_unit": 0.34, "unit": "kg"},
-                    {"inventory_id": "bag_12oz_valve", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "label_decaf_12oz", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "mailer_single", "quantity_per_unit": 0.3, "unit": "each"},
+                    {
+                        "inventory_id": "roasted_decaf_blend",
+                        "quantity_per_unit": 0.34,
+                        "unit": "kg",
+                    },
+                    {
+                        "inventory_id": "bag_12oz_valve",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "label_decaf_12oz",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "mailer_single",
+                        "quantity_per_unit": 0.3,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -146,9 +219,21 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 300,
                 "reorder_point": 120,
                 "components": [
-                    {"inventory_id": "roasted_house_blend", "quantity_per_unit": 0.9, "unit": "kg"},
-                    {"inventory_id": "bag_2lb_valve", "quantity_per_unit": 1, "unit": "each"},
-                    {"inventory_id": "label_house_2lb", "quantity_per_unit": 1, "unit": "each"},
+                    {
+                        "inventory_id": "roasted_house_blend",
+                        "quantity_per_unit": 0.9,
+                        "unit": "kg",
+                    },
+                    {
+                        "inventory_id": "bag_2lb_valve",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
+                    {
+                        "inventory_id": "label_house_2lb",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -162,8 +247,16 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 160,
                 "reorder_point": 60,
                 "components": [
-                    {"inventory_id": "roasted_espresso_blend", "quantity_per_unit": 2.3, "unit": "kg"},
-                    {"inventory_id": "bag_5lb_kraft", "quantity_per_unit": 1, "unit": "each"},
+                    {
+                        "inventory_id": "roasted_espresso_blend",
+                        "quantity_per_unit": 2.3,
+                        "unit": "kg",
+                    },
+                    {
+                        "inventory_id": "bag_5lb_kraft",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -177,7 +270,11 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 180,
                 "reorder_point": 80,
                 "components": [
-                    {"inventory_id": "cold_brew_bottle_32oz", "quantity_per_unit": 1, "unit": "each"},
+                    {
+                        "inventory_id": "cold_brew_bottle_32oz",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
                 ],
             },
             {
@@ -191,7 +288,11 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "target_stock": 200,
                 "reorder_point": 60,
                 "components": [
-                    {"inventory_id": "sampler_box", "quantity_per_unit": 1, "unit": "each"},
+                    {
+                        "inventory_id": "sampler_box",
+                        "quantity_per_unit": 1,
+                        "unit": "each",
+                    },
                 ],
             },
         ]
@@ -401,7 +502,10 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "vendor_type": "Label printer",
                 "default_lead_time_days": 5,
                 "reliability": 0.91,
-                "unit_costs": {"label_espresso_12oz": 0.07, "label_ethiopia_12oz": 0.08},
+                "unit_costs": {
+                    "label_espresso_12oz": 0.07,
+                    "label_ethiopia_12oz": 0.08,
+                },
                 "minimum_order": {"label_espresso_12oz": 500},
             },
             {
@@ -469,9 +573,13 @@ def ensure_indexes(db: Database) -> None:
     # active-alert lookup adds {status: {$nin: [...]}}. A ($nin) range predicate
     # cannot seek, so leading with session_id + created_at serves the sort for
     # both and avoids a blocking SORT stage.
-    db.alerts.create_index([("session_id", 1), ("created_at", -1)], name="alerts_session_recent")
+    db.alerts.create_index(
+        [("session_id", 1), ("created_at", -1)], name="alerts_session_recent"
+    )
     # Enforces one alert per (session, product+blocker) — backs the upsert dedupe.
-    db.alerts.create_index([("session_id", 1), ("dedupe_key", 1)], unique=True, name="alerts_dedupe")
+    db.alerts.create_index(
+        [("session_id", 1), ("dedupe_key", 1)], unique=True, name="alerts_dedupe"
+    )
 
     # One timeline per session: read newest-first for the feed, oldest-first for
     # the dialogue, so index both directions off session_id.
@@ -479,7 +587,8 @@ def ensure_indexes(db: Database) -> None:
         [("session_id", 1), ("created_at", -1)], name="history_session_recent"
     )
     db.session_history.create_index(
-        [("session_id", 1), ("role", 1), ("created_at", 1)], name="history_session_dialogue"
+        [("session_id", 1), ("role", 1), ("created_at", 1)],
+        name="history_session_dialogue",
     )
 
     # purchase_orders: list view filters session_id and sorts by created_at.
@@ -495,8 +604,9 @@ def ensure_indexes(db: Database) -> None:
         partialFilterExpression={"status": "ordered"},
     )
 
-    db.demo_sessions.create_index([("session_id", 1)], unique=True, sparse=True,
-                                  name="sessions_session_id")
+    db.demo_sessions.create_index(
+        [("session_id", 1)], unique=True, sparse=True, name="sessions_session_id"
+    )
 
 
 def ensure_validators(db: Database) -> None:
@@ -508,7 +618,14 @@ def ensure_validators(db: Database) -> None:
     validators = {
         "products": {
             "bsonType": "object",
-            "required": ["_id", "sku", "name", "daily_demand", "finished_units_on_hand", "components"],
+            "required": [
+                "_id",
+                "sku",
+                "name",
+                "daily_demand",
+                "finished_units_on_hand",
+                "components",
+            ],
             "properties": {
                 "sku": {"bsonType": "string"},
                 "daily_demand": {"bsonType": ["double", "int"], "minimum": 0},
@@ -552,7 +669,14 @@ def ensure_validators(db: Database) -> None:
             "required": ["_id", "session_id", "status", "risk", "recommendation"],
             "properties": {
                 "status": {
-                    "enum": ["New", "Opened", "Discussing", "Waiting approval", "Resolved", "Dismissed"]
+                    "enum": [
+                        "New",
+                        "Opened",
+                        "Discussing",
+                        "Waiting approval",
+                        "Resolved",
+                        "Dismissed",
+                    ]
                 },
                 "severity": {"enum": ["High", "Medium", "Low"]},
             },
@@ -581,7 +705,9 @@ def iso_document(document: dict[str, Any]) -> dict[str, Any]:
                 value = value.replace(tzinfo=timezone.utc)
             converted[key] = value.isoformat()
         elif isinstance(value, list):
-            converted[key] = [iso_document(item) if isinstance(item, dict) else item for item in value]
+            converted[key] = [
+                iso_document(item) if isinstance(item, dict) else item for item in value
+            ]
         elif isinstance(value, dict):
             converted[key] = iso_document(value)
         else:

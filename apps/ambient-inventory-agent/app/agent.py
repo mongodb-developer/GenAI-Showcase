@@ -15,7 +15,6 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime, timezone
 from typing import Any, AsyncIterator
 
 from dotenv import load_dotenv
@@ -29,7 +28,7 @@ from .mcp_session import (
     get_mcp_session,
 )
 from .memory import get_checkpointer, thread_config
-from .repository import AlreadyOrdered, InventoryRepository
+from .repository import InventoryRepository
 
 load_dotenv()
 
@@ -153,7 +152,6 @@ button in the UI, which submits whatever the current recommendation says.\
 """
 
 
-
 def build_agent_tools(session: MCPSession) -> list[Any]:
     """Re-expose MCP tools with app-owned arguments bound.
 
@@ -166,9 +164,7 @@ def build_agent_tools(session: MCPSession) -> list[Any]:
     wrapped: list[Any] = []
     for tool in session.tools:
         schema = tool.args_schema or {}
-        properties = (
-            schema.get("properties", {}) if isinstance(schema, dict) else {}
-        )
+        properties = schema.get("properties", {}) if isinstance(schema, dict) else {}
         visible = {
             name: spec for name, spec in properties.items() if name not in INJECTED_ARGS
         }
@@ -310,7 +306,6 @@ class CoffeeInventoryAgent:
         except Exception:
             return False
         return bool(getattr(state, "values", {}).get("messages"))
-
 
     def _context(
         self, alert: dict[str, Any], message: str, resumed: bool = False
@@ -533,7 +528,9 @@ def render_command(tool: str, args: dict[str, Any]) -> str:
     """Render an MCP call the way it would read as a MongoDB shell command."""
     collection = args.get("collection", "")
     if tool == "find":
-        rendered = f'find("{collection}", {json.dumps(args.get("filter", {}), default=str)})'
+        rendered = (
+            f'find("{collection}", {json.dumps(args.get("filter", {}), default=str)})'
+        )
         if args.get("sort"):
             rendered += f'.sort({json.dumps(args["sort"], default=str)})'
         if args.get("limit"):
@@ -542,7 +539,9 @@ def render_command(tool: str, args: dict[str, Any]) -> str:
     if tool == "aggregate":
         return f'aggregate("{collection}", {json.dumps(args.get("pipeline", []), default=str)})'
     if tool == "count":
-        return f'count("{collection}", {json.dumps(args.get("query", {}), default=str)})'
+        return (
+            f'count("{collection}", {json.dumps(args.get("query", {}), default=str)})'
+        )
     if tool == "list-collections":
         return "listCollections()"
     if tool == "collection-schema":
@@ -557,8 +556,6 @@ def render_command(tool: str, args: dict[str, Any]) -> str:
             f'{json.dumps(args.get("update", {}), default=str)[:200]})'
         )
     return f"{tool}({json.dumps(args, default=str)[:200]})"
-
-
 
 
 def _only_agent_collections(listing: str) -> str:
@@ -592,10 +589,11 @@ def _friendly_error(exc: Exception) -> str:
     """Readable failure text: the owner sees this in the chat panel."""
     text = _root_cause(exc)
     if "InternalServerException" in text or "ThrottlingException" in text:
-        return "Bedrock hiccupped on that request. Ask again — the retry usually succeeds."
+        return (
+            "Bedrock hiccupped on that request. Ask again — the retry usually succeeds."
+        )
     if "AccessDenied" in text or "UnrecognizedClient" in text:
         return "Bedrock rejected the credentials. Check AWS_REGION and model access."
     if "ValidationException" in text and "model" in text.lower():
         return f"Bedrock rejected the model id {os.getenv('BEDROCK_MODEL_ID')}. Check it is enabled in this region."
     return text[:300]
-

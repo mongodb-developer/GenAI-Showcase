@@ -11,7 +11,9 @@ load_dotenv()
 @lru_cache(maxsize=1)
 def get_client() -> MongoClient:
     uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
-    server_selection_timeout_ms = int(os.getenv("MONGODB_SERVER_SELECTION_TIMEOUT_MS", "5000"))
+    server_selection_timeout_ms = int(
+        os.getenv("MONGODB_SERVER_SELECTION_TIMEOUT_MS", "5000")
+    )
     # Keep driver pool defaults for this low-concurrency demo, but fail fast
     # during rehearsals if the configured Atlas/local endpoint is unreachable.
     return MongoClient(

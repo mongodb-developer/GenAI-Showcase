@@ -188,6 +188,7 @@ ALERT_SCHEMA = {
     ],
 }
 
+
 def _as_extended_json(document: dict[str, Any]) -> dict[str, Any]:
     """Render datetimes as MongoDB extended JSON so MCP stores real BSON dates."""
     return {
@@ -196,7 +197,6 @@ def _as_extended_json(document: dict[str, Any]) -> dict[str, Any]:
         else value
         for key, value in document.items()
     }
-
 
 
 def _alert_preview(document: dict[str, Any]) -> str:
@@ -364,7 +364,9 @@ class AlertInvestigator:
             checkpointer=get_checkpointer(),
         )
 
-    async def investigate(self, session_id: str, sweep_id: str) -> dict[str, Any] | None:
+    async def investigate(
+        self, session_id: str, sweep_id: str
+    ) -> dict[str, Any] | None:
         """Sweep, diagnose, and file the alert over MCP. Returns the alert, or None."""
         self._session_id = session_id
         self._sweep_id = sweep_id
@@ -432,7 +434,9 @@ class AlertInvestigator:
                 if key in seen:
                     continue
                 seen.add(key)
-                args = {k: v for k, v in (call.get("args") or {}).items() if v is not None}
+                args = {
+                    k: v for k, v in (call.get("args") or {}).items() if v is not None
+                }
                 self.repository.log_event(
                     session_id,
                     "mcp_tool",

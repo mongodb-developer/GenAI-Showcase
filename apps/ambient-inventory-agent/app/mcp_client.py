@@ -74,7 +74,12 @@ class RemoteMCPProbe:
                 tools_response = client.post(
                     self.url,
                     headers=headers,
-                    json={"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}},
+                    json={
+                        "jsonrpc": "2.0",
+                        "id": 2,
+                        "method": "tools/list",
+                        "params": {},
+                    },
                 )
                 tools_response.raise_for_status()
                 payload = _decode_mcp_response(tools_response.text)
@@ -91,7 +96,9 @@ class RemoteMCPProbe:
                     auth_method=self._auth_method(headers),
                 )
         except Exception as exc:
-            return MCPStatus(configured=True, url=self.url, reachable=False, tools=[], error=str(exc))
+            return MCPStatus(
+                configured=True, url=self.url, reachable=False, tools=[], error=str(exc)
+            )
 
     def _initialize(self, client: Any, headers: dict[str, str]) -> Any:
         return client.post(
@@ -126,7 +133,9 @@ class RemoteMCPProbe:
 
         token_url = self._discover_token_url(client, unauthorized_response)
         if not token_url:
-            raise ValueError("Could not discover MCP OAuth token endpoint from the remote MCP server.")
+            raise ValueError(
+                "Could not discover MCP OAuth token endpoint from the remote MCP server."
+            )
 
         data = {"grant_type": "client_credentials"}
         if self.url:
@@ -134,7 +143,11 @@ class RemoteMCPProbe:
 
         response = self._request_client_credentials_token(client, token_url, data)
         if response.status_code >= 400:
-            post_data = {**data, "client_id": self.client_id, "client_secret": self.client_secret}
+            post_data = {
+                **data,
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
+            }
             response = client.post(token_url, data=post_data)
         if response.status_code == 401:
             fallback_token_url = self._cloud_token_url_from_mcp_url()
@@ -151,7 +164,9 @@ class RemoteMCPProbe:
             raise ValueError("OAuth token response did not include access_token.")
         return access_token
 
-    def _request_client_credentials_token(self, client: Any, token_url: str, data: dict[str, str]) -> Any:
+    def _request_client_credentials_token(
+        self, client: Any, token_url: str, data: dict[str, str]
+    ) -> Any:
         credentials = f"{self.client_id}:{self.client_secret}".encode()
         return client.post(
             token_url,
@@ -163,7 +178,9 @@ class RemoteMCPProbe:
             },
         )
 
-    def _discover_token_url(self, client: Any, unauthorized_response: Any) -> str | None:
+    def _discover_token_url(
+        self, client: Any, unauthorized_response: Any
+    ) -> str | None:
         resource_metadata_url = _parse_resource_metadata_url(
             unauthorized_response.headers.get("WWW-Authenticate", "")
         )
@@ -173,19 +190,25 @@ class RemoteMCPProbe:
             metadata = protected_resource.json()
             authorization_servers = metadata.get("authorization_servers", [])
             for authorization_server in authorization_servers:
-                token_url = self._token_url_from_authorization_server(client, authorization_server)
+                token_url = self._token_url_from_authorization_server(
+                    client, authorization_server
+                )
                 if token_url:
                     return token_url
 
         return self._fallback_token_url(client)
 
-    def _token_url_from_authorization_server(self, client: Any, authorization_server: str) -> str | None:
+    def _token_url_from_authorization_server(
+        self, client: Any, authorization_server: str
+    ) -> str | None:
         metadata_urls = []
         if ".well-known" in authorization_server:
             metadata_urls.append(authorization_server)
         else:
             base = authorization_server.rstrip("/") + "/"
-            metadata_urls.append(urljoin(base, ".well-known/oauth-authorization-server"))
+            metadata_urls.append(
+                urljoin(base, ".well-known/oauth-authorization-server")
+            )
             metadata_urls.append(urljoin(base, ".well-known/openid-configuration"))
 
         for metadata_url in metadata_urls:
@@ -202,7 +225,10 @@ class RemoteMCPProbe:
         if not parsed.scheme or not parsed.netloc:
             return None
         origin = f"{parsed.scheme}://{parsed.netloc}"
-        for metadata_path in ["/.well-known/oauth-authorization-server", "/.well-known/openid-configuration"]:
+        for metadata_path in [
+            "/.well-known/oauth-authorization-server",
+            "/.well-known/openid-configuration",
+        ]:
             response = client.get(origin + metadata_path)
             if response.status_code >= 400:
                 continue

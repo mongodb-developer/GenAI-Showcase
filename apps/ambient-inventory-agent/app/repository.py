@@ -60,8 +60,6 @@ class InventoryRepository:
             }
         )
 
-
-
     def ensure_session(self, session_id: str) -> dict[str, Any]:
         session = self.db.demo_sessions.find_one_and_update(
             {"session_id": session_id},
@@ -133,9 +131,7 @@ class InventoryRepository:
         """
         # Fields the UI reads from the top level are not duplicated inside `risk`.
         promoted = ("summary", "headline", "recommendation", "title", "severity")
-        risk = {
-            key: value for key, value in diagnosis.items() if key not in promoted
-        }
+        risk = {key: value for key, value in diagnosis.items() if key not in promoted}
         now = utc_now()
         return {
             "_id": f"alert_{uuid4().hex[:10]}",
@@ -155,7 +151,9 @@ class InventoryRepository:
     def list_alerts(self, session_id: str) -> list[dict[str, Any]]:
         return [
             iso_document(alert)
-            for alert in self.db.alerts.find({"session_id": session_id}).sort("created_at", -1)
+            for alert in self.db.alerts.find({"session_id": session_id}).sort(
+                "created_at", -1
+            )
         ]
 
     def get_alert(self, alert_id: str) -> dict[str, Any] | None:
@@ -199,7 +197,9 @@ class InventoryRepository:
             entry["queries"] = queries
         self.db.session_history.insert_one(entry)
 
-    def list_dialogue(self, session_id: str, alert_id: str | None = None) -> list[dict[str, Any]]:
+    def list_dialogue(
+        self, session_id: str, alert_id: str | None = None
+    ) -> list[dict[str, Any]]:
         """Just the owner/agent turns from the session history, oldest first."""
         query: dict[str, Any] = {
             "session_id": session_id,
@@ -286,7 +286,9 @@ class InventoryRepository:
             alert_id,
         )
 
-    def place_order_directly(self, session_id: str, alert_id: str) -> tuple[dict[str, Any], bool]:
+    def place_order_directly(
+        self, session_id: str, alert_id: str
+    ) -> tuple[dict[str, Any], bool]:
         """Write the order with the driver. Used by the approve button.
 
         The button is app plumbing, not an agent action, so it writes directly and
@@ -323,7 +325,9 @@ class InventoryRepository:
         self.confirm_purchase_order(session_id, alert_id, order)
         return iso_document(order), True
 
-    def list_purchase_orders(self, session_id: str | None = None) -> list[dict[str, Any]]:
+    def list_purchase_orders(
+        self, session_id: str | None = None
+    ) -> list[dict[str, Any]]:
         query: dict[str, Any] = {}
         if session_id:
             # Seeded orders carry session_id "seed", so this stays an indexable
