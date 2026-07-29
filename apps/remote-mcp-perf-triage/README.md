@@ -53,12 +53,12 @@ would normally require a developer who knows exactly where to look.
 
 | File | Purpose |
 |------|---------|
-| `checkout_app.py` | The Contoso checkout page. Really hangs on the slow poll, then fires the incident to ChatGPT. |
+| `checkout_app.py` | The Leafy Electronics checkout page. Really hangs on the slow poll, then fires the incident to ChatGPT. |
 | `seed_payments.py` | Seeds a large, realistic `payments` collection (no index on `session_id`); `--drop-index` resets the demo. |
 | `generate_load.py` | Runs the checkout status-poll query repeatedly to feed Performance Advisor. |
-| `post_alert.py` | Posts an Atlas-styled "Query Targeting" alert to Slack via an incoming webhook. |
 | `trigger_chatgpt.py` | Sends a realistic PagerDuty-style incident to a published ChatGPT Workspace Agent and prints the conversation URL. |
-| `requirements.txt` | `pymongo` (for the seed and load scripts). |
+| `trigger_slack.py` | Posts that *same* incident to a Slack channel, on demand — shows the fan-out to a second surface. |
+| `requirements.txt` | `pymongo`, `python-dotenv`, and FastAPI/uvicorn for the checkout page. |
 
 ## Prerequisites
 
@@ -140,7 +140,7 @@ Notes:
 ### The checkout page (recommended opening)
 
 `checkout_app.py` gives the demo a visual first act with no terminal on screen. It
-serves a Contoso checkout that runs the **real** status-poll query against the **real**
+serves a Leafy Electronics checkout that runs the **real** status-poll query against the **real**
 unindexed collection — so the hang isn't staged, it's the bug:
 
 ```bash
@@ -196,7 +196,30 @@ credentials or a network call:
 python trigger_chatgpt.py --dry-run
 ```
 
-`post_alert.py` remains optional if you also want a separate Atlas-style alert in Slack.
+### Showing the Slack fan-out (optional)
+
+The same incident can land in Slack as well as ChatGPT — one webhook event, two
+surfaces. This never happens automatically; run it when you want the beat:
+
+```bash
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/XXX/YYY/ZZZ"
+python trigger_slack.py --dry-run                 # preview, sends nothing
+python trigger_slack.py                           # post it
+```
+
+To make it obviously *one* incident on screen, pass the same ID to both and link the
+Slack message back to the agent's conversation:
+
+```bash
+python trigger_chatgpt.py --incident-id PY1Z69L
+python trigger_slack.py --incident-id PY1Z69L \
+  --conversation-url "https://chatgpt.com/c/..."   # adds an "Open agent triage" button
+```
+
+The incident comes from `trigger_chatgpt.build_pagerduty_incident()`, so the two
+channels cannot drift apart — only the rendering differs. Note that nothing reads the
+Slack message back: it shows the incident *reaching* Slack, not a conversation with
+the agent there. A real deployment would need a Slack app wired to the agent for that.
 
 The Workspace Agents API accepts a caller-defined `conversation_key`. The simulator
 uses the PagerDuty incident ID for that key, so future webhook events for the same

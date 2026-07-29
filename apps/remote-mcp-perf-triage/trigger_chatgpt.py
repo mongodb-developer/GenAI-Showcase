@@ -209,9 +209,10 @@ def wait_for_run(trigger_id, run_id, token, poll_interval, timeout):
 
 def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
-    # Contoso is Microsoft's official placeholder company, used here so a public
-    # repo never puts a real organization's name on a fabricated incident.
-    parser.add_argument("--account-subdomain", default="contoso")
+    # Leafy Electronics is an invented company (MongoDB's leaf, and a sibling to the
+    # Leafy Roasters demo), so a public repo never puts a real organization's name on
+    # a fabricated incident.
+    parser.add_argument("--account-subdomain", default="leafyelectronics")
     parser.add_argument("--service", default="Checkout API")
     parser.add_argument("--service-id", default="PF9KMXH")
     parser.add_argument("--environment", default="production")

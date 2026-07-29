@@ -1,4 +1,5 @@
-"""Contoso checkout page — the demo's opening act, and a real reproduction of the bug.
+"""Leafy Electronics checkout page — the demo's opening act, and a real reproduction
+of the bug.
 
 Nothing here is simulated except the payment processor. The page runs the SAME
 status-poll query the demo is about, against the SAME unindexed collection:
@@ -34,10 +35,12 @@ import secrets
 import sys
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 try:
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse, JSONResponse
+    from fastapi.staticfiles import StaticFiles
     from pymongo import MongoClient
     from pymongo.errors import ExecutionTimeout
     from dotenv import load_dotenv
@@ -83,7 +86,13 @@ POLL_INTERVAL_MS = 2_500
 # edge is real, not theoretical. Post-index polls take ~20 ms and are unaffected.
 POLL_DEADLINE_MS = 2_500
 
-app = FastAPI(title="Contoso Checkout")
+app = FastAPI(title="Leafy Electronics Checkout")
+
+# The MongoDB leaf, copied from the Leafy Roasters inventory demo so both apps use
+# the identical asset. Resolved relative to this file, not the working directory,
+# so the app can be started from anywhere.
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Module state. Single-process, single-presenter demo; no locking needed.
 state = {
@@ -249,18 +258,37 @@ PAGE = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Contoso — Checkout</title>
+<title>Leafy Electronics — Checkout</title>
 <style>
+  /* Same Google Fonts import as the inventory app: Source Sans 3 for UI text,
+     Source Code Pro for the poll panel's monospace figures. */
+  @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600;700&display=swap");
+
+  /* Palette and type lifted from the Leafy Roasters inventory demo so the two
+     apps read as one company. MongoDB brand colors, Source Sans 3. */
   :root {
-    --ink:#1a1a1c; --muted:#6b6b73; --line:#e4e4e8; --bg:#f6f6f8;
-    --accent:#0b6bcb; --bad:#c62828; --good:#1b7f3b; --panel:#12141a;
+    --mongodb-green:#00ed64; --mongodb-forest:#00684a; --mongodb-slate:#001e2b;
+    --ink:#001e2b; --muted:#5c6c75; --subtle:#889397;
+    --line:#e4e8eb; --bg:#f4f6f8; --surface:#ffffff;
+    --accent:var(--mongodb-forest); --bad:#d0271d; --good:var(--mongodb-forest);
+    --panel:var(--mongodb-slate);
+    --radius:12px; --radius-sm:8px; --radius-btn:10px;
+    --shadow:0 1px 3px rgba(0,30,43,.08), 0 1px 2px rgba(0,30,43,.04);
   }
   * { box-sizing:border-box; }
-  body { margin:0; font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  body { margin:0; font-size:15px; line-height:1.5;
+         font-family:"Source Sans 3",Inter,ui-sans-serif,system-ui,-apple-system,
+                     BlinkMacSystemFont,"Segoe UI",sans-serif;
+         -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
          color:var(--ink); background:var(--bg); }
-  header { background:#fff; border-bottom:1px solid var(--line); padding:14px 28px; }
-  .brand { font-weight:650; font-size:17px; letter-spacing:-.2px; }
-  .brand span { color:var(--accent); }
+  header { background:var(--surface); border-bottom:1px solid var(--line); padding:14px 28px; }
+  /* Same stacked wordmark as the inventory app: company over section label. */
+  .brand { display:flex; align-items:center; gap:10px; }
+  /* Same 30px leaf as the inventory app's sidebar brand. */
+  .brand-logo { width:30px; height:30px; object-fit:contain; }
+  .brand-text { display:flex; flex-direction:column; line-height:1.15; }
+  .brand-text strong { font-size:15px; font-weight:700; color:var(--ink); }
+  .brand-text span { font-size:12px; color:var(--subtle); }
   main { max-width:940px; margin:32px auto; padding:0 20px;
          display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start; }
   .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:22px; }
@@ -287,7 +315,7 @@ PAGE = """<!doctype html>
   .msg.ok { color:var(--good); }
   .sub { color:var(--muted); font-size:13px; margin-top:5px; }
   .panel { background:var(--panel); border-radius:10px; padding:18px 20px; color:#e8e8ee;
-           font:12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace; }
+           font:12.5px/1.7 "Source Code Pro",ui-monospace,SFMono-Regular,Menlo,monospace; }
   .panel h3 { margin:0 0 12px; font:600 11px/1 -apple-system,sans-serif;
               letter-spacing:.09em; text-transform:uppercase; color:#8b8b99; }
   .log { min-height:190px; }
@@ -302,7 +330,15 @@ PAGE = """<!doctype html>
 </style>
 </head>
 <body>
-<header><div class="brand">contoso<span>.</span></div></header>
+<header>
+  <div class="brand">
+    <img src="/static/mongodb-logo.png" alt="MongoDB" class="brand-logo" />
+    <div class="brand-text">
+      <strong>Leafy Electronics</strong>
+      <span>Checkout</span>
+    </div>
+  </div>
+</header>
 <main>
   <div class="card">
     <h2>Order summary</h2>

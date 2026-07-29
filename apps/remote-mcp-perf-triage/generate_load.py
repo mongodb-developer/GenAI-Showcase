@@ -15,7 +15,8 @@ session_id, every poll is a full COLLSCAN.
 
 No maxTimeMS here: we WANT each query to complete slowly so it lands in the slow-query
 log (>100 ms) that Performance Advisor analyzes. The "checkout timing out" symptom is
-a narrative prop delivered via the staged Slack alert (post_alert.py).
+demonstrated for real by checkout_app.py, which runs this same query and genuinely
+exceeds its timeout.
 
 TRICKLE MODE (default): recency matters more than volume for Performance Advisor, and
 the M10 has a burstable CPU, so by default this runs a small BURST of queries every
