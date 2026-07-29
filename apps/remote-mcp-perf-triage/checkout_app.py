@@ -34,17 +34,17 @@ import os
 import secrets
 import sys
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 try:
+    import uvicorn
+    from dotenv import load_dotenv
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse, JSONResponse
     from fastapi.staticfiles import StaticFiles
     from pymongo import MongoClient
     from pymongo.errors import ExecutionTimeout
-    from dotenv import load_dotenv
-    import uvicorn
 except ImportError:
     sys.exit("Missing deps. Run: pip install -r requirements.txt")
 
@@ -103,6 +103,10 @@ state = {
 
 client: MongoClient | None = None
 
+# Strong references to in-flight "processor confirms the payment" tasks. Without
+# this asyncio can garbage-collect them mid-sleep (see RUF006).
+_gateway_tasks: set[asyncio.Task] = set()
+
 
 def coll():
     return client[DB_NAME][COLLECTION_NAME]
@@ -138,10 +142,19 @@ async def pay():
         "currency": "USD",
         "status": "pending",
         "payment_method": "card",
-        "card": {"brand": "visa", "last4": "4242", "exp_month": 11,
-                 "exp_year": 2029, "fingerprint": secrets.token_hex(8)},
-        "billing_address": {"city": "Seattle", "state": "WA",
-                            "country": "US", "postal_code": "98104"},
+        "card": {
+            "brand": "visa",
+            "last4": "4242",
+            "exp_month": 11,
+            "exp_year": 2029,
+            "fingerprint": secrets.token_hex(8),
+        },
+        "billing_address": {
+            "city": "Seattle",
+            "state": "WA",
+            "country": "US",
+            "postal_code": "98104",
+        },
         "line_items": ORDER,
         "gateway": "stripe",
         "risk_score": 4,
@@ -149,7 +162,12 @@ async def pay():
         "updated_at": now,
     }
     await asyncio.to_thread(coll().insert_one, doc)
-    asyncio.create_task(confirm_payment_later(session_id))
+    # Keep a strong reference: asyncio only holds a weak one, so an unreferenced
+    # task can be garbage-collected before it runs — which here would mean the
+    # payment never gets confirmed and even the post-index checkout fails.
+    task = asyncio.create_task(confirm_payment_later(session_id))
+    _gateway_tasks.add(task)
+    task.add_done_callback(_gateway_tasks.discard)
     return {"session_id": session_id, "amount": ORDER_TOTAL}
 
 
@@ -193,7 +211,9 @@ async def incident():
     if not state["incident_enabled"]:
         return JSONResponse({"fired": False, "reason": "disabled"}, status_code=200)
     if not state["incident_armed"]:
-        return JSONResponse({"fired": False, "reason": "already_fired"}, status_code=200)
+        return JSONResponse(
+            {"fired": False, "reason": "already_fired"}, status_code=200
+        )
 
     token = os.environ.get("AGENT_ACCESS_TOKEN")
     trigger_id = os.environ.get("WORKSPACE_AGENT_TRIGGER_ID")
@@ -211,7 +231,11 @@ async def incident():
     try:
         response = await asyncio.to_thread(
             trigger_chatgpt.trigger_agent,
-            trigger_id, token, payload, f"pagerduty-{incident_id}", event_id,
+            trigger_id,
+            token,
+            payload,
+            f"pagerduty-{incident_id}",
+            event_id,
         )
     except (RuntimeError, KeyError) as exc:
         return JSONResponse({"fired": False, "reason": str(exc)}, status_code=200)
@@ -482,13 +506,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
-    parser.add_argument("--no-incident", action="store_true",
-                        help="rehearse the checkout without paging the agent")
+    parser.add_argument(
+        "--no-incident",
+        action="store_true",
+        help="rehearse the checkout without paging the agent",
+    )
     args = parser.parse_args()
 
     uri = os.environ.get("MONGODB_URI")
     if not uri:
-        sys.exit('ERROR: set MONGODB_URI in .env')
+        sys.exit("ERROR: set MONGODB_URI in .env")
 
     global client
     client = MongoClient(uri, appname="perf-triage-demo-checkout")

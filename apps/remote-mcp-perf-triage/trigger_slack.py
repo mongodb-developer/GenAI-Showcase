@@ -40,7 +40,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime
 
 try:
     from dotenv import load_dotenv
@@ -66,10 +66,9 @@ def build_slack_payload(incident, conversation_url=None):
     a field grid of the routing metadata, and a button through to the incident.
     """
     # created_at is ISO-8601 with microseconds; trim to whole seconds for display.
-    created = (
-        datetime.fromisoformat(incident["created_at"].replace("Z", "+00:00"))
-        .strftime("%Y-%m-%d %H:%M:%S UTC")
-    )
+    created = datetime.fromisoformat(
+        incident["created_at"].replace("Z", "+00:00")
+    ).strftime("%Y-%m-%d %H:%M:%S UTC")
     service = incident["service"]["summary"]
     assignee = incident["assignees"][0]["summary"]
     team = incident["teams"][0]["summary"]
@@ -92,7 +91,10 @@ def build_slack_payload(incident, conversation_url=None):
         {
             "type": "section",
             "fields": [
-                {"type": "mrkdwn", "text": f"*Incident*\n#{incident['number']} · {incident['id']}"},
+                {
+                    "type": "mrkdwn",
+                    "text": f"*Incident*\n#{incident['number']} · {incident['id']}",
+                },
                 {"type": "mrkdwn", "text": f"*Service*\n{service}"},
                 {"type": "mrkdwn", "text": f"*Assigned to*\n{assignee}"},
                 {"type": "mrkdwn", "text": f"*Team*\n{team}"},
@@ -103,7 +105,10 @@ def build_slack_payload(incident, conversation_url=None):
         {
             "type": "context",
             "elements": [
-                {"type": "mrkdwn", "text": f"Triggered {created} · status *{incident['status']}*"}
+                {
+                    "type": "mrkdwn",
+                    "text": f"Triggered {created} · status *{incident['status']}*",
+                }
             ],
         },
     ]
@@ -161,12 +166,12 @@ def main():
     parser.add_argument(
         "--incident-id",
         help="PagerDuty-style incident ID. Pass the same value you gave "
-             "trigger_chatgpt.py so both surfaces show one incident.",
+        "trigger_chatgpt.py so both surfaces show one incident.",
     )
     parser.add_argument(
         "--conversation-url",
         help="ChatGPT conversation URL from trigger_chatgpt.py; adds an "
-             "'Open agent triage' button linking the two surfaces.",
+        "'Open agent triage' button linking the two surfaces.",
     )
     parser.add_argument(
         "--dry-run",

@@ -53,8 +53,8 @@ import time
 from datetime import datetime, timedelta, timezone
 
 try:
-    from pymongo import MongoClient, InsertOne
     from dotenv import load_dotenv
+    from pymongo import InsertOne, MongoClient
 except ImportError:
     sys.exit("pymongo not installed. Run: pip install -r requirements.txt")
 
@@ -75,15 +75,24 @@ CURRENCIES = ["USD", "EUR", "GBP", "CAD"]
 CARD_BRANDS = ["visa", "mastercard", "amex", "discover"]
 GATEWAYS = ["stripe", "adyen", "braintree"]
 CITIES = [
-    ("Austin", "TX", "US"), ("Seattle", "WA", "US"), ("Denver", "CO", "US"),
-    ("London", "", "GB"), ("Toronto", "ON", "CA"), ("Berlin", "", "DE"),
-    ("Dublin", "", "IE"), ("New York", "NY", "US"),
+    ("Austin", "TX", "US"),
+    ("Seattle", "WA", "US"),
+    ("Denver", "CO", "US"),
+    ("London", "", "GB"),
+    ("Toronto", "ON", "CA"),
+    ("Berlin", "", "DE"),
+    ("Dublin", "", "IE"),
+    ("New York", "NY", "US"),
 ]
 PRODUCTS = [
-    ("SKU-1001", "Wireless Headphones"), ("SKU-1002", "USB-C Cable"),
-    ("SKU-1003", "Laptop Stand"), ("SKU-1004", "Mechanical Keyboard"),
-    ("SKU-1005", "4K Monitor"), ("SKU-1006", "Webcam"),
-    ("SKU-1007", "Desk Lamp"), ("SKU-1008", "Notebook"),
+    ("SKU-1001", "Wireless Headphones"),
+    ("SKU-1002", "USB-C Cable"),
+    ("SKU-1003", "Laptop Stand"),
+    ("SKU-1004", "Mechanical Keyboard"),
+    ("SKU-1005", "4K Monitor"),
+    ("SKU-1006", "Webcam"),
+    ("SKU-1007", "Desk Lamp"),
+    ("SKU-1008", "Notebook"),
 ]
 
 
@@ -114,12 +123,14 @@ def make_doc(blob_bytes, base_time):
     line_items = []
     for _ in range(n_items):
         sku, name = random.choice(PRODUCTS)
-        line_items.append({
-            "sku": sku,
-            "name": name,
-            "qty": random.randint(1, 4),
-            "unit_price": random.randint(500, 20_000),
-        })
+        line_items.append(
+            {
+                "sku": sku,
+                "name": name,
+                "qty": random.randint(1, 4),
+                "unit_price": random.randint(500, 20_000),
+            }
+        )
     amount = sum(i["qty"] * i["unit_price"] for i in line_items)
     created = base_time - timedelta(seconds=random.randint(0, 90 * 24 * 3600))
     return {
@@ -139,7 +150,9 @@ def make_doc(blob_bytes, base_time):
             "fingerprint": secrets.token_hex(8),
         },
         "billing_address": {
-            "city": city, "state": state, "country": country,
+            "city": city,
+            "state": state,
+            "country": country,
             "postal_code": f"{random.randint(10000, 99999)}",
         },
         "line_items": line_items,
@@ -154,19 +167,32 @@ def make_doc(blob_bytes, base_time):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--docs", type=int, default=300_000, help="number of documents to insert")
-    parser.add_argument("--blob-bytes", type=int, default=1600,
-                        help="approx size of the gateway_response payload per doc")
+    parser.add_argument(
+        "--docs", type=int, default=300_000, help="number of documents to insert"
+    )
+    parser.add_argument(
+        "--blob-bytes",
+        type=int,
+        default=1600,
+        help="approx size of the gateway_response payload per doc",
+    )
     parser.add_argument("--batch", type=int, default=5000, help="insert batch size")
-    parser.add_argument("--drop", action="store_true", help="drop the collection before seeding")
-    parser.add_argument("--drop-index", action="store_true",
-                        help="drop the demo index and exit WITHOUT reseeding "
-                             "(the light reset after a demo has created it)")
+    parser.add_argument(
+        "--drop", action="store_true", help="drop the collection before seeding"
+    )
+    parser.add_argument(
+        "--drop-index",
+        action="store_true",
+        help="drop the demo index and exit WITHOUT reseeding "
+        "(the light reset after a demo has created it)",
+    )
     args = parser.parse_args()
 
     uri = os.environ.get("MONGODB_URI")
     if not uri:
-        sys.exit('ERROR: set MONGODB_URI, e.g.\n  export MONGODB_URI="mongodb+srv://user:pass@host/"')
+        sys.exit(
+            'ERROR: set MONGODB_URI, e.g.\n  export MONGODB_URI="mongodb+srv://user:pass@host/"'
+        )
 
     client = MongoClient(uri, appname="perf-triage-demo-seed")
     coll = client[DB_NAME][COLLECTION_NAME]
@@ -178,26 +204,36 @@ def main():
         # Light reset: restore the slow condition on an intact collection. Exits
         # before the insert loop, so the existing 300k documents are untouched.
         if args.drop:
-            sys.exit("ERROR: --drop-index and --drop are mutually exclusive. "
-                     "--drop-index keeps the data; --drop destroys it.")
+            sys.exit(
+                "ERROR: --drop-index and --drop are mutually exclusive. "
+                "--drop-index keeps the data; --drop destroys it."
+            )
         existing = list(coll.index_information().keys())
         if DEMO_INDEX_NAME in existing:
-            print(f"Dropping index {DEMO_INDEX_NAME} from {DB_NAME}.{COLLECTION_NAME} ...")
+            print(
+                f"Dropping index {DEMO_INDEX_NAME} from {DB_NAME}.{COLLECTION_NAME} ..."
+            )
             coll.drop_index(DEMO_INDEX_NAME)
         else:
             print(f"Index {DEMO_INDEX_NAME} not present — nothing to drop.")
-        print(f"Indexes now: {list(coll.index_information().keys())}  (expect only _id_)")
+        print(
+            f"Indexes now: {list(coll.index_information().keys())}  (expect only _id_)"
+        )
         print(f"Documents kept: {coll.estimated_document_count():,}")
-        print("Next: make sure generate_load.py is running so Performance Advisor "
-              "rebuilds its recommendation before the next demo.")
+        print(
+            "Next: make sure generate_load.py is running so Performance Advisor "
+            "rebuilds its recommendation before the next demo."
+        )
         return
 
     if args.drop:
         print(f"Dropping {DB_NAME}.{COLLECTION_NAME} ...")
         coll.drop()
 
-    print(f"Seeding {args.docs:,} docs (~{args.blob_bytes}B gateway payload each) into "
-          f"{DB_NAME}.{COLLECTION_NAME} — NO index on session_id.")
+    print(
+        f"Seeding {args.docs:,} docs (~{args.blob_bytes}B gateway payload each) into "
+        f"{DB_NAME}.{COLLECTION_NAME} — NO index on session_id."
+    )
     base_time = datetime.now(timezone.utc)
     start = time.time()
     inserted = 0
@@ -210,15 +246,23 @@ def main():
         if inserted % 100_000 == 0 or inserted == args.docs:
             elapsed = time.time() - start
             rate = inserted / elapsed if elapsed else 0
-            print(f"  {inserted:,}/{args.docs:,}  ({rate:,.0f} docs/s, {elapsed:,.0f}s elapsed)")
+            print(
+                f"  {inserted:,}/{args.docs:,}  ({rate:,.0f} docs/s, {elapsed:,.0f}s elapsed)"
+            )
 
     stats = client[DB_NAME].command("collstats", COLLECTION_NAME)
     size_gb = stats.get("size", 0) / 1e9
     storage_gb = stats.get("storageSize", 0) / 1e9
-    print(f"\nDone. Logical size ~{size_gb:.2f} GB, on-disk storage ~{storage_gb:.2f} GB.")
-    print(f"Indexes present: {list(coll.index_information().keys())}  (expect only _id_)")
-    print("Next: run generate_load.py to warm the cache and feed Performance Advisor, "
-          "then confirm scan time with an explain() (expect ~9 s cold, ~5 s warm on a 2 GB M10).")
+    print(
+        f"\nDone. Logical size ~{size_gb:.2f} GB, on-disk storage ~{storage_gb:.2f} GB."
+    )
+    print(
+        f"Indexes present: {list(coll.index_information().keys())}  (expect only _id_)"
+    )
+    print(
+        "Next: run generate_load.py to warm the cache and feed Performance Advisor, "
+        "then confirm scan time with an explain() (expect ~9 s cold, ~5 s warm on a 2 GB M10)."
+    )
 
 
 if __name__ == "__main__":

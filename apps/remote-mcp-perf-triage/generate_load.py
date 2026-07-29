@@ -52,9 +52,9 @@ import time
 from datetime import datetime
 
 try:
+    from dotenv import load_dotenv
     from pymongo import MongoClient
     from pymongo.errors import PyMongoError
-    from dotenv import load_dotenv
 except ImportError:
     sys.exit("pymongo not installed. Run: pip install -r requirements.txt")
 
@@ -81,18 +81,29 @@ def run_query(coll):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--burst", type=int, default=3,
-                        help="number of queries to run per cycle")
-    parser.add_argument("--interval", type=float, default=300,
-                        help="seconds between the start of each burst "
-                             "(0 = continuous / no sleep between bursts)")
-    parser.add_argument("--duration", type=float, default=0,
-                        help="total seconds to run (0 = run until Ctrl+C)")
+    parser.add_argument(
+        "--burst", type=int, default=3, help="number of queries to run per cycle"
+    )
+    parser.add_argument(
+        "--interval",
+        type=float,
+        default=300,
+        help="seconds between the start of each burst "
+        "(0 = continuous / no sleep between bursts)",
+    )
+    parser.add_argument(
+        "--duration",
+        type=float,
+        default=0,
+        help="total seconds to run (0 = run until Ctrl+C)",
+    )
     args = parser.parse_args()
 
     uri = os.environ.get("MONGODB_URI")
     if not uri:
-        sys.exit('ERROR: set MONGODB_URI, e.g.\n  export MONGODB_URI="mongodb+srv://user:pass@host/"')
+        sys.exit(
+            'ERROR: set MONGODB_URI, e.g.\n  export MONGODB_URI="mongodb+srv://user:pass@host/"'
+        )
 
     client = MongoClient(uri, appname="perf-triage-demo-load")
     coll = client[DB_NAME][COLLECTION_NAME]
@@ -103,10 +114,16 @@ def main():
     except PyMongoError as exc:
         sys.exit(f"ERROR: cannot reach MongoDB — {type(exc).__name__}: {exc}")
 
-    mode = "continuous" if args.interval == 0 else f"trickle ({args.burst} queries / {args.interval:.0f}s)"
+    mode = (
+        "continuous"
+        if args.interval == 0
+        else f"trickle ({args.burst} queries / {args.interval:.0f}s)"
+    )
     limit = "until Ctrl+C" if args.duration == 0 else f"{args.duration:.0f}s"
-    print(f"Polling {DB_NAME}.{COLLECTION_NAME} — {mode}, {limit}. "
-          "Each query is a full COLLSCAN (no index on session_id).")
+    print(
+        f"Polling {DB_NAME}.{COLLECTION_NAME} — {mode}, {limit}. "
+        "Each query is a full COLLSCAN (no index on session_id)."
+    )
 
     deadline = time.time() + args.duration if args.duration > 0 else None
     total = 0
@@ -137,18 +154,24 @@ def main():
                 avg = sum(latencies) / len(latencies)
                 slow = 100 * sum(1 for x in latencies if x > 100) / len(latencies)
                 suffix = f"  |  {len(failures)} failed" if failures else ""
-                print(f"  {ts}  burst of {len(latencies)}: avg {avg:7.1f} ms  |  "
-                      f"{slow:3.0f}% over 100 ms  |  {total:,} total{suffix}",
-                      flush=True)
+                print(
+                    f"  {ts}  burst of {len(latencies)}: avg {avg:7.1f} ms  |  "
+                    f"{slow:3.0f}% over 100 ms  |  {total:,} total{suffix}",
+                    flush=True,
+                )
             else:
                 # Whole burst failed — almost always a dropped connection.
-                print(f"  {ts}  burst FAILED ({', '.join(sorted(set(failures)))}) — "
-                      f"will retry next cycle  |  {total:,} total, {errors} errors",
-                      flush=True)
+                print(
+                    f"  {ts}  burst FAILED ({', '.join(sorted(set(failures)))}) — "
+                    f"will retry next cycle  |  {total:,} total, {errors} errors",
+                    flush=True,
+                )
 
             if args.interval > 0:
                 sleep_for = args.interval - (time.time() - cycle_start)
-                if sleep_for > 0 and (deadline is None or time.time() + sleep_for < deadline):
+                if sleep_for > 0 and (
+                    deadline is None or time.time() + sleep_for < deadline
+                ):
                     time.sleep(sleep_for)
                 elif deadline is not None:
                     break  # not enough time left for another cycle

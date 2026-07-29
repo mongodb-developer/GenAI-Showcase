@@ -291,7 +291,9 @@ def main():
     if not token:
         sys.exit("ERROR: set AGENT_ACCESS_TOKEN")
     if not trigger_id:
-        sys.exit("ERROR: set WORKSPACE_AGENT_TRIGGER_ID to the agtch_... API channel ID")
+        sys.exit(
+            "ERROR: set WORKSPACE_AGENT_TRIGGER_ID to the agtch_... API channel ID"
+        )
     if not trigger_id.startswith("agtch_"):
         sys.exit("ERROR: WORKSPACE_AGENT_TRIGGER_ID must begin with agtch_")
 
