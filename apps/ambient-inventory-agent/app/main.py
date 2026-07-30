@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -111,6 +111,17 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Ambient Inventory Agent", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+# StaticFiles sends an ETag but no Cache-Control, so a browser may reuse app.js without
+# revalidating — which shows up as a UI change that "didn't work" until a hard reload.
+# Not worth debugging twice, and this demo serves three small files to one laptop.
+@app.middleware("http")
+async def no_store_static(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path == "/" or request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-store, must-revalidate"
+    return response
 
 
 @app.get("/")

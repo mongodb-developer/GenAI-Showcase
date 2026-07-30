@@ -32,10 +32,13 @@ const START_STEPS = [
   "Starting the scheduled inventory sweep",
 ];
 
-// Paced for narration, not for speed: each step needs to stay on screen long enough
-// to be talked through. Raise these to slow the opening down further.
-const CURTAIN_STEP_MS = 2600;
-const CURTAIN_SETTLE_MS = 900;
+// Paced for narration, not for speed: each step needs to stay on screen long enough to
+// say a sentence about it. Every step is guaranteed its full time even when the MCP
+// handshake finishes early, so the opening lasts a predictable
+// (4 x STEP) + SETTLE ~= 15s regardless of how fast the network is.
+// Raise CURTAIN_STEP_MS to slow the whole opening down evenly.
+const CURTAIN_STEP_MS = 3500;
+const CURTAIN_SETTLE_MS = 1000;
 
 // Medium is the healthy case for this demo — a reorder point reached with time to
 // spare. Only High warrants red.
@@ -386,13 +389,15 @@ function renderCurtain() {
       state.sessionId = started.session_id;
       localStorage.setItem("ambientInventorySessionId", state.sessionId);
 
-      // The handshake often finishes before the timeline has walked through every
-      // step. Dropping the curtain at that moment skips past steps the presenter is
-      // still narrating, so let the remaining ones play out first. Capped so a fast
-      // connection cannot stall the demo for long.
+      // The handshake usually finishes before the timeline has walked through every
+      // step, and dropping the curtain then skips lines the presenter is still
+      // narrating. So let EVERY remaining step have its full time on screen — no cap,
+      // because a cap is what made the last step flash past on a fast connection. The
+      // ticker is still running, so this is waiting for it to reach the end rather
+      // than advancing anything itself.
       const remaining = items.length - 1 - step;
       if (remaining > 0) {
-        await sleep(Math.min(remaining, 2) * CURTAIN_STEP_MS);
+        await sleep(remaining * CURTAIN_STEP_MS);
       }
 
       clearInterval(ticker);
@@ -527,24 +532,30 @@ function render(force = false, pulse = false) {
     purchase_orders: purchaseOrdersView,
     suppliers: suppliersView,
   };
-  // Read the feed's scroll position BEFORE the rebuild below throws the old node
-  // away: whether to auto-scroll depends on where the reader was, and after
+  // Read scroll positions BEFORE the rebuild below throws the old nodes away: after
   // innerHTML there is nothing left to ask.
+  //
+  // TWO scrollers matter here. `.activity-list` is the feed's own overflow box, and
+  // `.view` — the element being rebuilt — scrolls as well, so replacing its contents
+  // resets the page's scroll position on every poll. Restoring only the inner one
+  // still leaves the view jumping.
   const oldFeed = els.view.querySelector(".activity-list");
-  const wasPinned = oldFeed ? isPinnedToBottom(oldFeed) : true;
-  const priorScroll = oldFeed ? oldFeed.scrollTop : 0;
+  const feedWasPinned = oldFeed ? isPinnedToBottom(oldFeed) : true;
+  const feedScroll = oldFeed ? oldFeed.scrollTop : 0;
+  const viewScroll = els.view.scrollTop;
 
   els.view.innerHTML = (views[state.activeTab] || dashboardView)();
   if (state.activeTab === "alerts") wireAlertsView();
+
+  // Put the page back where it was, unconditionally: a re-render is a data update, and
+  // it should never move the reader.
+  els.view.scrollTop = viewScroll;
 
   // The feed appears on both Dashboard and Inbox. Follow the newest event only while
   // the reader is already at the bottom; if they have scrolled up to read an earlier
   // tool call, hold their position instead of yanking them back down every poll.
   const feed = els.view.querySelector(".activity-list");
-  if (feed) {
-    if (wasPinned) feed.scrollTop = feed.scrollHeight;
-    else feed.scrollTop = priorScroll;
-  }
+  if (feed) feed.scrollTop = feedWasPinned ? feed.scrollHeight : feedScroll;
 }
 
 /* ---------- Dashboard ---------- */
