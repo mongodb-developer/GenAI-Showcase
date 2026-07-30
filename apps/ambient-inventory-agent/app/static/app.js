@@ -32,6 +32,11 @@ const START_STEPS = [
   "Starting the scheduled inventory sweep",
 ];
 
+// Paced for narration, not for speed: each step needs to stay on screen long enough
+// to be talked through. Raise these to slow the opening down further.
+const CURTAIN_STEP_MS = 2600;
+const CURTAIN_SETTLE_MS = 900;
+
 // Medium is the healthy case for this demo — a reorder point reached with time to
 // spare. Only High warrants red.
 const SEVERITY_CLASS = { High: "danger", Medium: "warning", Low: "neutral" };
@@ -99,6 +104,16 @@ function titleCase(value) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Treat "close enough to the bottom" as pinned. An exact comparison fails on
+// fractional scroll heights from zoom or a trackpad's sub-pixel scrolling, which would
+// silently turn auto-follow off and look like the feed had frozen.
+const PIN_SLACK_PX = 24;
+function isPinnedToBottom(el) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight <= PIN_SLACK_PX;
+}
+
 function escapeHtml(value) {
   return String(value == null ? "" : value)
     .replaceAll("&", "&amp;")
@@ -137,6 +152,39 @@ function atRiskProductIds() {
   return ids;
 }
 
+/* Products whose shortage has been ordered but not yet received.
+   Placing an order resolves the alert, which would otherwise flip these SKUs
+   straight back to "Healthy" — but nothing has arrived: the stock on hand is
+   unchanged and the supplier is still days out. They stay distinct from healthy
+   until the order's status leaves "ordered". */
+function inboundInventoryIds() {
+  const ids = new Set();
+  (state.snapshot?.purchase_orders || [])
+    .filter((po) => po.status === "ordered")
+    .forEach((po) => {
+      (po.line_items || []).forEach((line) => {
+        if (line.inventory_id) ids.add(line.inventory_id);
+      });
+    });
+  return ids;
+}
+
+function onOrderProductIds() {
+  const inbound = inboundInventoryIds();
+  if (!inbound.size) return new Set();
+
+  // Any product drawing on an inbound component is waiting on it. Derived from the
+  // bill of materials rather than a cached list, same as the sweep does.
+  const ids = new Set();
+  (state.snapshot?.products || []).forEach((product) => {
+    const waiting = (product.components || []).some((component) =>
+      inbound.has(component.inventory_id),
+    );
+    if (waiting) ids.add(product._id);
+  });
+  return ids;
+}
+
 function blockerInventoryIds() {
   return new Set(activeAlerts().map((alert) => alert.risk?.blocker_inventory_id).filter(Boolean));
 }
@@ -148,12 +196,18 @@ function supplierName(supplierId) {
 
 /* Status comes from the server's cover calculation (finished units plus what the
    limiting component can still make), so this can never contradict the inbox. */
-function productStatus(product, riskIds) {
+function productStatus(product, riskIds, onOrderIds) {
   // Only the agent's findings colour this. The server can compute reorder status
   // itself, but showing it would answer the question before the agent does and
   // spoil the reveal — the point of the demo is that the risk is invisible until
   // something goes looking for it.
   if (riskIds.has(product._id)) return { label: "Reorder", cls: "warning" };
+  // Ordered but not arrived. Placing the order resolves the alert, and without this
+  // the SKU would claim to be "Healthy" while the stock on hand is unchanged and the
+  // supplier is still days out.
+  if (onOrderIds && onOrderIds.has(product._id)) {
+    return { label: "On order", cls: "info" };
+  }
   return { label: "Healthy", cls: "success" };
 }
 
@@ -322,7 +376,7 @@ function renderCurtain() {
         step += 1;
         advance();
       }
-    }, 1500);
+    }, CURTAIN_STEP_MS);
 
     try {
       const started = await api("/api/demo/start", {
@@ -331,9 +385,21 @@ function renderCurtain() {
       });
       state.sessionId = started.session_id;
       localStorage.setItem("ambientInventorySessionId", state.sessionId);
+
+      // The handshake often finishes before the timeline has walked through every
+      // step. Dropping the curtain at that moment skips past steps the presenter is
+      // still narrating, so let the remaining ones play out first. Capped so a fast
+      // connection cannot stall the demo for long.
+      const remaining = items.length - 1 - step;
+      if (remaining > 0) {
+        await sleep(Math.min(remaining, 2) * CURTAIN_STEP_MS);
+      }
+
       clearInterval(ticker);
       step = items.length;
       advance();
+      // Beat on the completed timeline: every step ticked, before the dashboard.
+      await sleep(CURTAIN_SETTLE_MS);
       node.remove();
       await refreshState();
       render(true);
@@ -461,12 +527,24 @@ function render(force = false, pulse = false) {
     purchase_orders: purchaseOrdersView,
     suppliers: suppliersView,
   };
+  // Read the feed's scroll position BEFORE the rebuild below throws the old node
+  // away: whether to auto-scroll depends on where the reader was, and after
+  // innerHTML there is nothing left to ask.
+  const oldFeed = els.view.querySelector(".activity-list");
+  const wasPinned = oldFeed ? isPinnedToBottom(oldFeed) : true;
+  const priorScroll = oldFeed ? oldFeed.scrollTop : 0;
+
   els.view.innerHTML = (views[state.activeTab] || dashboardView)();
   if (state.activeTab === "alerts") wireAlertsView();
-  // The feed appears on both Dashboard and Inbox; keep it pinned to the newest
-  // event wherever it is rendered.
+
+  // The feed appears on both Dashboard and Inbox. Follow the newest event only while
+  // the reader is already at the bottom; if they have scrolled up to read an earlier
+  // tool call, hold their position instead of yanking them back down every poll.
   const feed = els.view.querySelector(".activity-list");
-  if (feed) feed.scrollTop = feed.scrollHeight;
+  if (feed) {
+    if (wasPinned) feed.scrollTop = feed.scrollHeight;
+    else feed.scrollTop = priorScroll;
+  }
 }
 
 /* ---------- Dashboard ---------- */
@@ -474,10 +552,11 @@ function dashboardView() {
   const snap = state.snapshot || {};
   const products = snap.products || [];
   const riskIds = atRiskProductIds();
+  const onOrderIds = onOrderProductIds();
 
   const rows = products
     .map((product) => {
-      const status = productStatus(product, riskIds);
+      const status = productStatus(product, riskIds, onOrderIds);
       return `
         <tr>
           <td>
@@ -886,6 +965,9 @@ function handleStreamEvent(event) {
 function renderStream() {
   const container = els.view.querySelector("#chatMessages");
   if (!container) return;
+  // Sampled before the live message is mutated below, for the same reason as the
+  // activity feed: a reader scrolled up mid-answer should stay where they are.
+  const wasPinned = isPinnedToBottom(container);
 
   let pending = container.querySelector(".message.owner.pending");
   if (state.pendingOwnerMessage && !pending) {
@@ -923,7 +1005,7 @@ function renderStream() {
     body = `<span class="stream-wait">Thinking</span>`;
   }
   live.innerHTML = `${tools}${body}`;
-  container.scrollTop = container.scrollHeight;
+  if (wasPinned) container.scrollTop = container.scrollHeight;
 }
 
 async function approveOrder() {
@@ -969,11 +1051,12 @@ function productsView() {
   const products = snap.products || [];
   const items = snap.inventory_items || [];
   const riskIds = atRiskProductIds();
+  const onOrderIds = onOrderProductIds();
   const blockerIds = blockerInventoryIds();
 
   const productRows = products
     .map((product) => {
-      const status = productStatus(product, riskIds);
+      const status = productStatus(product, riskIds, onOrderIds);
       return `
         <tr>
           <td>
@@ -999,12 +1082,18 @@ function productsView() {
     });
   });
 
+  // Components with an order raised but nothing delivered yet. Same reason as the
+  // products table: the order closes the alert, but the quantity on hand has not
+  // moved, so "In stock" would overstate it.
+  const inboundIds = inboundInventoryIds();
+
   const itemRows = items
     .map((item) => {
       const isBlocker = blockerIds.has(item._id);
-      const status = isBlocker
-        ? { label: "Blocking", cls: "danger" }
-        : { label: "In stock", cls: "success" };
+      let status;
+      if (isBlocker) status = { label: "Blocking", cls: "danger" };
+      else if (inboundIds.has(item._id)) status = { label: "On order", cls: "info" };
+      else status = { label: "In stock", cls: "success" };
       const sharers = usedBy[item._id] || [];
       return `
         <tr>
