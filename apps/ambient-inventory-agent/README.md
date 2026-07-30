@@ -155,6 +155,12 @@ or instance role).
 ### Run
 
 ```bash
+./setup_demo.sh          # reseeds, then runs the app on :8008
+```
+
+Equivalent by hand, in this order — the reseed has to land while the server is down:
+
+```bash
 python seed_demo.py --reset
 uvicorn app.main:app --port 8008
 ```
@@ -166,21 +172,26 @@ the first chat message from stalling on stage. Check it worked:
 curl -s localhost:8008/api/health | python -m json.tool
 ```
 
-`mcp.ready` must be `true`. Then open `http://localhost:8008/?fresh=1` for a
-clean run — it resets the scenario and starts a new delayed alert. The `fresh=1`
-parameter is stripped from the URL immediately, so an accidental refresh
-mid-demo will not wipe the scenario.
+`mcp.ready` must be `true`. Then open `http://localhost:8008/` and press **Start
+demo** when you begin.
+
+Reseeding is a pre-flight step, not something the page does, which is why
+`setup_demo.sh` does it before starting the server. Neither loading the page nor
+pressing **Start demo** reseeds — `/api/demo/start` mints a new `session_id`, which
+leaves the previous run's alert and transcript behind but does *not* clear
+`purchase_orders`. That matters, because a leftover order for the shared component
+makes the next sweep decide no alert is needed, so run `./setup_demo.sh` again
+between runs. Refreshing mid-demo is safe.
 
 Avoid `--reload` during a rehearsal: the pending alert lives in an in-process
 task and a reload cancels it.
 
 ## Stage flow
 
-Seed first, then open the app and walk away:
+Start it, then open the app and walk away:
 
 ```bash
-python seed_demo.py --reset
-uvicorn app.main:app --port 8008     # wait for [mcp] connected
+./setup_demo.sh                      # wait for [mcp] connected
 open http://localhost:8008/
 ```
 

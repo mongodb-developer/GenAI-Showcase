@@ -53,6 +53,8 @@ would normally require a developer who knows exactly where to look.
 
 | File | Purpose |
 |------|---------|
+| `setup_demo.sh` | Resets the demo, then runs the checkout page. `--drop` for a full reseed. |
+| `trickle.sh` | `start`/`stop`/`status` for the Performance Advisor trickle. |
 | `checkout_app.py` | The Leafy Electronics checkout page. Really hangs on the slow poll, then fires the incident to ChatGPT. |
 | `seed_payments.py` | Seeds a large, realistic `payments` collection (no index on `session_id`); `--drop-index` resets the demo. |
 | `generate_load.py` | Runs the checkout status-poll query repeatedly to feed Performance Advisor. |
@@ -144,7 +146,7 @@ serves a Leafy Electronics checkout that runs the **real** status-poll query aga
 unindexed collection — so the hang isn't staged, it's the bug:
 
 ```bash
-python checkout_app.py                 # http://127.0.0.1:8000
+./setup_demo.sh                        # resets, then serves http://127.0.0.1:8000
 python checkout_app.py --no-incident   # rehearse without paging the agent
 ```
 
@@ -245,19 +247,35 @@ completes sub-millisecond — well under any checkout timeout.
 
 ## Reset (to re-run the demo)
 
+`setup_demo.sh` does the reset and then runs the checkout page, so one command per
+demo run is enough:
+
+```bash
+./setup_demo.sh          # light reset: drops the index, keeps the 300k docs
+./setup_demo.sh --drop   # full reseed: fresh 300k, several minutes
+```
+
+The trickle is managed separately, since it runs for hours across many demo runs:
+
+```bash
+./trickle.sh start       # kills any existing trickle, then starts one fresh
+./trickle.sh status
+./trickle.sh stop        # end of day
+```
+
 ### Light reset (usual case)
 
-If the collection is intact and you just created the index during the demo, drop the
-index so the slow condition returns:
+If the collection is intact and you just created the index during the demo, dropping
+the index restores the slow condition — that is all `./setup_demo.sh` does. By hand:
 
 ```bash
 python seed_payments.py --drop-index      # drops the index, keeps the 300k docs
 ```
 
-This exits before the insert loop, so your data is untouched. (Equivalent by hand:
+This exits before the insert loop, so your data is untouched. (Equivalent in the shell:
 `db.payments.dropIndex("session_id_1_status_1")`.)
 
-Then make sure the trickle is running again ahead of the next run:
+Keep the trickle running ahead of the next run — `./trickle.sh start`, or by hand:
 
 ```bash
 nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log to watch
@@ -265,7 +283,7 @@ nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log
 
 ### Full reseed ritual (fresh data)
 
-If you need to rebuild the collection from scratch:
+To rebuild the collection from scratch, `./setup_demo.sh --drop`. By hand:
 
 ```bash
 python seed_payments.py --drop                    # drop, then seed a fresh 300k
