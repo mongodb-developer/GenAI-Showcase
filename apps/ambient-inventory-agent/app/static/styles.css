@@ -233,6 +233,25 @@ input {
   letter-spacing: -0.01em;
 }
 
+/* Signed-in user, top right. Decorative — the demo has no auth. */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-strong);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  /* Initials are centred optically: the tracking above pushes them right. */
+  text-indent: 0.02em;
+  flex-shrink: 0;
+  user-select: none;
+}
+
 .view {
   padding: 28px 32px 40px;
   overflow-y: auto;
