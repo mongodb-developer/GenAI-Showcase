@@ -23,22 +23,31 @@ const els = {
   navItems: Array.from(document.querySelectorAll(".nav-item")),
 };
 
-// Shown as a timeline while the demo starts. Wording tracks what the server is
-// actually doing in /api/demo/start.
+// Shown as a timeline while the demo starts. One line per real operation in
+// MCPSession.connect(), in order:
+//   1. _fetch_token()        — OAuth client credentials
+//   2. client.get_tools()    — the MCP server's tool list
+//   3. remote-atlas-connect  — binds projectId + clusterName, returns a connectionId
+//   4. filter to AGENT_TOOL_NAMES, then the sweep is scheduled
+// "Connecting to MongoDB Remote MCP" used to lead this list and was dropped: finding
+// where to authenticate happens inside the same handshake as authenticating.
 const START_STEPS = [
-  "Connecting to MongoDB Remote MCP",
-  "Authenticating the service account",
-  "Opening the Atlas cluster connection",
+  "Authenticating to Atlas",
+  "Loading the MCP tools",
+  "Establishing the cluster connection",
   "Starting the scheduled inventory sweep",
 ];
 
-// Paced for narration, not for speed: each step needs to stay on screen long enough to
-// say a sentence about it. Every step is guaranteed its full time even when the MCP
-// handshake finishes early, so the opening lasts a predictable
-// (4 x STEP) + SETTLE ~= 15s regardless of how fast the network is.
+// Paced for narration: long enough to say "it authenticates to Atlas with a service
+// account and connects to one cluster in the project", short enough that the room is
+// not waiting on a progress list. Every step is guaranteed its full time even when the
+// MCP handshake finishes early, so the opening is a predictable ~7-9s either way.
+//
+// Not zero on purpose: the sweep starts the moment this begins, so the curtain is what
+// buys the head start — the activity feed is already filling when the dashboard appears.
 // Raise CURTAIN_STEP_MS to slow the whole opening down evenly.
-const CURTAIN_STEP_MS = 3500;
-const CURTAIN_SETTLE_MS = 1000;
+const CURTAIN_STEP_MS = 2200;
+const CURTAIN_SETTLE_MS = 700;
 
 // Medium is the healthy case for this demo — a reorder point reached with time to
 // spare. Only High warrants red.
