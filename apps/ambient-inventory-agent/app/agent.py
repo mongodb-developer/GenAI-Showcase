@@ -285,14 +285,19 @@ class CoffeeInventoryAgent:
         self.session = get_mcp_session()
 
     async def _build(self):
-        from langgraph.prebuilt import create_react_agent
+        # LangChain 1.x absorbed LangGraph's prebuilt ReAct constructor:
+        # `langgraph.prebuilt.create_react_agent` still works but prints a
+        # deprecation notice. The returned object is the same compiled LangGraph
+        # graph — streaming, checkpointing and `aget_state` are unchanged.
+        from langchain.agents import create_agent
 
         await self.session.ensure()
         tools = build_agent_tools(self.session)
-        return create_react_agent(
+        return create_agent(
             model_for_agent(),
             tools,
-            prompt=SYSTEM_PROMPT.format(database=self.session.database),
+            # Renamed from `prompt` in the move to langchain.agents.
+            system_prompt=SYSTEM_PROMPT.format(database=self.session.database),
             # Working memory in MongoDB: each turn resumes the real message state
             # — including prior tool calls and their results — so the agent does
             # not re-query what it already knows.

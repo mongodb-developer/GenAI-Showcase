@@ -289,8 +289,10 @@ class AlertInvestigator:
         Bedrock, and filing via a tool keeps the schema enforced by the same
         tool-calling loop the MCP queries already use.
         """
+        # See the note in agent.py: LangChain 1.x owns the prebuilt ReAct
+        # constructor now; the result is still a compiled LangGraph graph.
+        from langchain.agents import create_agent
         from langchain_core.tools import StructuredTool
-        from langgraph.prebuilt import create_react_agent
 
         await self.session.ensure()
 
@@ -355,10 +357,10 @@ class AlertInvestigator:
         # a turn that runs out mid-argument emits no tool call at all — the sweep
         # then has nothing to file and silently degrades. Low effort keeps the cost
         # down; the ceiling is there so truncation can never be the failure.
-        return create_react_agent(
+        return create_agent(
             model_for_agent(max_tokens=8192, effort="low"),
             [*build_agent_tools(self.session), file_tool],
-            prompt=INVESTIGATOR_PROMPT.format(database=self.session.database),
+            system_prompt=INVESTIGATOR_PROMPT.format(database=self.session.database),
             # Shares the session's memory thread, so the schema this sweep reads is
             # already known when the owner starts asking questions.
             checkpointer=get_checkpointer(),

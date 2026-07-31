@@ -618,7 +618,7 @@ function eventRow({ kind, message, command, time, pending }) {
 }
 
 /* The MCP calls behind one chat answer, rendered as an activity trace. */
-function chatActivity(rawQueries, { pendingTool, answered, thinking, fromMemory } = {}) {
+function chatActivity(rawQueries, { pendingTool, answered, thinking } = {}) {
   // Normalise once: a persisted turn that needed no queries has no `queries` field
   // at all, and an unguarded read here throws and takes the whole alert expansion
   // down with it.
@@ -627,16 +627,8 @@ function chatActivity(rawQueries, { pendingTool, answered, thinking, fromMemory 
   if (thinking) {
     rows.push(eventRow({ kind: "agent_plan", message: thinking, pending: true }));
   }
-  // An answer with no queries means it came from what the agent already knew this
-  // session. Worth stating rather than leaving the trace blank.
-  if (fromMemory && !queries.length) {
-    rows.push(
-      eventRow({
-        kind: "agent_plan",
-        message: "Answered from what this session had already read — no new queries.",
-      }),
-    );
-  }
+  // A turn that needed no queries simply renders no trace. Saying so out loud is
+  // implementation detail the owner does not need.
   queries.forEach((query) =>
     rows.push(eventRow({ kind: "mcp_tool", message: mcpSummary(query), command: query })),
   );
@@ -777,14 +769,14 @@ function alertExpansion(alert) {
   const messages = (state.snapshot?.dialogue || []).filter((message) => message.alert_id === alert._id);
   const allMessages = messages.length
     ? messages
-    : [{ role: "agent", content: "Ask me about the cause, supplier timing, affected SKUs, or order size — I'll query MongoDB through the MCP server to answer." }];
+    : [{ role: "agent", content: "Ask me about the cause, supplier timing, affected SKUs, or order size." }];
   const chat = allMessages
     .map((message) => {
       // Keep the MCP queries visible after the stream ends: they are the
       // evidence for the answer above them.
       const activity =
         message.role === "agent"
-          ? chatActivity(message.queries, { answered: true, fromMemory: true })
+          ? chatActivity(message.queries, { answered: true })
           : "";
       return `<div class="message ${message.role}">${activity}${escapeHtml(message.content)}</div>`;
     })
