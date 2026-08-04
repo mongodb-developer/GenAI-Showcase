@@ -29,6 +29,26 @@ def _fmt(value: Any) -> str:
     return json.dumps(value, default=str)
 
 
+def product_cover(products: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Days of finished stock per product, for the dashboard's Cover column.
+
+    Deliberately shallow: just `finished_units_on_hand / daily_demand`. Judging
+    whether a product is actually at risk means allocating shared components by
+    demand and comparing against supplier lead times — that is the agent's job, done
+    over MCP, and duplicating it here would put a second opinion on screen that could
+    disagree with the alert.
+    """
+    cover: dict[str, dict[str, Any]] = {}
+    for product in products:
+        daily_demand = float(product.get("daily_demand") or 0)
+        if daily_demand <= 0:
+            continue
+        units = float(product.get("finished_units_on_hand") or 0)
+        # Whole days: a tenth of a day of coffee is not a number anyone acts on.
+        cover[product["_id"]] = {"days_of_cover": int(units // daily_demand)}
+    return cover
+
+
 class InventoryRepository:
     def __init__(self, db: Database):
         self.db = db
@@ -58,6 +78,22 @@ class InventoryRepository:
                 "metadata": metadata or {},
                 "created_at": utc_now(),
             }
+        )
+
+    def log_mcp_call(
+        self, session_id: str, tool: str, args: dict[str, Any], command: str
+    ) -> None:
+        """Record one Remote MCP tool call the agent made, for the activity feed."""
+        self.log_event(
+            session_id,
+            "mcp_tool",
+            f"Called MCP {tool} on {args.get('collection', 'the database')}.",
+            {
+                "tool": tool,
+                "collection": args.get("collection"),
+                "command": command,
+                "via": "remote_mcp",
+            },
         )
 
     def ensure_session(self, session_id: str) -> dict[str, Any]:
@@ -124,6 +160,11 @@ class InventoryRepository:
 
         Returns only what it can resolve, so a missing document leaves whatever the
         agent supplied rather than blanking a tile.
+
+        `blocker_shared_with` is every product drawing on the component, the one the
+        alert is attributed to included — the UI's count is `len()` of this list.
+        Excluding the alert's own product meant matching against `product_id`, which
+        made the count wrong whenever a model put something else there.
         """
         derived: dict[str, Any] = {}
 
@@ -136,14 +177,13 @@ class InventoryRepository:
                 derived["blocker_name"] = item.get("name")
                 derived["blocker_quantity_on_hand"] = item.get("quantity_on_hand")
 
-            # Every OTHER product drawing on this component, from the bill of materials
-            # rather than a stored list — the same derivation the sweep's aggregate does.
-            product_id = risk.get("product_id")
+            # From the bill of materials rather than a stored list — the same derivation
+            # the sweep's own aggregate does.
             sharers = self.db.products.find(
                 {"components.inventory_id": component_id}, {"sku": 1}
             )
             derived["blocker_shared_with"] = sorted(
-                p["sku"] for p in sharers if p["_id"] != product_id and p.get("sku")
+                p["sku"] for p in sharers if p.get("sku")
             )
 
         product_id = risk.get("product_id")
@@ -168,13 +208,11 @@ class InventoryRepository:
         promoted = ("summary", "headline", "recommendation", "title", "severity")
         risk = {key: value for key, value in diagnosis.items() if key not in promoted}
 
-        # Fill the fields that are lookups rather than judgements. The agent supplies the
-        # two ids — which product, which component — and everything below follows from
-        # them by definition. Asking the model to also transcribe the name, the on-hand
-        # count, the SKU and the sharing SKUs gave those figures a second source that
-        # could disagree with the collection they came from.
-        # What the agent decides is unchanged: which component is at risk, the reorder
-        # point, days left, the supplier, the quantity, the urgency and the wording.
+        # Fill in the lookups. The agent chooses the two ids — which product, which
+        # component — and the name, on-hand count and SKUs follow from them, so they are
+        # read from the collection rather than transcribed by the model. Everything the
+        # agent decides is untouched: reorder point, days left, supplier, quantity,
+        # urgency and wording.
         risk.update(self._derived_risk_fields(risk))
         now = utc_now()
         return {
@@ -392,15 +430,12 @@ class InventoryRepository:
         ]
 
     def state_snapshot(self, session_id: str) -> dict[str, Any]:
-        from .graph import product_cover
-
         products = self.get_products()
         inventory_items = list(self.db.inventory_items.find().sort("name", 1))
         suppliers = list(self.db.suppliers.find().sort("name", 1))
-        # Whether this session's sweep has been started, so the UI's play control
-        # can stay in its running state during the seconds before the agent logs
-        # its first event. Without this it briefly reverts to "Run sweep" and looks
-        # like the click did not register.
+        # Whether this session's sweep has been started, so the UI's play control can
+        # stay in its running state during the seconds before the agent logs its first
+        # event.
         session = self.db.demo_sessions.find_one(
             {"session_id": session_id}, {"monitor_scheduled": 1, "monitor_ran": 1}
         )

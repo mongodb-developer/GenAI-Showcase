@@ -31,30 +31,23 @@ const els = {
   navItems: Array.from(document.querySelectorAll(".nav-item")),
 };
 
-// The app opens straight into the portal — no start screen. It should read as
-// software the shop already runs, with the agent as a feature of it, so the only
-// demo affordance is the play control in the Agent activity card.
-//
-// Pressing it calls /api/demo/start, which re-mints the service-account token,
-// reloads the MCP tools, binds a fresh connectionId, and schedules the sweep. That
-// handshake is ~7s of real work (1.5s token + 2.5s tools + 3.2s connect), so the
+// The play control calls /api/demo/start, which re-mints the service-account token,
+// reloads the MCP tools, binds a fresh connectionId, and schedules the sweep. The
 // button narrates those steps while they happen rather than covering them with a
-// curtain. No artificial pacing: what is on screen is what the server is doing.
+// curtain.
 const START_STEPS = [
   "Authenticating to Atlas",
   "Loading the MCP tools",
   "Connecting to the cluster",
 ];
 
-// Roughly the measured duration of each handshake step, used only to advance the
-// label on the button. The real completion is the API response, which cuts the
-// sequence short or lets it sit on the last step until the server answers.
+// Roughly how long each handshake step takes, used only to advance the label on the
+// button. The real completion is the API response, which cuts the sequence short or
+// lets it sit on the last step until the server answers.
 const START_STEP_MS = [1500, 2500, 3200];
 
 // The sweep logs each MCP call the moment it happens, so this interval is the only
-// thing standing between a real event and the feed showing it. At 2500ms calls arrived
-// in clumps and the panel looked like it was catching up rather than keeping pace;
-// /api/state measures ~150ms, so 1s leaves the request ~85% idle.
+// thing standing between a real event and the feed showing it.
 const POLL_MS = 1000;
 
 // Medium is the healthy case for this demo — a reorder point reached with time to
@@ -72,7 +65,7 @@ const PAGE_TITLES = {
 // Labels say where each line actually came from: the deterministic monitor, a
 // driver query, or a real Remote MCP tool call made by the model.
 const EVENT_META = {
-  agent_plan: { label: "Agent · plan", cls: "plan" },
+  agent_plan: { label: "Agent · thinking", cls: "plan" },
   mcp_tool: { label: "Agent · MCP", cls: "mcp" },
   agent_response: { label: "Agent · answer", cls: "response" },
   owner_message: { label: "Owner · asked", cls: "plan" },
@@ -123,9 +116,9 @@ function titleCase(value) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-// Treat "close enough to the bottom" as pinned. An exact comparison fails on
-// fractional scroll heights from zoom or a trackpad's sub-pixel scrolling, which would
-// silently turn auto-follow off and look like the feed had frozen.
+// Treat "close enough to the bottom" as pinned: an exact comparison fails on
+// fractional scroll heights from zoom or sub-pixel scrolling, silently turning
+// auto-follow off.
 const PIN_SLACK_PX = 24;
 function isPinnedToBottom(el) {
   return el.scrollHeight - el.scrollTop - el.clientHeight <= PIN_SLACK_PX;
@@ -169,11 +162,9 @@ function atRiskProductIds() {
   return ids;
 }
 
-/* Products whose shortage has been ordered but not yet received.
-   Placing an order resolves the alert, which would otherwise flip these SKUs
-   straight back to "Healthy" — but nothing has arrived: the stock on hand is
-   unchanged and the supplier is still days out. They stay distinct from healthy
-   until the order's status leaves "ordered". */
+/* Components with an order placed but nothing delivered yet, so the products drawing
+   on them can read as "On order" rather than flipping straight back to "Healthy"
+   when the alert resolves. */
 function inboundInventoryIds() {
   const ids = new Set();
   (state.snapshot?.purchase_orders || [])
@@ -214,17 +205,12 @@ function supplierName(supplierId) {
 /* Status comes from the server's cover calculation (finished units plus what the
    limiting component can still make), so this can never contradict the inbox. */
 function productStatus(product, riskIds, onOrderIds) {
-  // Only the agent's findings colour this. The server can compute reorder status
-  // itself, but showing it would answer the question before the agent does and
-  // spoil the reveal — the point of the demo is that the risk is invisible until
-  // something goes looking for it.
+  // Only the agent's findings colour this: computing reorder status here would answer
+  // the question before the agent does.
   if (riskIds.has(product._id)) return { label: "Reorder", cls: "warning" };
-  // Ordered but not arrived. Placing the order resolves the alert, and without this
-  // the SKU would claim to be "Healthy" while the stock on hand is unchanged and the
-  // supplier is still days out.
-  if (onOrderIds && onOrderIds.has(product._id)) {
-    return { label: "On order", cls: "info" };
-  }
+  // Ordered but not arrived: stock on hand is unchanged and the supplier is still
+  // days out, so this is not "Healthy" yet.
+  if (onOrderIds?.has(product._id)) return { label: "On order", cls: "info" };
   return { label: "Healthy", cls: "success" };
 }
 
@@ -240,54 +226,25 @@ function coverDays(product) {
   return cover ? `${cover.days_of_cover} days` : "—";
 }
 
-/* One line stating the problem and the fix, written by the agent. */
-function alertHeadline(alert) {
-  return alert.summary || "";
+/* The order placed against an alert, if there is one. */
+function orderForAlert(alert) {
+  return (state.snapshot?.purchase_orders || []).find(
+    (po) => po.alert_id === alert._id && po.status === "ordered",
+  );
 }
 
-/* The agent chooses which figures matter, so render what it filed rather than a
-   fixed set of tiles. Falls back to the rule's fields when a rule authored the
-   alert (MCP unavailable). */
-/* Built here, not by the agent. These three tiles are pure formatting of figures the
-   alert already carries, so asking the model to also emit a `stats` array made the
-   filing turn markedly slower and gave the numbers two sources that could disagree.
-   Alerts filed before that change still have `risk.stats`; prefer it so their tiles
-   render as they did when they were written. */
-function alertStats(alert) {
-  const stats = alert.risk?.stats;
-  if (Array.isArray(stats) && stats.length) return stats;
-
-  const risk = alert.risk || {};
-  const affected = 1 + (risk.blocker_shared_with || []).length;
-  const fallback = [
-    { label: "SKUs affected", value: `${affected} products`, emphasis: "critical" },
-    {
-      label: "Stock vs reorder",
-      value:
-        risk.blocker_quantity_on_hand != null && risk.component_reorder_point != null
-          ? `${risk.blocker_quantity_on_hand} / ${risk.component_reorder_point} units`
-          : "—",
-      emphasis: "critical",
-    },
-    {
-      label: "Days left",
-      value:
-        risk.component_days_left != null
-          ? `${Math.floor(risk.component_days_left)} days`
-          : "—",
-      emphasis: "warning",
-    },
-  ];
-  return fallback.filter((stat) => stat.value !== "—");
+/* Whether the order on file is the one recommended here. If the owner ordered from
+   someone else in the chat, this recommendation was never acted on — so the button
+   keeps offering it rather than claiming credit for a different purchase. */
+function recommendationOrdered(alert) {
+  const order = orderForAlert(alert);
+  return Boolean(order && order.supplier_id === (alert.recommendation || {}).supplier_id);
 }
-
 
 /* What closed the alert. Without this the card just collapses and it is not
    obvious an order was actually placed. */
 function resolvedNote(alert) {
-  const order = (state.snapshot?.purchase_orders || []).find(
-    (po) => po.alert_id === alert._id && po.status === "ordered",
-  );
+  const order = orderForAlert(alert);
   if (!order) return "";
   const line = (order.line_items || [])[0] || {};
   return `
@@ -297,24 +254,32 @@ function resolvedNote(alert) {
     </span>`;
 }
 
-
-
-/* Whether the order on file is the one recommended here. If the owner ordered from
-   someone else in the chat, this recommendation was never acted on — so the button
-   keeps offering it rather than claiming credit for a different purchase. */
-function recommendationOrdered(alert) {
-  const order = (state.snapshot?.purchase_orders || []).find(
-    (po) => po.alert_id === alert._id && po.status === "ordered",
-  );
-  return Boolean(order && order.supplier_id === (alert.recommendation || {}).supplier_id);
-}
-
+/* The three risk tiles, formatted here rather than by the agent — they are pure
+   presentation of figures the alert already carries, and asking the model to emit
+   them as well gave those numbers a second source that could disagree with the
+   first. A tile with nothing to show is dropped rather than rendered as a dash. */
 function statTiles(alert) {
-  const tiles = alertStats(alert)
+  const risk = alert.risk || {};
+  // `blocker_shared_with` includes the alert's own product, so this is a length
+  // rather than 1 + length.
+  const affected = (risk.blocker_shared_with || []).length;
+  const stock =
+    risk.blocker_quantity_on_hand != null && risk.component_reorder_point != null
+      ? `${risk.blocker_quantity_on_hand} / ${risk.component_reorder_point} units`
+      : null;
+  const daysLeft =
+    risk.component_days_left != null ? `${Math.floor(risk.component_days_left)} days` : null;
+
+  const tiles = [
+    { label: "SKUs affected", value: affected ? `${affected} products` : null, emphasis: "critical" },
+    { label: "Stock vs reorder", value: stock, emphasis: "critical" },
+    { label: "Days left", value: daysLeft, emphasis: "warning" },
+  ]
+    .filter((stat) => stat.value)
     .map(
       (stat) => `
-        <div class="risk-tile ${escapeHtml(stat.emphasis || "neutral")}">
-          <span>${escapeHtml(stat.label)}</span>
+        <div class="risk-tile ${stat.emphasis}">
+          <span>${stat.label}</span>
           <strong>${escapeHtml(stat.value)}</strong>
         </div>`,
     )
@@ -323,15 +288,10 @@ function statTiles(alert) {
 }
 
 /* ---------- Session ---------- */
-/* Boot straight into the portal with the shop's real data on screen and the agent
-   idle. Nothing runs until the play control is pressed, so the laptop can sit on the
-   podium indefinitely — and a rehearsal leaves nothing behind, because pressing play
-   mints a new session id.
-
-   A session is always created, even on a first load: the portal's tables come from
-   /api/state, and without a session id there is nothing to fetch and the dashboard
-   would render empty. An in-progress demo survives a reload for the same reason —
-   the stored id is reused and its alert and feed come back with it. */
+/* Boot into the portal with the shop's data on screen and the agent idle: nothing runs
+   until the play control is pressed. A session is always created, since the portal's
+   tables come from /api/state, and reusing the stored id lets an in-progress demo
+   survive a reload with its alert and feed intact. */
 async function startSession() {
   const session = await api("/api/demo/session", {
     method: "POST",
@@ -349,10 +309,8 @@ async function startSession() {
    a live status instead.
 
    Keyed on the server's `monitor.scheduled` flag rather than on the activity feed
-   having events. The agent takes a few seconds to log its first line, and treating
-   an empty feed as "not started" made the button flick back to "Run sweep" in that
-   gap — which reads as though the click was lost. `started` covers the narrower gap
-   between the API responding and the first poll carrying the new session's flag. */
+   having events, since the agent takes a few seconds to log its first line. `started`
+   covers the gap between the API responding and the first poll carrying the flag. */
 function demoStarted() {
   if (state.started) return true;
   const monitor = state.snapshot?.monitor || {};
@@ -402,8 +360,8 @@ async function startDemo() {
   if (state.starting) return;
   state.starting = true;
   state.startError = null;
-  // Drop any banner from an earlier attempt: a sticky failure message would
-  // otherwise sit there through the retry it is no longer describing.
+  // Drop any banner from an earlier attempt, so a stale failure message does not sit
+  // there through the retry.
   state.banner = null;
   render(true);
 
@@ -431,8 +389,7 @@ async function startDemo() {
     state.selectedAlertId = null;
     state.prevActiveAlerts = 0;
     // The sweep is scheduled server-side now. Latch it locally so the control goes
-    // straight to "Monitoring" instead of waiting on the next poll to say so — the
-    // snapshot in hand is still the previous session's.
+    // straight to "Monitoring" instead of waiting on the next poll.
     state.started = true;
     // Drop the old session's feed and alerts rather than showing them under the new
     // session for a poll or two.
@@ -660,6 +617,26 @@ function dashboardView() {
     </div>`;
 }
 
+/* The agent's working, as one row rather than one row per line.
+
+   Each sampled line arrives as its own event, and rendered individually they were
+   mostly chrome: six copies of the tag and timestamp around six short lines. Grouped,
+   the tag is stated once and the lines below it read as a single derivation — which is
+   what they are. */
+function thinkingRow(lines, time) {
+  const body = lines
+    .map((line) => `<span class="thinking-line">${escapeHtml(line)}</span>`)
+    .join("");
+  return `
+    <div class="event">
+      <div class="event-head">
+        <span class="event-tag plan">${EVENT_META.agent_plan.label}</span>
+        ${time ? `<span class="event-time">${fmtDate(time)}</span>` : ""}
+      </div>
+      <div class="thinking-lines">${body}</div>
+    </div>`;
+}
+
 /* One activity row — tag, time, message, command. Shared between the dashboard
    feed and the chat panel so the agent's actions look the same everywhere. */
 function eventRow({ kind, message, command, time, pending }) {
@@ -714,23 +691,22 @@ function chatActivity(rawQueries, { pendingTool, answered, thinking } = {}) {
   return rows.length ? `<div class="chat-activity">${rows.join("")}</div>` : "";
 }
 
-/* "find(\"products\", …)" -> "Queried products via MCP." */
+/* A rendered command read back as prose: find("products", …) -> "Queried products." */
+const MCP_VERBS = {
+  find: "Queried",
+  aggregate: "Aggregated",
+  count: "Counted",
+  getSchema: "Read the schema for",
+  getIndexes: "Read the indexes for",
+  insertMany: "Inserted into",
+  updateMany: "Updated",
+  listCollections: "Listed the collections",
+};
 function mcpSummary(command) {
   const verb = String(command || "").split("(")[0] || "MCP";
   const collection = (String(command).match(/"([a-z_]+)"/) || [])[1];
-  const labels = {
-    find: "Queried",
-    aggregate: "Aggregated",
-    count: "Counted",
-    getSchema: "Read the schema for",
-    getIndexes: "Read the indexes for",
-    insertMany: "Inserted into",
-    updateMany: "Updated",
-    listCollections: "Listed the collections",
-  };
-  const label = labels[verb] || verb;
-  if (verb === "listCollections") return "Listed the collections.";
-  return collection ? `${label} ${collection}.` : `${label}.`;
+  const label = MCP_VERBS[verb] || verb;
+  return collection && verb !== "listCollections" ? `${label} ${collection}.` : `${label}.`;
 }
 
 function activityFeed() {
@@ -741,48 +717,58 @@ function activityFeed() {
   // Snapshot returns newest-first; show as a chronological trace.
   const ordered = events.slice(0, 24).reverse();
 
-  // The sweep logs one placeholder: "Writing up the diagnosis…" when the agent starts
-  // composing the alert, a turn that runs ~30s and would otherwise log nothing until the
-  // alert appears. It is persisted like any other event, so drop it once the insert that
-  // publishes the alert has landed — otherwise it lingers beside the row that replaced it.
-  const superseded = new Set();
-  ordered.forEach((event, index) => {
-    if (!event.metadata?.pending) return;
-    const replaced = ordered
-      .slice(index + 1)
-      .some((later) => later.metadata?.collection === "alerts");
-    if (replaced) superseded.add(index);
-  });
+  // The sweep logs one placeholder — "Writing up the diagnosis…" — to cover the ~30s
+  // turn that composes the alert and logs nothing until it lands. It is persisted like
+  // any other event, so drop it once the write that publishes the alert has appeared,
+  // or it lingers beside the row that replaced it. Walking newest-first means the flag
+  // is already set by the time the placeholder is reached.
+  let alertWritten = false;
+  const kept = ordered.reduceRight((rows, event) => {
+    if (event.metadata?.collection === "alerts") alertWritten = true;
+    if (event.metadata?.pending && alertWritten) return rows;
+    rows.unshift(event);
+    return rows;
+  }, []);
 
-  const items = ordered
-    .map((event, index) =>
-      superseded.has(index)
-        ? ""
-        : eventRow({
-            kind: event.event_type,
-            message: event.message,
-            command: event.metadata && event.metadata.command,
-            time: event.created_at,
-            pending: Boolean(event.metadata?.pending),
-          }),
-    )
-    .join("");
-  return `<div class="activity-list">${items}</div>`;
+  // Collapse each run of the agent's working into one row. The lines are logged
+  // separately so they appear as the model writes them, but a run of them is one
+  // thought, and rendering it as one row keeps the MCP calls either side legible.
+  const items = [];
+  for (let i = 0; i < kept.length; i += 1) {
+    if (!kept[i].metadata?.thinking) {
+      items.push(
+        eventRow({
+          kind: kept[i].event_type,
+          message: kept[i].message,
+          command: kept[i].metadata?.command,
+          time: kept[i].created_at,
+          pending: Boolean(kept[i].metadata?.pending),
+        }),
+      );
+      continue;
+    }
+    const run = [];
+    const startedAt = kept[i].created_at;
+    while (i < kept.length && kept[i].metadata?.thinking) {
+      run.push(kept[i].message);
+      i += 1;
+    }
+    i -= 1;
+    items.push(thinkingRow(run, startedAt));
+  }
+  return `<div class="activity-list">${items.join("")}</div>`;
 }
 
 /* While the scheduled sweep is running, say so in the inbox — the wait is the
    agent working, and the activity feed shows what it is doing. */
 function sweepRunning() {
   const events = state.snapshot?.history || [];
-  if (!events.length) return false;
-  const startedSweep = events.some((event) => event.event_type === "agent_plan");
-  // Done when the alert exists or the sweep failed. This used to look for an
-  // `agent_finding` event, which no longer exists — the alert itself is the
-  // conclusion, so its presence is the more direct signal.
+  const started = events.some((event) => event.event_type === "agent_plan");
+  // Done when the alert exists — the alert IS the conclusion — or the sweep errored.
   const finished =
     (state.snapshot?.alerts || []).length > 0 ||
     events.some((event) => event.event_type === "error");
-  return startedSweep && !finished;
+  return started && !finished;
 }
 
 function sweepBanner() {
@@ -820,7 +806,7 @@ function alertsView() {
                   <span class="mono alert-date">${fmtDay(alert.created_at)}</span>
                 </div>
                 <strong>${escapeHtml(alert.title)}</strong>
-                <span class="alert-summary">${escapeHtml(alertHeadline(alert))}</span>
+                <span class="alert-summary">${escapeHtml(alert.summary || "")}</span>
                 ${resolved ? resolvedNote(alert) : ""}
                 <span class="alert-chevron" aria-hidden="true"></span>
               </button>
@@ -1013,8 +999,10 @@ function handleStreamEvent(event) {
     // matching tool_call event replaces it with the real query.
     state.streamTools.push({ tool: event.tool, command: null, pending: true });
   } else if (event.type === "tool_call") {
-    // Resolve the oldest pending placeholder for this tool. Argument streaming
-    // and call finalization can interleave, so match on tool name only.
+    // Resolve the oldest pending placeholder for this tool, then drop any others
+    // still pending for it: argument streaming can announce the same tool several
+    // times before the call is finalized, and those extras are duplicates. Matching
+    // on tool name only, because the streamed announcement carries no call id.
     const pending = state.streamTools.find(
       (entry) => entry.pending && entry.tool === event.tool,
     );
@@ -1024,15 +1012,8 @@ function handleStreamEvent(event) {
     } else {
       state.streamTools.push({ tool: event.tool, command: event.command });
     }
-    // Any placeholder still pending for a tool that has now reported a real
-    // command is a duplicate from argument streaming; drop it.
     state.streamTools = state.streamTools.filter(
-      (entry, index) =>
-        !entry.pending ||
-        !state.streamTools.some(
-          (other, otherIndex) =>
-            otherIndex !== index && !other.pending && other.tool === entry.tool,
-        ),
+      (entry) => !(entry.pending && entry.tool === event.tool),
     );
   } else if (event.type === "error") {
     state.streamError = event.message;
@@ -1162,9 +1143,6 @@ function productsView() {
     });
   });
 
-  // Components with an order raised but nothing delivered yet. Same reason as the
-  // products table: the order closes the alert, but the quantity on hand has not
-  // moved, so "In stock" would overstate it.
   const inboundIds = inboundInventoryIds();
 
   const itemRows = items

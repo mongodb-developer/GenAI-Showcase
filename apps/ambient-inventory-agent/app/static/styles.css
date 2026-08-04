@@ -907,6 +907,24 @@ input {
   line-height: 1.45;
 }
 
+/* The agent's working: several lines under one tag, set apart from the feed's own
+   narration by a rule down the left so it reads as the model's voice rather than the
+   app's. Slightly muted — it is context for the alert, not the alert. */
+.thinking-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 10px;
+  border-left: 2px solid #e3d9f7;
+}
+
+.thinking-line {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
 .event-cmd {
   display: block;
   margin-top: 7px;

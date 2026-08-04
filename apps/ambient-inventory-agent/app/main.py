@@ -15,8 +15,8 @@ from pydantic import BaseModel
 from .agent import CoffeeInventoryAgent
 from .db import get_database
 from .demo_data import ensure_indexes, ensure_validators, seed_demo_data
-from .graph import InventoryMonitorGraph
 from .mcp_session import MCPUnavailable, get_mcp_session
+from .monitor import InventoryMonitor
 from .memory import close_checkpointer
 from .repository import InventoryRepository
 
@@ -47,16 +47,16 @@ def repository() -> InventoryRepository:
     return InventoryRepository(get_database())
 
 
-def monitor_graph() -> InventoryMonitorGraph:
-    return InventoryMonitorGraph(repository())
+def run_sweep(session_id: str) -> dict | None:
+    """The sweep, off the event loop: the investigator runs its own asyncio loop."""
+    return InventoryMonitor(repository()).run(session_id)
 
 
 async def delayed_monitor(session_id: str, delay_seconds: int) -> None:
     await asyncio.sleep(delay_seconds)
-    repo = repository()
-    if repo.active_alert_for_session(session_id):
+    if repository().active_alert_for_session(session_id):
         return
-    await asyncio.to_thread(monitor_graph().run, session_id)
+    await asyncio.to_thread(run_sweep, session_id)
 
 
 def schedule_monitor_once(session_id: str) -> None:
@@ -115,7 +115,6 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # StaticFiles sends an ETag but no Cache-Control, so a browser may reuse app.js without
 # revalidating — which shows up as a UI change that "didn't work" until a hard reload.
-# Not worth debugging twice, and this demo serves three small files to one laptop.
 @app.middleware("http")
 async def no_store_static(request: Request, call_next):
     response = await call_next(request)
@@ -166,9 +165,8 @@ async def start_demo(_: SessionRequest) -> dict:
 
     The MCP session is re-minted rather than reused: the service-account token is
     good for an hour, and the laptop may have sat on the podium longer than that
-    before anyone spoke. Minting unconditionally costs ~7s (1.5s token, 2.5s tool
-    load, 3.2s remote-atlas-connect) and is the same every time, which is worth
-    more on stage than a fast path that occasionally has to explain itself.
+    before anyone spoke. Minting unconditionally costs a few seconds and behaves the
+    same every time, which is worth more on stage than an occasionally-stale fast path.
     """
     for task in scheduled_tasks.values():
         task.cancel()
@@ -192,9 +190,8 @@ async def start_demo(_: SessionRequest) -> dict:
 async def run_monitor(payload: SessionRequest) -> dict:
     """Run a sweep synchronously — useful for rehearsing without reloading."""
     session_id = payload.session_id or f"session_{uuid4().hex[:10]}"
-    repo = repository()
-    repo.ensure_session(session_id)
-    alert = await asyncio.to_thread(monitor_graph().run, session_id)
+    repository().ensure_session(session_id)
+    alert = await asyncio.to_thread(run_sweep, session_id)
     return {"session_id": session_id, "alert": alert}
 
 

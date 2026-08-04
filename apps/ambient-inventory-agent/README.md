@@ -12,20 +12,27 @@ coffee roaster. It shows one compressed monitoring cycle:
 
 ## Architecture
 
-**One agent, three jobs.** Same model, same MCP tool set, same MongoDB
+**One agent, two jobs.** Same model, same MCP tool set, same MongoDB
 connection; what differs is the prompt and when it runs.
 
 | Job | When | File |
 |---|---|---|
 | **Monitor** | On **Run sweep** | `investigator.py` — sweeps, diagnoses, files the alert |
 | **Assistant** | Owner asks | `agent.py` — answers from the database, streaming |
-| **Order clerk** | Owner approves | `order_agent.py` — records the purchase order |
 
-`graph.py` only schedules the monitoring run. Every judgement in the alert — which
-component, which supplier, how many, how urgent — is the agent's, reached by
-querying MongoDB over Remote MCP. There is no rule-based alternative: if the agent
-cannot complete, no alert is raised and the failure is surfaced in the feed rather
-than papered over with a fabricated one.
+Ordering is not a third agent. When the owner decides in the chat, the assistant
+writes the purchase order itself with `insert-many`; when they press the approve
+button instead, the app writes it with the driver and labels it as such.
+
+Both jobs are LangGraph agents: `create_agent` compiles a ReAct graph, the app
+streams from it with `astream`, and its memory is checkpointed to MongoDB with
+`langgraph-checkpoint-mongodb`. `monitor.py` only schedules the sweep — it holds no
+orchestration of its own, because the sweep is one agent doing the whole job.
+
+Every judgement in the alert — which component, which supplier, how many, how
+urgent — is the agent's, reached by querying MongoDB over Remote MCP. There is no
+rule-based alternative: if the agent cannot complete, no alert is raised and the
+failure is surfaced in the feed rather than papered over with a fabricated one.
 
 ```
 Browser ──SSE──► FastAPI ──► LangGraph ReAct agent ──► Claude (Bedrock)
@@ -52,7 +59,7 @@ wrong cluster.
 
 ### How the agent authenticates
 
-**`RemoteMCPProbe.service_account_token()` in `app/mcp_client.py` is the whole
+**`RemoteMCPAuth.service_account_token()` in `app/mcp_client.py` is the whole
 story** — one function, and the code that actually runs.
 
 The agent holds no database username or password. It holds an Atlas **service
@@ -241,7 +248,7 @@ restarting.
 | `suppliers` | Lead times, reliability, `unit_costs`, `minimum_order` |
 | `purchase_orders` | Seeded inbound POs plus agent-submitted orders |
 | `alerts` | Inbox alerts with the decision inputs that produced them |
-| `session_history` | One timeline per session: owner questions, agent answers, and every tool call the agent made (TTL 24h) |
+| `session_history` | One timeline per session: owner questions, agent answers, and every tool call the agent made |
 | `checkpoints`, `checkpoint_writes` | LangGraph short-term memory, one thread per sweep |
 | `demo_sessions` | Session state and the seed marker |
 
@@ -257,8 +264,9 @@ Notes on the schema, following MongoDB's modeling guidance:
   session-scoped list views, plus a unique `(session_id, dedupe_key)` backing the
   alert upsert.
 - **Approval is idempotent in the database.** A unique partial index on
-  `{alert_id}` where `status: "submitted"` means a double-click cannot place two
-  supplier orders.
+  `{alert_id}` where `status: "ordered"` means a double-click cannot place two
+  supplier orders — and neither can the agent, so it does not spend a query
+  checking before it writes.
 - **Seeded documents carry `session_id: "seed"`** so session queries stay
   indexable equality matches instead of `{$exists: false}`.
 - **`$jsonSchema` validators** are attached at `warn` level: drift shows up in the
@@ -278,17 +286,13 @@ monitoring run — not on the browser session or the alert:
 - The alert stores its `sweep_id`, so opening it resumes that thread. Nothing is
   held in the browser.
 
-The order write runs nested inside a chat turn, so it deliberately has no
-checkpointer — sharing the conversation's thread would resume it mid-tool-call.
-Writing one document needs no memory.
-
 ### Overriding the recommendation
 
-If the owner wants a different supplier, the agent records that as an `override`
-beside the untouched `recommendation`. The alert keeps showing what the agent
-advised — that is the record — and the override shows what will actually be
-ordered. Nothing is written to `purchase_orders` until the owner says to place it,
-either in words or with the button.
+If the owner wants a different supplier, the agent orders from theirs. The alert
+goes on showing the original `recommendation` — that is the record of what the
+agent advised — and the purchase order is the record of what was actually bought.
+Nothing reaches `purchase_orders` until the owner says to place it, either in words
+or with the button.
 
 This is also why a phone would work in a real deployment: state is in MongoDB, so
 a push notification deep-linking to an alert would resume the same conversation.
@@ -302,10 +306,12 @@ otherwise.
 This is a demo, and a few things would change in production:
 
 - The monitor runs once per browser session via an in-process `asyncio` task. A
-  real deployment would run the same graph on a schedule (cron, worker, or
-  managed LangGraph) independent of anyone viewing the page, and the alert would
-  also go out as a push notification.
+  real deployment would run the same sweep on a schedule (cron, worker, or managed
+  LangGraph) independent of anyone viewing the page — `InventoryMonitor.run()` is
+  the entry point that would be called — and the alert would also go out as a push
+  notification.
 - Purchase orders are simulated — no supplier API is called.
-- Alert detection is deliberately rule-based. Keeping the LLM out of detection
-  is a reasonable production choice too: thresholds stay auditable and cheap,
-  and the model is reserved for explanation and decision support.
+- Detection here is the model's own work, which is what makes the demo, but a
+  production system would likely compute the threshold crossing deterministically
+  and reserve the model for diagnosis and decision support: cheaper per sweep, and
+  the trigger stays auditable.

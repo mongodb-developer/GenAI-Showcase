@@ -21,10 +21,12 @@ from typing import Any
 import httpx
 from dotenv import load_dotenv
 
-from .mcp_client import RemoteMCPProbe
+from .mcp_client import RemoteMCPAuth
 
 load_dotenv()
 
+# `remote-atlas-connect` reports the id in prose, so it is read back out of the
+# text: either the quoted form it uses today or a bare UUID anywhere in the reply.
 CONNECTION_ID_PATTERN = re.compile(
     r"connectionId is \"([0-9a-fA-F-]{36})\"|([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
@@ -66,11 +68,27 @@ def _extract_connection_id(payload: Any) -> str | None:
     return match.group(1) or match.group(2)
 
 
+def discovery_result(tool_name: str, result: Any) -> str:
+    """A discovery tool's output as the agent should see it.
+
+    Applied on both paths into the cache — the agent's own call and the startup
+    warm-up — so a `list-collections` reply can never reach the model still
+    advertising the app's bookkeeping collections.
+    """
+    text = result if isinstance(result, str) else str(result)
+    if tool_name != "list-collections":
+        return text
+    for name in set(re.findall(r'"name":\s*"([a-z_]+)"', text)):
+        if name not in AGENT_COLLECTIONS:
+            text = re.sub(rf'\s*\{{[^{{}}]*"name":\s*"{name}"[^{{}}]*\}},?', "", text)
+    return text
+
+
 class MCPSession:
     """Holds the authenticated MCP tool set and the Atlas connectionId."""
 
     def __init__(self) -> None:
-        self.probe = RemoteMCPProbe()
+        self.auth = RemoteMCPAuth()
         self.project_id = os.getenv("MDB_MCP_PROJECT_ID", "").strip()
         self.cluster_name = os.getenv("MDB_MCP_CLUSTER_NAME", "Cluster0").strip()
         self.database = os.getenv("MONGODB_DATABASE", "ambient_inventory_agent")
@@ -93,11 +111,11 @@ class MCPSession:
     def _fetch_token(self) -> str:
         """Mint the service-account bearer token (sync httpx, run in a thread).
 
-        See `RemoteMCPProbe.service_account_token` for the exchange itself — that
-        is the function to read when you want to know how the agent authenticates.
+        See `RemoteMCPAuth.service_account_token` for the exchange itself — that is
+        the function to read when you want to know how the agent authenticates.
         """
         with httpx.Client(timeout=30.0, follow_redirects=True) as client:
-            return self.probe.service_account_token(client)
+            return self.auth.service_account_token(client)
 
     async def connect(self) -> None:
         """Authenticate, load tools, and bind an Atlas connectionId."""
@@ -105,7 +123,7 @@ class MCPSession:
             if self.ready:
                 return
 
-            if not self.probe.client_id or not self.probe.client_secret:
+            if not self.auth.client_id or not self.auth.client_secret:
                 raise MCPUnavailable(
                     "Remote MCP credentials are missing. Set MDB_MCP_API_CLIENT_ID and "
                     "MDB_MCP_API_CLIENT_SECRET in .env."
@@ -134,7 +152,7 @@ class MCPSession:
                 {
                     "mongodb": {
                         "transport": "streamable_http",
-                        "url": self.probe.url,
+                        "url": self.auth.url,
                         "headers": headers,
                     }
                 }
@@ -220,9 +238,7 @@ class MCPSession:
         async def run(key, tool, payload):
             try:
                 result = await tool.ainvoke(payload)
-                self.discovery_cache[key] = (
-                    result if isinstance(result, str) else str(result)
-                )
+                self.discovery_cache[key] = discovery_result(tool.name, result)
             except Exception:
                 # A warm-up miss is harmless: the agent will just call the tool.
                 pass
@@ -235,8 +251,8 @@ class MCPSession:
 
     def status(self) -> dict[str, Any]:
         return {
-            "configured": bool(self.probe.client_id and self.probe.client_secret),
-            "url": self.probe.url,
+            "configured": bool(self.auth.client_id and self.auth.client_secret),
+            "url": self.auth.url,
             "ready": self.ready,
             "connection_id": self.connection_id,
             "cluster": self.cluster_name,
