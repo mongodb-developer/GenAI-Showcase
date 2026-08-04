@@ -215,7 +215,7 @@ def get_agent_tools(session: MCPSession) -> list[Any]:
                     if cache_key in session.discovery_cache:
                         return session.discovery_cache[cache_key]
 
-                result = await _invoke_with_reauth(session, mcp_tool, payload)
+                result = await mcp_tool.ainvoke(payload)
                 text = result if isinstance(result, str) else str(result)
                 if mcp_tool.name == "list-collections":
                     # Do not advertise the app's own bookkeeping collections; the
@@ -237,50 +237,6 @@ def get_agent_tools(session: MCPSession) -> list[Any]:
             )
         )
     return wrapped
-
-
-def _is_expired_token(exc: BaseException) -> bool:
-    """Whether a failed MCP call looks like an expired bearer token.
-
-    The MCP client raises through a TaskGroup, so the 401 is buried in a
-    sub-exception — hence matching on the unwrapped text rather than a status code.
-    """
-    text = _root_cause(exc)
-    return "401" in text or "Unauthorized" in text
-
-
-async def _invoke_with_reauth(
-    session: MCPSession, mcp_tool: Any, payload: dict[str, Any]
-):
-    """Call an MCP tool, re-authenticating once if the token has expired.
-
-    The OAuth token is minted when the session opens and lasts about an hour, so a
-    laptop that has been sitting on a podium — or a long rehearsal — outlives it. The
-    failure lands on whichever tool call comes next, and during a demo that is most
-    likely the purchase-order write at the very end: the agent chooses `insert-many`,
-    the call 401s, no order is written and the alert never resolves. Silent from the
-    audience's side, and the worst possible moment.
-
-    `session.reconnect()` mints a fresh token and a fresh `connectionId`, so the retry
-    re-resolves the tool from the new session and re-stamps the connection into the
-    payload — the captured `mcp_tool` still carries the dead token in its client.
-    """
-    try:
-        return await mcp_tool.ainvoke(payload)
-    except Exception as exc:
-        if not _is_expired_token(exc):
-            raise
-        await session.reconnect()
-        fresh = next((t for t in session.tools if t.name == mcp_tool.name), None)
-        if fresh is None:
-            raise
-        return await fresh.ainvoke(
-            {
-                **payload,
-                "connectionId": session.connection_id,
-                "database": session.database,
-            }
-        )
 
 
 def _model_facing_schema(args_schema: Any) -> dict[str, Any]:
