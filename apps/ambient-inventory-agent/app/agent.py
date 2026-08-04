@@ -18,7 +18,6 @@ import re
 from typing import Any, AsyncIterator
 
 from dotenv import load_dotenv
-from pydantic import Field, create_model
 
 from .mcp_session import (
     AGENT_COLLECTIONS,
@@ -35,6 +34,14 @@ load_dotenv()
 # Arguments the app owns, not the model. Injecting them keeps the agent from
 # guessing a connectionId or querying the wrong database.
 INJECTED_ARGS = {"connectionId", "database"}
+
+# Hidden from the model but not replaced with anything: `find` without a limit returns
+# the whole collection, and every collection here holds tens of documents. Left visible,
+# the model passed arbitrary values (a measured sweep chose `limit: 50`) and then
+# re-read `inventory_items` a second time to check what it had missed. Prompting it not
+# to did not hold. Nothing here needs paging, so the parameter has no use — and the
+# agent cannot mis-set an argument it cannot see.
+HIDDEN_ARGS = {"limit"}
 
 SYSTEM_PROMPT = """\
 You are the inventory assistant for Leafy Roasters, a specialty coffee roaster \
@@ -152,41 +159,30 @@ button in the UI, which submits whatever the current recommendation says.\
 """
 
 
-def build_agent_tools(session: MCPSession) -> list[Any]:
-    """Re-expose MCP tools with app-owned arguments bound.
+def get_agent_tools(session: MCPSession) -> list[Any]:
+    """The MongoDB tools the agent is allowed to use, narrowed for it.
 
-    The model sees `find(collection, filter, limit)` instead of
-    `find(connectionId, database, collection, ...)`, which removes a whole class
-    of stage failure and shrinks the tool-choice prompt.
+    Each MCP tool is re-exposed with the app's own arguments already filled in and
+    the off-limits collections refused, so the model chooses WHAT to query but not
+    WHERE or what it may touch:
+
+      MCP gives us:  find(connectionId, database, collection, filter, limit, ...)
+      the model gets: find(collection, filter, limit, ...)
+
+    `connectionId` is a UUID minted at runtime by `remote-atlas-connect`, so a model
+    asked for one can only guess. Dropping it removes a whole class of stage failure
+    and shrinks the tool-choice prompt.
     """
     from langchain_core.tools import StructuredTool
 
     wrapped: list[Any] = []
     for tool in session.tools:
-        schema = tool.args_schema or {}
-        properties = schema.get("properties", {}) if isinstance(schema, dict) else {}
-        visible = {
-            name: spec for name, spec in properties.items() if name not in INJECTED_ARGS
-        }
-
-        fields: dict[str, Any] = {}
-        for name, spec in visible.items():
-            json_type = spec.get("type") if isinstance(spec, dict) else None
-            python_type = {
-                "string": str,
-                "integer": int,
-                "number": float,
-                "boolean": bool,
-                "object": dict,
-                "array": list,
-            }.get(json_type, Any)
-            description = spec.get("description", "") if isinstance(spec, dict) else ""
-            fields[name] = (
-                python_type | None if python_type is not Any else Any,
-                Field(default=None, description=description),
-            )
-
-        args_model = create_model(f"{tool.name.replace('-', '_')}_Args", **fields)
+        # Pass the MCP server's own argument schema straight through, minus the two
+        # keys the app fills in. Rebuilding it as a Pydantic model by hand was
+        # strictly worse: it validated nothing (every field ended up optional) and
+        # it dropped MCP's per-argument descriptions — including the one telling the
+        # model that `filter` takes db.collection.find() syntax.
+        args_schema = _model_facing_schema(tool.args_schema)
 
         def make_coroutine(mcp_tool: Any):
             async def run(**kwargs: Any) -> str:
@@ -236,11 +232,40 @@ def build_agent_tools(session: MCPSession) -> list[Any]:
             StructuredTool(
                 name=tool.name,
                 description=(tool.description or "").split("\n")[0],
-                args_schema=args_model,
+                args_schema=args_schema,
                 coroutine=make_coroutine(tool),
             )
         )
     return wrapped
+
+
+def _model_facing_schema(args_schema: Any) -> dict[str, Any]:
+    """The MCP tool's own call signature, with the app-owned arguments removed.
+
+    `connectionId` and `database` are supplied by the app at call time, so leaving
+    them in the signature only invites the model to guess a runtime UUID it has no
+    way to know. Dropped from `required` as well, or the model is being asked for
+    something it must not provide.
+
+    This is the tool's SIGNATURE — which arguments `find` takes. Nothing to do with
+    document shape: the agent discovers that itself via `collection-schema`.
+    """
+    if not isinstance(args_schema, dict):
+        return {"type": "object", "properties": {}}
+
+    properties = args_schema.get("properties")
+    if not isinstance(properties, dict):
+        return {"type": "object", "properties": {}}
+
+    concealed = INJECTED_ARGS | HIDDEN_ARGS
+    trimmed = dict(args_schema)
+    trimmed["properties"] = {
+        name: spec for name, spec in properties.items() if name not in concealed
+    }
+    required = args_schema.get("required")
+    if isinstance(required, list):
+        trimmed["required"] = [name for name in required if name not in concealed]
+    return trimmed
 
 
 def model_for_agent(max_tokens: int | None = None, effort: str | None = None):
@@ -285,22 +310,14 @@ class CoffeeInventoryAgent:
         self.session = get_mcp_session()
 
     async def _build(self):
-        # LangChain 1.x absorbed LangGraph's prebuilt ReAct constructor:
-        # `langgraph.prebuilt.create_react_agent` still works but prints a
-        # deprecation notice. The returned object is the same compiled LangGraph
-        # graph — streaming, checkpointing and `aget_state` are unchanged.
         from langchain.agents import create_agent
 
         await self.session.ensure()
-        tools = build_agent_tools(self.session)
+        tools = get_agent_tools(self.session)
         return create_agent(
             model_for_agent(),
             tools,
-            # Renamed from `prompt` in the move to langchain.agents.
             system_prompt=SYSTEM_PROMPT.format(database=self.session.database),
-            # Working memory in MongoDB: each turn resumes the real message state
-            # — including prior tool calls and their results — so the agent does
-            # not re-query what it already knows.
             checkpointer=get_checkpointer(),
         )
 

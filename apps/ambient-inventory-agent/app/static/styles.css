@@ -617,29 +617,6 @@ input {
 }
 
 /* ---------- Alert detail ---------- */
-.detail-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.detail-header h2 {
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.eyebrow {
-  margin-bottom: 5px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--danger);
-  font-family: "Source Code Pro", monospace;
-}
-
 /* The agent decides how many stats matter (3-5), so the grid flows rather than
    assuming a fixed count. */
 .risk-grid {
@@ -691,13 +668,6 @@ input {
 .risk-tile strong {
   font-size: 14.5px;
   line-height: 1.25;
-}
-
-.conversation-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 16px;
-  align-items: start;
 }
 
 .chat-panel {
@@ -850,38 +820,6 @@ input {
   background: var(--accent);
   border-radius: 40px;
   box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.22);
-}
-
-.order-panel {
-  padding: 16px;
-  align-self: start;
-}
-
-.order-panel h3 {
-  margin-bottom: 12px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.proposal-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 9px 0;
-  border-top: 1px solid var(--border);
-  font-size: 13.5px;
-}
-
-.proposal-row span {
-  color: var(--muted);
-}
-
-.proposal-row strong {
-  text-align: right;
-}
-
-.order-panel .btn--primary {
-  margin-top: 14px;
 }
 
 .note {
@@ -1080,135 +1018,57 @@ input {
   font-family: "Source Code Pro", monospace;
 }
 
-/* ---------- Start curtain ---------- */
-/* Covers the app until the presenter is ready. Nothing runs behind it, so the
-   laptop can sit on the podium indefinitely without burning the demo. */
-.curtain {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
+/* ---------- Agent play control ---------- */
+/* Lives in the Agent activity card head. Deliberately understated — a small
+   control inside an existing panel, so the portal reads as software the shop
+   already runs rather than a demo with a start screen. */
+.play-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: var(--mongodb-slate);
-}
-
-.curtain-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  max-width: 480px;
-  padding: 48px 44px;
-  text-align: center;
-  color: #ffffff;
-}
-
-.curtain-logo {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-}
-
-.curtain-card h2 {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.curtain-card p {
-  color: #b8c4c9;
-  font-size: 14.5px;
-  line-height: 1.55;
-}
-
-/* Startup progress as a vertical timeline: a green track with a dot per step, so
-   completed work stays visible instead of being replaced by the next line. */
-.steps {
-  margin: 6px 0 0;
-  padding: 0 0 0 22px;
-  list-style: none;
-  text-align: left;
-  position: relative;
-}
-
-.steps::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 7px;
-  bottom: 7px;
-  width: 2px;
-  background: rgba(0, 237, 100, 0.22);
-}
-
-.step {
-  position: relative;
-  padding: 7px 0;
-  color: #6b7d85;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  background: var(--surface);
+  color: var(--ink);
   font-size: 13px;
-  line-height: 1.4;
-  transition: color 0.25s ease;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.step-dot {
-  position: absolute;
-  left: -22px;
-  top: 11px;
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(0, 237, 100, 0.3);
-  border-radius: 999px;
-  background: var(--mongodb-slate);
-  transition: background 0.25s ease, border-color 0.25s ease;
+.play-btn:hover {
+  border-color: var(--accent-strong);
+  background: var(--accent-soft);
 }
 
-.step.done {
-  color: #9fb2ba;
+.play-btn svg {
+  width: 11px;
+  height: 11px;
+  fill: var(--accent-strong);
+  stroke: none;
 }
 
-.step.done .step-dot {
-  border-color: var(--accent);
-  background: var(--accent);
+/* Handshake in progress, and the steady state once the agent is working. Same
+   shape as the button it replaces, so the card head does not reflow. */
+.agent-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
-.step.active {
-  color: #ffffff;
+.agent-status.live {
+  color: var(--accent-strong);
   font-weight: 600;
 }
 
-.step.active .step-dot {
-  border-color: var(--accent);
-  background: var(--accent);
-  box-shadow: 0 0 0 4px rgba(0, 237, 100, 0.18);
-}
-
-.step.failed {
-  color: #ff8f85;
-}
-
-.step.failed .step-dot {
-  border-color: var(--danger);
-  background: var(--danger);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .step,
-  .step-dot {
-    transition: none;
-  }
-}
-
-.curtain-btn:disabled {
-  border-color: rgba(0, 237, 100, 0.35);
-  background: transparent;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.curtain-btn {
-  min-width: 190px;
-  min-height: 46px;
-  font-size: 15px;
+.agent-status.working {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Responsive ---------- */
@@ -1237,7 +1097,6 @@ input {
 
     .grid-2,
   .alerts-layout,
-  .conversation-layout,
   .risk-grid {
     grid-template-columns: 1fr;
   }

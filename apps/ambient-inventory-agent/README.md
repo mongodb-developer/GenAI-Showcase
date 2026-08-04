@@ -3,7 +3,7 @@
 A stage-ready demo of an inventory monitoring assistant for a regional specialty
 coffee roaster. It shows one compressed monitoring cycle:
 
-1. The presenter presses **Start demo**.
+1. The presenter presses **Run sweep** on the inventory dashboard.
 2. An agent sweeps the catalogue over MongoDB Remote MCP.
 3. It finds a shared component below its reorder point and files an alert.
 4. The owner asks the agent about suppliers, timing and quantities.
@@ -17,7 +17,7 @@ connection; what differs is the prompt and when it runs.
 
 | Job | When | File |
 |---|---|---|
-| **Monitor** | On Enter | `investigator.py` — sweeps, diagnoses, files the alert |
+| **Monitor** | On **Run sweep** | `investigator.py` — sweeps, diagnoses, files the alert |
 | **Assistant** | Owner asks | `agent.py` — answers from the database, streaming |
 | **Order clerk** | Owner approves | `order_agent.py` — records the purchase order |
 
@@ -44,10 +44,23 @@ The driver is used only for things no model should decide: seeding, the activity
 log, the chat transcript, session state, and the UI's state snapshot.
 
 MCP data tools require a `connectionId` from `remote-atlas-connect`. The app
-performs that handshake at startup — and again when **Enter** is pressed, since a
-laptop left open on a podium may be holding an expired token — then injects
+performs that handshake at startup — and again when **Run sweep** is pressed, since
+the service-account token lasts an hour and a laptop left open on a podium may be
+holding an expired one — then injects
 `connectionId` and `database` into every tool call so the model cannot target the
 wrong cluster.
+
+### How the agent authenticates
+
+**`RemoteMCPProbe.service_account_token()` in `app/mcp_client.py` is the whole
+story** — one function, and the code that actually runs.
+
+The agent holds no database username or password. It holds an Atlas **service
+account** (client id + secret, the same credential a CI job would use), sends it as
+HTTP Basic in a standard OAuth 2.0 `client_credentials` grant, and gets back a
+bearer token valid for one hour. That token authorizes every MCP tool call. Access
+is exactly what the service account is granted in the Atlas project — revoke it
+there and every tool call stops, with no redeploy.
 
 The agent is scoped to eight of the ~41 tools, which keeps it out of Atlas
 administration (`drop-database`, `create-cluster`, …) and keeps tool selection
@@ -172,12 +185,12 @@ the first chat message from stalling on stage. Check it worked:
 curl -s localhost:8008/api/health | python -m json.tool
 ```
 
-`mcp.ready` must be `true`. Then open `http://localhost:8008/` and press **Start
-demo** when you begin.
+`mcp.ready` must be `true`. Then open `http://localhost:8008/` and press **Run
+sweep** when you begin.
 
 Reseeding is a pre-flight step, not something the page does, which is why
 `setup_demo.sh` does it before starting the server. Neither loading the page nor
-pressing **Start demo** reseeds — `/api/demo/start` mints a new `session_id`, which
+pressing **Run sweep** reseeds — `/api/demo/start` mints a new `session_id`, which
 leaves the previous run's alert and transcript behind but does *not* clear
 `purchase_orders`. That matters, because a leftover order for the shared component
 makes the next sweep decide no alert is needed, so run `./setup_demo.sh` again
@@ -195,11 +208,13 @@ Start it, then open the app and walk away:
 open http://localhost:8008/
 ```
 
-1. A **Start demo** screen appears and nothing runs behind it, so the laptop can
-   sit on the podium indefinitely. There is no URL parameter to remember.
-2. Press **Start demo** when you begin. It re-mints the Remote MCP session — a
-   long-idle laptop may be holding an expired OAuth token — and starts the sweep.
-   About 6 seconds, then the dashboard.
+1. The app opens straight into the inventory portal, showing the shop's real data
+   with the agent idle. Nothing runs until you press play, so the laptop can sit on
+   the podium indefinitely and there is no URL parameter to remember.
+2. Press **Run sweep** in the Agent activity panel when you begin. It re-mints the
+   service-account token, rebinds the cluster connection, and starts the sweep —
+   about 6 seconds, narrated on the button itself. The control then becomes a live
+   **Monitoring** indicator.
 3. The Agent activity panel fills as it works: `Agent · plan`, then a live stream
    of `Agent · MCP` queries. This is the part to narrate; the badge pulses when
    the agent files its diagnosis, roughly 45 seconds in.
@@ -209,7 +224,7 @@ open http://localhost:8008/
    answer streams in.
 6. Approve the order. The agent writes the purchase order over MCP (~17s).
 
-Timing after **Enter**: ~6s to reconnect MCP, then the alert lands 40–65s later.
+Timing after **Run sweep**: ~6s to reconnect MCP, then the alert lands 40–65s later.
 The activity feed populates throughout, so the wait is the demo rather than dead
 air. A chat answer takes 15–45s depending on how many queries the model runs.
 

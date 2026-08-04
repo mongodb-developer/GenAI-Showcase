@@ -54,7 +54,7 @@ class RemoteMCPProbe:
             with httpx.Client(timeout=8.0, follow_redirects=True) as client:
                 initialize = self._initialize(client, headers)
                 if initialize.status_code == 401 and not headers.get("Authorization"):
-                    token = self._get_oauth_token(client, initialize)
+                    token = self.service_account_token(client)
                     headers["Authorization"] = f"Bearer {token}"
                     initialize = self._initialize(client, headers)
                 initialize.raise_for_status()
@@ -124,57 +124,51 @@ class RemoteMCPProbe:
             return "oauth_client_credentials"
         return None
 
-    def _get_oauth_token(self, client: Any, unauthorized_response: Any) -> str:
+    def service_account_token(self, client: Any) -> str:
+        """Trade the Atlas service-account id + secret for a 1-hour bearer token."""
         if not self.client_id or not self.client_secret:
             raise ValueError(
                 "MCP endpoint requires auth. Set MDB_MCP_API_CLIENT_ID and "
                 "MDB_MCP_API_CLIENT_SECRET."
             )
 
-        token_url = self._discover_token_url(client, unauthorized_response)
-        if not token_url:
-            raise ValueError(
-                "Could not discover MCP OAuth token endpoint from the remote MCP server."
-            )
-
-        data = {"grant_type": "client_credentials"}
-        if self.url:
-            data["resource"] = self.url.rstrip("/")
-
-        response = self._request_client_credentials_token(client, token_url, data)
-        if response.status_code >= 400:
-            post_data = {
-                **data,
-                "client_id": self.client_id,
-                "client_secret": self.client_secret,
-            }
-            response = client.post(token_url, data=post_data)
-        if response.status_code == 401:
-            fallback_token_url = self._cloud_token_url_from_mcp_url()
-            if fallback_token_url and fallback_token_url != token_url:
-                response = self._request_client_credentials_token(
-                    client,
-                    fallback_token_url,
-                    {"grant_type": "client_credentials"},
-                )
+        credentials = b64encode(f"{self.client_id}:{self.client_secret}".encode())
+        response = client.post(
+            self._token_url(client),
+            content=urlencode({"grant_type": "client_credentials"}),
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": f"Basic {credentials.decode()}",
+            },
+        )
         response.raise_for_status()
-        payload = response.json()
-        access_token = payload.get("access_token")
+
+        access_token = response.json().get("access_token")
         if not access_token:
             raise ValueError("OAuth token response did not include access_token.")
         return access_token
 
-    def _request_client_credentials_token(
-        self, client: Any, token_url: str, data: dict[str, str]
-    ) -> Any:
-        credentials = f"{self.client_id}:{self.client_secret}".encode()
-        return client.post(
-            token_url,
-            content=urlencode(data),
-            headers={
-                "Accept": "application/json",
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Authorization": f"Basic {b64encode(credentials).decode()}",
+    def _token_url(self, client: Any) -> str:
+        """Get or discover the token URL."""
+        cloud_token_url = self._cloud_token_url_from_mcp_url()
+        if cloud_token_url:
+            return cloud_token_url
+
+        discovered = self._discover_token_url(client, self._unauthorized(client))
+        if not discovered:
+            raise ValueError(
+                "Could not determine the Atlas token endpoint for the MCP server."
+            )
+        return discovered
+
+    def _unauthorized(self, client: Any) -> Any:
+        """The MCP server's 401, which names its authorization server."""
+        return self._initialize(
+            client,
+            {
+                "Accept": "application/json, text/event-stream",
+                "Content-Type": "application/json",
             },
         )
 
@@ -238,11 +232,15 @@ class RemoteMCPProbe:
         return None
 
     def _cloud_token_url_from_mcp_url(self) -> str | None:
-        parsed = urlparse(self.url or "")
-        hostname = parsed.netloc
-        if hostname == "mcp-dev.mongodb.com":
-            return "https://cloud-dev.mongodb.com/api/oauth/token"
-        return None
+        """`mcp-dev.mongodb.com` -> `cloud-dev.mongodb.com/api/oauth/token`.
+
+        Derived rather than hardcoded per environment, so pointing
+        MDB_MCP_API_BASE_URL at production picks up `cloud.mongodb.com` on its own.
+        """
+        hostname = urlparse(self.url or "").netloc
+        if not hostname.startswith("mcp") or not hostname.endswith("mongodb.com"):
+            return None
+        return f"https://cloud{hostname[len('mcp'):]}/api/oauth/token"
 
 
 def _decode_mcp_response(text: str) -> dict[str, Any]:

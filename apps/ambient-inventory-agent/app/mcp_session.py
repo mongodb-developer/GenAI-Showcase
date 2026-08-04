@@ -90,17 +90,14 @@ class MCPSession:
     def ready(self) -> bool:
         return bool(self.connection_id and self.tools)
 
-    def _fetch_token(self) -> str | None:
-        """Client-credentials token via the probe's OAuth discovery (sync httpx)."""
-        headers = {
-            "Accept": "application/json, text/event-stream",
-            "Content-Type": "application/json",
-        }
+    def _fetch_token(self) -> str:
+        """Mint the service-account bearer token (sync httpx, run in a thread).
+
+        See `RemoteMCPProbe.service_account_token` for the exchange itself — that
+        is the function to read when you want to know how the agent authenticates.
+        """
         with httpx.Client(timeout=30.0, follow_redirects=True) as client:
-            initialize = self.probe._initialize(client, headers)
-            if initialize.status_code == 401:
-                return self.probe._get_oauth_token(client, initialize)
-        return None
+            return self.probe.service_account_token(client)
 
     async def connect(self) -> None:
         """Authenticate, load tools, and bind an Atlas connectionId."""
@@ -131,7 +128,8 @@ class MCPSession:
             except Exception as exc:
                 raise MCPUnavailable(f"MCP OAuth failed: {exc}") from exc
 
-            headers = {"Authorization": f"Bearer {token}"} if token else {}
+            # Every MCP request from here on carries the service-account token.
+            headers = {"Authorization": f"Bearer {token}"}
             client = MultiServerMCPClient(
                 {
                     "mongodb": {

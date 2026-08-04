@@ -14,6 +14,14 @@ const state = {
   pendingOwnerMessage: null,
   submitting: false,
   banner: null,
+  // Set while /api/demo/start is in flight, so the play control can show the
+  // MCP handshake is happening rather than looking like a dead click.
+  starting: false,
+  startError: null,
+  // Latched once the server confirms the sweep is scheduled, so the control does
+  // not fall back to "Run sweep" while waiting for the first poll or the agent's
+  // first logged event.
+  started: false,
 };
 
 const els = {
@@ -23,31 +31,31 @@ const els = {
   navItems: Array.from(document.querySelectorAll(".nav-item")),
 };
 
-// Shown as a timeline while the demo starts. One line per real operation in
-// MCPSession.connect(), in order:
-//   1. _fetch_token()        — OAuth client credentials
-//   2. client.get_tools()    — the MCP server's tool list
-//   3. remote-atlas-connect  — binds projectId + clusterName, returns a connectionId
-//   4. filter to AGENT_TOOL_NAMES, then the sweep is scheduled
-// "Connecting to MongoDB Remote MCP" used to lead this list and was dropped: finding
-// where to authenticate happens inside the same handshake as authenticating.
+// The app opens straight into the portal — no start screen. It should read as
+// software the shop already runs, with the agent as a feature of it, so the only
+// demo affordance is the play control in the Agent activity card.
+//
+// Pressing it calls /api/demo/start, which re-mints the service-account token,
+// reloads the MCP tools, binds a fresh connectionId, and schedules the sweep. That
+// handshake is ~7s of real work (1.5s token + 2.5s tools + 3.2s connect), so the
+// button narrates those steps while they happen rather than covering them with a
+// curtain. No artificial pacing: what is on screen is what the server is doing.
 const START_STEPS = [
   "Authenticating to Atlas",
   "Loading the MCP tools",
-  "Establishing the cluster connection",
-  "Starting the scheduled inventory sweep",
+  "Connecting to the cluster",
 ];
 
-// Paced for narration: long enough to say "it authenticates to Atlas with a service
-// account and connects to one cluster in the project", short enough that the room is
-// not waiting on a progress list. Every step is guaranteed its full time even when the
-// MCP handshake finishes early, so the opening is a predictable ~7-9s either way.
-//
-// Not zero on purpose: the sweep starts the moment this begins, so the curtain is what
-// buys the head start — the activity feed is already filling when the dashboard appears.
-// Raise CURTAIN_STEP_MS to slow the whole opening down evenly.
-const CURTAIN_STEP_MS = 2200;
-const CURTAIN_SETTLE_MS = 700;
+// Roughly the measured duration of each handshake step, used only to advance the
+// label on the button. The real completion is the API response, which cuts the
+// sequence short or lets it sit on the last step until the server answers.
+const START_STEP_MS = [1500, 2500, 3200];
+
+// The sweep logs each MCP call the moment it happens, so this interval is the only
+// thing standing between a real event and the feed showing it. At 2500ms calls arrived
+// in clumps and the panel looked like it was catching up rather than keeping pace;
+// /api/state measures ~150ms, so 1s leaves the request ~85% idle.
+const POLL_MS = 1000;
 
 // Medium is the healthy case for this demo — a reorder point reached with time to
 // spare. Only High warrants red.
@@ -66,7 +74,6 @@ const PAGE_TITLES = {
 const EVENT_META = {
   agent_plan: { label: "Agent · plan", cls: "plan" },
   mcp_tool: { label: "Agent · MCP", cls: "mcp" },
-  agent_finding: { label: "Agent · finding", cls: "response" },
   agent_response: { label: "Agent · answer", cls: "response" },
   owner_message: { label: "Owner · asked", cls: "plan" },
   agent_message: { label: "Agent · replied", cls: "response" },
@@ -115,8 +122,6 @@ function titleCase(value) {
     .replaceAll("_", " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Treat "close enough to the bottom" as pinned. An exact comparison fails on
 // fractional scroll heights from zoom or a trackpad's sub-pixel scrolling, which would
@@ -243,11 +248,15 @@ function alertHeadline(alert) {
 /* The agent chooses which figures matter, so render what it filed rather than a
    fixed set of tiles. Falls back to the rule's fields when a rule authored the
    alert (MCP unavailable). */
+/* Built here, not by the agent. These three tiles are pure formatting of figures the
+   alert already carries, so asking the model to also emit a `stats` array made the
+   filing turn markedly slower and gave the numbers two sources that could disagree.
+   Alerts filed before that change still have `risk.stats`; prefer it so their tiles
+   render as they did when they were written. */
 function alertStats(alert) {
   const stats = alert.risk?.stats;
   if (Array.isArray(stats) && stats.length) return stats;
 
-  // Last resort only: both the agent and the rule now supply `stats` directly.
   const risk = alert.risk || {};
   const affected = 1 + (risk.blocker_shared_with || []).length;
   const fallback = [
@@ -314,118 +323,136 @@ function statTiles(alert) {
 }
 
 /* ---------- Session ---------- */
-/* Boot into the start curtain and run nothing. Pressing Enter resets the scenario
-   and starts the sweep, so opening the app is always safe — no URL parameter to
-   remember, and a rehearsal leaves nothing behind for the real run.
+/* Boot straight into the portal with the shop's real data on screen and the agent
+   idle. Nothing runs until the play control is pressed, so the laptop can sit on the
+   podium indefinitely — and a rehearsal leaves nothing behind, because pressing play
+   mints a new session id.
 
-   An in-progress demo survives a reload: if this session already has activity, skip
-   the curtain and rejoin it. */
+   A session is always created, even on a first load: the portal's tables come from
+   /api/state, and without a session id there is nothing to fetch and the dashboard
+   would render empty. An in-progress demo survives a reload for the same reason —
+   the stored id is reused and its alert and feed come back with it. */
 async function startSession() {
-  const resumed = state.sessionId
-    ? await api("/api/demo/session", {
-        method: "POST",
-        body: JSON.stringify({ session_id: state.sessionId }),
-      }).catch(() => null)
-    : null;
+  const session = await api("/api/demo/session", {
+    method: "POST",
+    body: JSON.stringify({ session_id: state.sessionId }),
+  });
+  state.sessionId = session.session_id;
+  localStorage.setItem("ambientInventorySessionId", state.sessionId);
 
-  if (resumed) {
-    state.sessionId = resumed.session_id;
-    await refreshState();
-  }
-  state.pollHandle = setInterval(refreshState, 2500);
-
-  if ((state.snapshot?.history || []).length) {
-    render(true);
-  } else {
-    renderCurtain();
-  }
+  await refreshState();
+  state.pollHandle = setInterval(refreshState, POLL_MS);
+  render(true);
 }
 
-/* Full-screen start curtain. Reconnects Remote MCP before sweeping, because a
-   long-idle laptop may be holding an expired OAuth token and connectionId. */
-function renderCurtain() {
-  if (document.getElementById("curtain")) return;
-  const node = document.createElement("div");
-  node.id = "curtain";
-  node.className = "curtain";
-  node.innerHTML = `
-    <div class="curtain-card">
-      <img src="/static/mongodb-logo.png" alt="" class="curtain-logo" />
-      <h2>Leafy Roasters</h2>
-      <button id="curtainStart" type="button" class="btn--primary curtain-btn">
-        Start demo
-      </button>
-      <ol id="curtainSteps" class="steps hidden">
-        ${START_STEPS.map(
-          (label) => `<li class="step"><span class="step-dot"></span>${escapeHtml(label)}</li>`,
-        ).join("")}
-      </ol>
-    </div>`;
-  document.body.appendChild(node);
+/* Is the sweep under way? Drives the play control: once it is, the button becomes
+   a live status instead.
 
-  const button = node.querySelector("#curtainStart");
-  button.addEventListener("click", async () => {
-    button.disabled = true;
-    button.textContent = "Starting…";
+   Keyed on the server's `monitor.scheduled` flag rather than on the activity feed
+   having events. The agent takes a few seconds to log its first line, and treating
+   an empty feed as "not started" made the button flick back to "Run sweep" in that
+   gap — which reads as though the click was lost. `started` covers the narrower gap
+   between the API responding and the first poll carrying the new session's flag. */
+function demoStarted() {
+  if (state.started) return true;
+  const monitor = state.snapshot?.monitor || {};
+  return Boolean(
+    monitor.scheduled || monitor.ran || (state.snapshot?.history || []).length,
+  );
+}
 
-    // Progress as a timeline rather than one replaced line: the MCP handshake takes
-    // a few seconds, and seeing completed steps accumulate reads as work rather
-    // than a hang.
-    const list = node.querySelector("#curtainSteps");
-    const items = Array.from(list.querySelectorAll(".step"));
-    list.classList.remove("hidden");
+/* The play control, in the Agent activity card head. Reads as a feature of the
+   portal rather than a demo prop: idle, then the live handshake steps, then a
+   pulsing "Monitoring" once the agent is working. */
+function playControl() {
+  if (state.starting) {
+    return `
+      <span class="agent-status working">
+        <span class="sweep-dot"></span>
+        <span id="startStep">${escapeHtml(START_STEPS[0])}…</span>
+      </span>`;
+  }
+  if (state.startError) {
+    return `
+      <span class="agent-status">
+        <button id="playButton" type="button" class="play-btn" title="Retry">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" /></svg>
+          Retry
+        </button>
+      </span>`;
+  }
+  if (demoStarted()) {
+    return `
+      <span class="agent-status live">
+        <span class="sweep-dot"></span>
+        Monitoring
+      </span>`;
+  }
+  return `
+    <button id="playButton" type="button" class="play-btn" title="Run the inventory sweep">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" /></svg>
+      Run sweep
+    </button>`;
+}
 
-    let step = 0;
-    const advance = () => {
-      items.forEach((item, index) => {
-        item.classList.toggle("done", index < step);
-        item.classList.toggle("active", index === step);
-      });
-    };
-    advance();
-    const ticker = setInterval(() => {
-      if (step < items.length - 1) {
-        step += 1;
-        advance();
-      }
-    }, CURTAIN_STEP_MS);
+/* Start the agent: re-mint the service-account token, rebind the cluster
+   connection, and schedule the sweep. The button walks the handshake steps while
+   the request is in flight — no padding, so it lands on the real response. */
+async function startDemo() {
+  if (state.starting) return;
+  state.starting = true;
+  state.startError = null;
+  // Drop any banner from an earlier attempt: a sticky failure message would
+  // otherwise sit there through the retry it is no longer describing.
+  state.banner = null;
+  render(true);
 
-    try {
-      const started = await api("/api/demo/start", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
-      state.sessionId = started.session_id;
-      localStorage.setItem("ambientInventorySessionId", state.sessionId);
-
-      // The handshake usually finishes before the timeline has walked through every
-      // step, and dropping the curtain then skips lines the presenter is still
-      // narrating. So let EVERY remaining step have its full time on screen — no cap,
-      // because a cap is what made the last step flash past on a fast connection. The
-      // ticker is still running, so this is waiting for it to reach the end rather
-      // than advancing anything itself.
-      const remaining = items.length - 1 - step;
-      if (remaining > 0) {
-        await sleep(remaining * CURTAIN_STEP_MS);
-      }
-
-      clearInterval(ticker);
-      step = items.length;
-      advance();
-      // Beat on the completed timeline: every step ticked, before the dashboard.
-      await sleep(CURTAIN_SETTLE_MS);
-      node.remove();
-      await refreshState();
-      render(true);
-    } catch (error) {
-      clearInterval(ticker);
-      items.forEach((item) => item.classList.remove("active", "done"));
-      items[step].classList.add("failed");
-      items[step].append(` — ${String(error.message || error).slice(0, 120)}`);
-      button.disabled = false;
-      button.textContent = "Retry";
+  const label = () => document.getElementById("startStep");
+  let step = 0;
+  let timer = null;
+  const advance = () => {
+    step += 1;
+    const node = label();
+    if (node && step < START_STEPS.length) {
+      node.textContent = `${START_STEPS[step]}…`;
+      timer = setTimeout(advance, START_STEP_MS[step]);
     }
-  });
+  };
+  timer = setTimeout(advance, START_STEP_MS[0]);
+
+  try {
+    const started = await api("/api/demo/start", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    // A fresh session id, so a previous run's alert and transcript stay behind.
+    state.sessionId = started.session_id;
+    localStorage.setItem("ambientInventorySessionId", state.sessionId);
+    state.selectedAlertId = null;
+    state.prevActiveAlerts = 0;
+    // The sweep is scheduled server-side now. Latch it locally so the control goes
+    // straight to "Monitoring" instead of waiting on the next poll to say so — the
+    // snapshot in hand is still the previous session's.
+    state.started = true;
+    // Drop the old session's feed and alerts rather than showing them under the new
+    // session for a poll or two.
+    state.snapshot = null;
+  } catch (error) {
+    state.startError = String(error.message || error);
+    // Nothing was scheduled, so clear the latch or the control would claim to be
+    // monitoring a sweep that never began.
+    state.started = false;
+    state.banner = {
+      kind: "danger",
+      sticky: true,
+      text: `Could not start the agent: ${state.startError}`,
+    };
+  } finally {
+    clearTimeout(timer);
+    state.starting = false;
+    await refreshState();
+    render(true);
+  }
 }
 
 async function refreshState() {
@@ -465,10 +492,15 @@ function snapshotBanner(snapshot) {
       text: "Remote MCP is not configured. Set MDB_MCP_API_CLIENT_ID / _SECRET and MDB_MCP_PROJECT_ID in .env — the agent has no tools without it.",
     };
   }
-  if (!mcp.ready) {
+  // Only complain when the handshake has actually FAILED, which the server tells
+  // us by setting `error`. Two normal situations have `ready === false` with no
+  // error, and both used to flash a red banner: the server's own startup connect
+  // on first page load, and the ~6s after pressing play, which drops the old
+  // session before minting a new token. The play control already narrates that.
+  if (!mcp.ready && mcp.error && !state.starting) {
     return {
       kind: "danger",
-      text: `Remote MCP is not connected${mcp.error ? `: ${mcp.error}` : "."} The agent cannot answer until it is.`,
+      text: `Remote MCP is not connected: ${mcp.error} The agent cannot answer until it is.`,
     };
   }
   return null;
@@ -523,7 +555,19 @@ function signature() {
   const pos = (snap.purchase_orders || []).map((po) => `${po._id}:${po.status}`).join(",");
   const messages = (snap.dialogue || []).length;
   const events = (snap.history || []).length;
-  return [state.activeTab, state.selectedAlertId, alerts, pos, messages, events].join("|");
+  // The play control's state is part of the view: without it, flipping to
+  // "starting" would not repaint until some other field happened to change.
+  return [
+    state.activeTab,
+    state.selectedAlertId,
+    alerts,
+    pos,
+    messages,
+    events,
+    state.starting,
+    state.startError,
+    demoStarted(),
+  ].join("|");
 }
 
 function render(force = false, pulse = false) {
@@ -555,6 +599,8 @@ function render(force = false, pulse = false) {
 
   els.view.innerHTML = (views[state.activeTab] || dashboardView)();
   if (state.activeTab === "alerts") wireAlertsView();
+  const play = els.view.querySelector("#playButton");
+  if (play) play.addEventListener("click", startDemo);
 
   // Put the page back where it was, unconditionally: a re-render is a data update, and
   // it should never move the reader.
@@ -605,7 +651,10 @@ function dashboardView() {
         </table>
       </div>
       <div class="card">
-        <div class="card-head"><h2>Agent activity</h2></div>
+        <div class="card-head">
+          <h2>Agent activity</h2>
+          ${playControl()}
+        </div>
         ${activityFeed()}
       </div>
     </div>`;
@@ -690,16 +739,32 @@ function activityFeed() {
     return `<div class="activity-list"><div class="event"><span class="event-msg">No activity yet.</span></div></div>`;
   }
   // Snapshot returns newest-first; show as a chronological trace.
-  const items = events
-    .slice(0, 24)
-    .reverse()
-    .map((event) =>
-      eventRow({
-        kind: event.event_type,
-        message: event.message,
-        command: event.metadata && event.metadata.command,
-        time: event.created_at,
-      }),
+  const ordered = events.slice(0, 24).reverse();
+
+  // The sweep logs one placeholder: "Writing up the diagnosis…" when the agent starts
+  // composing the alert, a turn that runs ~30s and would otherwise log nothing until the
+  // alert appears. It is persisted like any other event, so drop it once the insert that
+  // publishes the alert has landed — otherwise it lingers beside the row that replaced it.
+  const superseded = new Set();
+  ordered.forEach((event, index) => {
+    if (!event.metadata?.pending) return;
+    const replaced = ordered
+      .slice(index + 1)
+      .some((later) => later.metadata?.collection === "alerts");
+    if (replaced) superseded.add(index);
+  });
+
+  const items = ordered
+    .map((event, index) =>
+      superseded.has(index)
+        ? ""
+        : eventRow({
+            kind: event.event_type,
+            message: event.message,
+            command: event.metadata && event.metadata.command,
+            time: event.created_at,
+            pending: Boolean(event.metadata?.pending),
+          }),
     )
     .join("");
   return `<div class="activity-list">${items}</div>`;
@@ -711,9 +776,12 @@ function sweepRunning() {
   const events = state.snapshot?.history || [];
   if (!events.length) return false;
   const startedSweep = events.some((event) => event.event_type === "agent_plan");
-  const finished = events.some(
-    (event) => event.event_type === "agent_finding" || event.event_type === "error",
-  );
+  // Done when the alert exists or the sweep failed. This used to look for an
+  // `agent_finding` event, which no longer exists — the alert itself is the
+  // conclusion, so its presence is the more direct signal.
+  const finished =
+    (state.snapshot?.alerts || []).length > 0 ||
+    events.some((event) => event.event_type === "error");
   return startedSweep && !finished;
 }
 

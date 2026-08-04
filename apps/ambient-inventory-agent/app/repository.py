@@ -119,6 +119,41 @@ class InventoryRepository:
         nextnum = int(latest["_id"].split("-")[1]) + 1 if latest else 1001
         return f"PO-{nextnum}"
 
+    def _derived_risk_fields(self, risk: dict[str, Any]) -> dict[str, Any]:
+        """Look up the alert fields that follow from the two ids the agent chose.
+
+        Returns only what it can resolve, so a missing document leaves whatever the
+        agent supplied rather than blanking a tile.
+        """
+        derived: dict[str, Any] = {}
+
+        component_id = risk.get("blocker_inventory_id")
+        if component_id:
+            item = self.db.inventory_items.find_one(
+                {"_id": component_id}, {"name": 1, "quantity_on_hand": 1}
+            )
+            if item:
+                derived["blocker_name"] = item.get("name")
+                derived["blocker_quantity_on_hand"] = item.get("quantity_on_hand")
+
+            # Every OTHER product drawing on this component, from the bill of materials
+            # rather than a stored list — the same derivation the sweep's aggregate does.
+            product_id = risk.get("product_id")
+            sharers = self.db.products.find(
+                {"components.inventory_id": component_id}, {"sku": 1}
+            )
+            derived["blocker_shared_with"] = sorted(
+                p["sku"] for p in sharers if p["_id"] != product_id and p.get("sku")
+            )
+
+        product_id = risk.get("product_id")
+        if product_id:
+            product = self.db.products.find_one({"_id": product_id}, {"sku": 1})
+            if product and product.get("sku"):
+                derived["product_sku"] = product["sku"]
+
+        return derived
+
     def build_alert_document(
         self, session_id: str, sweep_id: str, diagnosis: dict[str, Any]
     ) -> dict[str, Any]:
@@ -132,6 +167,15 @@ class InventoryRepository:
         # Fields the UI reads from the top level are not duplicated inside `risk`.
         promoted = ("summary", "headline", "recommendation", "title", "severity")
         risk = {key: value for key, value in diagnosis.items() if key not in promoted}
+
+        # Fill the fields that are lookups rather than judgements. The agent supplies the
+        # two ids — which product, which component — and everything below follows from
+        # them by definition. Asking the model to also transcribe the name, the on-hand
+        # count, the SKU and the sharing SKUs made the filing turn longer and gave those
+        # figures a second source that could disagree with the collection they came from.
+        # What the agent decides is unchanged: which component is at risk, the reorder
+        # point, days left, the supplier, the quantity, the urgency and the wording.
+        risk.update(self._derived_risk_fields(risk))
         now = utc_now()
         return {
             "_id": f"alert_{uuid4().hex[:10]}",
@@ -353,7 +397,18 @@ class InventoryRepository:
         products = self.get_products()
         inventory_items = list(self.db.inventory_items.find().sort("name", 1))
         suppliers = list(self.db.suppliers.find().sort("name", 1))
+        # Whether this session's sweep has been started, so the UI's play control
+        # can stay in its running state during the seconds before the agent logs
+        # its first event. Without this it briefly reverts to "Run sweep" and looks
+        # like the click did not register.
+        session = self.db.demo_sessions.find_one(
+            {"session_id": session_id}, {"monitor_scheduled": 1, "monitor_ran": 1}
+        )
         return {
+            "monitor": {
+                "scheduled": bool(session and session.get("monitor_scheduled")),
+                "ran": bool(session and session.get("monitor_ran")),
+            },
             "alerts": self.list_alerts(session_id),
             "purchase_orders": self.list_purchase_orders(session_id),
             "dialogue": self.list_dialogue(session_id),

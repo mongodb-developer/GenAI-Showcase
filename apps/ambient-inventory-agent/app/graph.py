@@ -85,14 +85,9 @@ class InventoryMonitorGraph:
         no alert is raised and the failure is surfaced rather than papered over.
         """
         session_id = state["session_id"]
-        repo = self.repository
-
         sweep_id = state["sweep_id"]
         alert = self._investigate(session_id, sweep_id)
         if alert:
-            repo.log_event(
-                session_id, "agent_finding", f"Diagnosis: {alert.get('summary', '')}"
-            )
             state["alert"] = alert
             return state
 

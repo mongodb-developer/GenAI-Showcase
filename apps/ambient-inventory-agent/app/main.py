@@ -158,15 +158,17 @@ async def create_session(payload: SessionRequest) -> dict:
 
 @app.post("/api/demo/start")
 async def start_demo(_: SessionRequest) -> dict:
-    """Start the sweep. Seed separately, before the laptop goes on stage.
+    """Start the sweep, behind the portal's play control.
 
     Deliberately does not reseed: `python seed_demo.py --reset` is a pre-flight
-    step, so pressing this is fast and the start screen is on display for seconds
-    rather than minutes.
+    step, so pressing play spends its time on the MCP handshake rather than on
+    rewriting the database.
 
-    The MCP session is re-minted rather than reused: the laptop may have sat on the
-    podium for a long time before anyone spoke, and a stale OAuth token would
-    otherwise surface as a failure on the agent's first query.
+    The MCP session is re-minted rather than reused: the service-account token is
+    good for an hour, and the laptop may have sat on the podium longer than that
+    before anyone spoke. Minting unconditionally costs ~7s (1.5s token, 2.5s tool
+    load, 3.2s remote-atlas-connect) and is the same every time, which is worth
+    more on stage than a fast path that occasionally has to explain itself.
     """
     for task in scheduled_tasks.values():
         task.cancel()
