@@ -80,8 +80,10 @@ ALERT_SCHEMA = {
         # it to also format those same numbers into a strictly-ordered array of
         # label/value/emphasis objects was the largest single item in this schema and
         # produced no information the app did not already have. Removing it shortens the
-        # filing turn, which was ~32s of a ~51s sweep, and the tiles cannot drift from
-        # the figures any more because there is only one source for them.
+        # tiles cannot drift from the figures any more, because there is only one source
+        # for them. Note this did NOT speed the sweep up: the long pause before the alert
+        # is the model reasoning, not composing output, and it is governed by the effort
+        # setting rather than the size of this schema.
         "blocker_inventory_id": {
             "type": "string",
             "description": "_id of the component that actually limits production.",
@@ -358,10 +360,11 @@ class AlertInvestigator:
         #
         # `messages` as well as `updates` for one reason only: the model streams a tool
         # NAME before it has finished composing the arguments, which is the only way to
-        # know `file_alert` has started. That turn is ~32s of a ~51s sweep and logs
-        # nothing until the alert lands, so it gets a placeholder. Per-query placeholders
-        # were tried here too and removed: they led the real call by under a second, so
-        # they added a line of noise per query without covering any real wait.
+        # know `file_alert` has started. The reasoning turn before it runs ~26s at low
+        # effort (~52s at default) and logs nothing until the alert lands, so it gets a
+        # placeholder. Per-query placeholders were tried here too and removed: they led
+        # the real call by under a second, so they added a line of noise per query
+        # without covering any real wait.
         seen: set[str] = set()
         announced_filing = False
         async for mode, chunk in agent.astream(

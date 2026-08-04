@@ -171,8 +171,8 @@ class InventoryRepository:
         # Fill the fields that are lookups rather than judgements. The agent supplies the
         # two ids — which product, which component — and everything below follows from
         # them by definition. Asking the model to also transcribe the name, the on-hand
-        # count, the SKU and the sharing SKUs made the filing turn longer and gave those
-        # figures a second source that could disagree with the collection they came from.
+        # count, the SKU and the sharing SKUs gave those figures a second source that
+        # could disagree with the collection they came from.
         # What the agent decides is unchanged: which component is at risk, the reorder
         # point, days left, the supplier, the quantity, the urgency and the wording.
         risk.update(self._derived_risk_fields(risk))
