@@ -35,13 +35,9 @@ Usage:
     # Continuous (hammer) mode: back-to-back queries, no sleep between bursts.
     python generate_load.py --interval 0
 
-    # Run unattended in the background, logging to a file:
+    # Run unattended in the background, logging to a file (or use ./trickle.sh):
     nohup python generate_load.py > load.log 2>&1 &
     # ...check on it later:  tail -f load.log ;  stop it:  kill %1  (or the PID)
-
-    # Or via cron — a burst every 15 minutes (no long-running process):
-    #   */15 * * * * cd /path/to/apps/remote-mcp-perf-triage && \
-    #     MONGODB_URI="mongodb+srv://..." python generate_load.py --burst 3 --interval 0 --duration 30
 """
 
 import argparse
@@ -63,7 +59,9 @@ load_dotenv()
 DB_NAME = "ecommerce"
 COLLECTION_NAME = "payments"
 
-POLL_FILTER_STATUS = "completed"
+# Latency above which Atlas logs a query as slow — the threshold that decides
+# whether a poll feeds Performance Advisor at all.
+SLOW_QUERY_MS = 100
 
 
 def run_query(coll):
@@ -75,7 +73,7 @@ def run_query(coll):
     """
     session_id = f"sess_{secrets.token_hex(12)}"
     t0 = time.perf_counter()
-    coll.find_one({"session_id": session_id, "status": POLL_FILTER_STATUS})
+    coll.find_one({"session_id": session_id, "status": "completed"})
     return (time.perf_counter() - t0) * 1000
 
 
@@ -133,12 +131,10 @@ def main():
             cycle_start = time.time()
             ts = datetime.now().strftime("%H:%M:%S")
 
-            # Survive transient trouble instead of dying. This process is meant to
-            # run unattended for hours before a demo, across laptop sleep, wifi
-            # handoffs and Atlas blips — any of which raises PyMongoError. Losing
-            # the trickle means Performance Advisor's recommendation goes stale,
-            # so a failed burst is logged and skipped, never fatal. pymongo
-            # reconnects on its own; we just have to keep asking.
+            # Survive transient trouble instead of dying: this runs unattended for
+            # hours across laptop sleep, wifi handoffs and Atlas blips, any of which
+            # raises PyMongoError. A failed burst is logged and skipped, never
+            # fatal — pymongo reconnects on its own; we just keep asking.
             latencies = []
             failures = []
             for _ in range(args.burst):
@@ -152,11 +148,11 @@ def main():
 
             if latencies:
                 avg = sum(latencies) / len(latencies)
-                slow = 100 * sum(1 for x in latencies if x > 100) / len(latencies)
+                slow = sum(x > SLOW_QUERY_MS for x in latencies) / len(latencies)
                 suffix = f"  |  {len(failures)} failed" if failures else ""
                 print(
                     f"  {ts}  burst of {len(latencies)}: avg {avg:7.1f} ms  |  "
-                    f"{slow:3.0f}% over 100 ms  |  {total:,} total{suffix}",
+                    f"{slow:3.0%} over {SLOW_QUERY_MS} ms  |  {total:,} total{suffix}",
                     flush=True,
                 )
             else:

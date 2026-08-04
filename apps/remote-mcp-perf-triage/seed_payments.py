@@ -8,20 +8,19 @@ status-poll query trips the slow-query log that feeds Performance Advisor, and
 
 Two design constraints, satisfied together:
 
-1. The scan must be reliably slow. Empirically on an M10 with 2 GB RAM (measured),
-   300,000 documents of ~2 KB is the sweet spot: a COLLSCAN runs ~9 s cold and
-   settles to ~5 s once the cache is warm. That is clearly slow and dramatic in
-   explain(), yet stays safely under the MongoDB MCP server's 60 s maxTimeMS cap.
-   NOTE: do NOT seed millions here — a scan of that size can exceed the 60 s cap,
+1. The scan must be reliably slow. On an M10 with 2 GB RAM, 300,000 documents of
+   ~2 KB is the sweet spot: a COLLSCAN takes several seconds — clearly slow and
+   dramatic in explain(), yet safely under the MongoDB MCP server's 60 s
+   maxTimeMS cap. Do NOT seed millions: a scan that large can exceed the cap,
    making the agent's explain()/find() ERROR out during the demo instead of
    returning stats. Bigger is worse, not better.
 
    What makes the scan slow is that the collection (~0.63 GB) OUTGROWS the
    WiredTiger cache (~50% of host RAM, so ~537 MB on a 2 GB M10), forcing reads
    from disk. On a bigger tier the collection fits entirely in cache and the same
-   query returns in ~200 ms — measured at 222 ms on a 4 GB host — which kills the
-   demo. If scans come back suspiciously fast, check hostInfo.memSizeMB: the fix
-   is a smaller tier, NOT more documents.
+   query returns in a couple hundred milliseconds, which kills the demo. If scans
+   come back suspiciously fast, check hostInfo.memSizeMB: the fix is a smaller
+   tier, NOT more documents.
 
    The document bytes live in a realistic `gateway_response` field (an opaque
    base64 payload — exactly what payment processors return and apps store for
@@ -33,10 +32,10 @@ Two design constraints, satisfied together:
    filters on). Only the default _id index exists.
 
 Tip: after seeding, warm the cache (run generate_load.py or a few scans) so the
-demo sees the ~4 s warm time rather than the ~30 s cold time.
+demo sees the faster warm scan time rather than the slower cold one.
 
 Usage:
-    export MONGODB_URI="mongodb+srv://<user>:<pass>@cluster0.z7basj.mongodb-dev.net/"
+    export MONGODB_URI="mongodb+srv://<user>:<pass>@host/"
     python seed_payments.py                 # defaults: 300,000 docs, ~1.6 KB gateway blob
     python seed_payments.py --docs 300000 --blob-bytes 1600
     python seed_payments.py --drop          # drop the collection first (fresh reseed)
@@ -69,7 +68,8 @@ DEMO_INDEX_NAME = "session_id_1_status_1"
 
 # Realistic reference data. These enum-ish fields are a small fraction of each
 # document, so their compressibility doesn't matter — the bulk is the random blob.
-STATUS_WEIGHTS = [("completed", 0.92), ("pending", 0.05), ("failed", 0.03)]
+STATUSES = ["completed", "pending", "failed"]
+STATUS_WEIGHTS = [0.92, 0.05, 0.03]
 PAYMENT_METHODS = ["card", "paypal", "apple_pay", "google_pay", "bank_transfer"]
 CURRENCIES = ["USD", "EUR", "GBP", "CAD"]
 CARD_BRANDS = ["visa", "mastercard", "amex", "discover"]
@@ -94,16 +94,6 @@ PRODUCTS = [
     ("SKU-1007", "Desk Lamp"),
     ("SKU-1008", "Notebook"),
 ]
-
-
-def weighted_status():
-    r = random.random()
-    cumulative = 0.0
-    for status, weight in STATUS_WEIGHTS:
-        cumulative += weight
-        if r <= cumulative:
-            return status
-    return "completed"
 
 
 def gateway_blob(blob_bytes):
@@ -140,7 +130,7 @@ def make_doc(blob_bytes, base_time):
         "user_id": f"usr_{random.randint(1, 500_000)}",
         "amount": amount,
         "currency": random.choice(CURRENCIES),
-        "status": weighted_status(),
+        "status": random.choices(STATUSES, STATUS_WEIGHTS)[0],
         "payment_method": random.choice(PAYMENT_METHODS),
         "card": {
             "brand": random.choice(CARD_BRANDS),
@@ -177,10 +167,13 @@ def main():
         help="approx size of the gateway_response payload per doc",
     )
     parser.add_argument("--batch", type=int, default=5000, help="insert batch size")
-    parser.add_argument(
+    # --drop destroys the data; --drop-index keeps it. Asking for both is a mistake
+    # worth catching in argparse, before the script connects to anything.
+    reset = parser.add_mutually_exclusive_group()
+    reset.add_argument(
         "--drop", action="store_true", help="drop the collection before seeding"
     )
-    parser.add_argument(
+    reset.add_argument(
         "--drop-index",
         action="store_true",
         help="drop the demo index and exit WITHOUT reseeding "
@@ -201,15 +194,9 @@ def main():
     client.admin.command("ping")
 
     if args.drop_index:
-        # Light reset: restore the slow condition on an intact collection. Exits
-        # before the insert loop, so the existing 300k documents are untouched.
-        if args.drop:
-            sys.exit(
-                "ERROR: --drop-index and --drop are mutually exclusive. "
-                "--drop-index keeps the data; --drop destroys it."
-            )
-        existing = list(coll.index_information().keys())
-        if DEMO_INDEX_NAME in existing:
+        # Light reset: restore the slow condition on an intact collection. Returns
+        # before the insert loop, so the existing documents are untouched.
+        if DEMO_INDEX_NAME in coll.index_information():
             print(
                 f"Dropping index {DEMO_INDEX_NAME} from {DB_NAME}.{COLLECTION_NAME} ..."
             )
@@ -217,10 +204,8 @@ def main():
         else:
             print(f"Index {DEMO_INDEX_NAME} not present — nothing to drop.")
         print(
-            f"Indexes now: {list(coll.index_information().keys())}  (expect only _id_)"
-        )
-        print(f"Documents kept: {coll.estimated_document_count():,}")
-        print(
+            f"Indexes now: {list(coll.index_information())}  (expect only _id_)\n"
+            f"Documents kept: {coll.estimated_document_count():,}\n"
             "Next: make sure generate_load.py is running so Performance Advisor "
             "rebuilds its recommendation before the next demo."
         )
@@ -251,17 +236,12 @@ def main():
             )
 
     stats = client[DB_NAME].command("collstats", COLLECTION_NAME)
-    size_gb = stats.get("size", 0) / 1e9
-    storage_gb = stats.get("storageSize", 0) / 1e9
     print(
-        f"\nDone. Logical size ~{size_gb:.2f} GB, on-disk storage ~{storage_gb:.2f} GB."
-    )
-    print(
-        f"Indexes present: {list(coll.index_information().keys())}  (expect only _id_)"
-    )
-    print(
+        f"\nDone. Logical size ~{stats.get('size', 0) / 1e9:.2f} GB, "
+        f"on-disk storage ~{stats.get('storageSize', 0) / 1e9:.2f} GB.\n"
+        f"Indexes present: {list(coll.index_information())}  (expect only _id_)\n"
         "Next: run generate_load.py to warm the cache and feed Performance Advisor, "
-        "then confirm scan time with an explain() (expect ~9 s cold, ~5 s warm on a 2 GB M10)."
+        "then confirm the scan is slow with an explain()."
     )
 
 

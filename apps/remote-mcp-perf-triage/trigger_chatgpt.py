@@ -33,10 +33,9 @@ API_ROOT = "https://api.chatgpt.com/v1/workspace_agents"
 BETA_HEADER = "workspace_agent_runs=v1"
 WAIT_STOP_STATUSES = {"completed", "failed", "suspended"}
 
-# The trigger POST has been measured at ~5.5 s, but tail latency is much worse: a
-# live run once died on a 30 s read timeout, then succeeded three times in a row.
-# Generous timeout + retries, because failing this call on stage is the one error
-# the audience actually sees.
+# The trigger POST usually returns in a few seconds, but its tail latency is much
+# worse. Generous timeout + retries, because failing this call on stage is the one
+# error the audience actually sees.
 REQUEST_TIMEOUT_S = 90
 MAX_ATTEMPTS = 3
 RETRY_BACKOFF_S = 2.0
@@ -57,12 +56,7 @@ def request_json(url, token, method="GET", payload=None, idempotency_key=None):
     if idempotency_key:
         headers["Idempotency-Key"] = idempotency_key
 
-    request = urllib.request.Request(
-        url,
-        data=data,
-        headers=headers,
-        method=method,
-    )
+    request = urllib.request.Request(url, data=data, headers=headers, method=method)
 
     last_error = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
@@ -72,13 +66,12 @@ def request_json(url, token, method="GET", payload=None, idempotency_key=None):
                 return response.status, json.loads(body)
         except urllib.error.HTTPError as exc:
             body = exc.read().decode("utf-8", errors="replace")
+            error = RuntimeError(f"ChatGPT API returned HTTP {exc.code}: {body}")
             # 4xx other than 408/429 is our bug (bad token, bad trigger id) —
             # retrying just delays the error message.
             if exc.code not in RETRY_STATUS:
-                raise RuntimeError(
-                    f"ChatGPT API returned HTTP {exc.code}: {body}"
-                ) from exc
-            last_error = RuntimeError(f"ChatGPT API returned HTTP {exc.code}: {body}")
+                raise error from exc
+            last_error = error
         except (urllib.error.URLError, TimeoutError, OSError) as exc:
             reason = getattr(exc, "reason", exc)
             last_error = RuntimeError(f"Could not reach the ChatGPT API: {reason}")
@@ -96,9 +89,10 @@ def request_json(url, token, method="GET", payload=None, idempotency_key=None):
     raise last_error
 
 
-def pagerduty_id(prefix="P", length=7):
+def pagerduty_id():
+    """A PagerDuty-shaped incident ID: 'P' plus six uppercase alphanumerics."""
     alphabet = string.ascii_uppercase + string.digits
-    return prefix + "".join(secrets.choice(alphabet) for _ in range(length - 1))
+    return "P" + "".join(secrets.choice(alphabet) for _ in range(6))
 
 
 def build_pagerduty_incident(args, incident_id):
@@ -166,11 +160,20 @@ def build_pagerduty_incident(args, incident_id):
 
 
 def build_trigger_payload(incident, conversation_key):
+    """Wrap the incident as the agent's turn.
+
+    Deliberately thin: it delivers the alert and nothing else. The triage
+    behaviour belongs in the agent's own instructions, and the prompt must not
+    hint at the database, the collection, the query, or the fix — discovering
+    those over MCP is the whole point of the demo.
+    """
     return {
         "conversation_key": conversation_key,
-        "input": "PagerDuty incident:\n```json\n"
-        + json.dumps(incident, indent=2)
-        + "\n```",
+        "input": (
+            "PagerDuty webhook — incident.triggered:\n```json\n"
+            + json.dumps(incident, indent=2)
+            + "\n```"
+        ),
     }
 
 
@@ -299,11 +302,7 @@ def main():
 
     try:
         response = trigger_agent(
-            trigger_id,
-            token,
-            incident,
-            conversation_key,
-            event_id,
+            trigger_id, token, incident, conversation_key, event_id
         )
         print(f"PagerDuty incident: {incident_id}")
         print(f"Webhook event: {event_id}")
@@ -314,11 +313,7 @@ def main():
             print(f"Run ID: {run_id}")
         if args.wait and run_id:
             run = wait_for_run(
-                trigger_id,
-                run_id,
-                token,
-                args.poll_interval,
-                args.timeout,
+                trigger_id, run_id, token, args.poll_interval, args.timeout
             )
             if run.get("error"):
                 print(f"Run error: {json.dumps(run['error'])}")

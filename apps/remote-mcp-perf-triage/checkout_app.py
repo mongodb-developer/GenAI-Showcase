@@ -6,9 +6,9 @@ status-poll query the demo is about, against the SAME unindexed collection:
 
     db.payments.findOne({ session_id: ..., status: "completed" })
 
-Pre-index that poll is a ~6 s COLLSCAN, so the page genuinely blows its client-side
-budget and genuinely fails. Post-index it returns in ~1 ms and the page succeeds.
-The hang is not staged; it is the bug.
+Pre-index that poll is a multi-second COLLSCAN, so the page genuinely blows its
+client-side budget and genuinely fails. Post-index it returns in milliseconds and
+the page succeeds. The hang is not staged; it is the bug.
 
 Flow when you click "Submit payment":
   1. POST /api/pay      inserts a real payment doc with status="pending", and
@@ -17,8 +17,8 @@ Flow when you click "Submit payment":
   2. GET  /api/status   runs the real poll query. The browser calls this in a loop
                         and shows each attempt's latency in the status panel.
   3. On timeout, the browser calls POST /api/incident, which sends the PagerDuty
-                        incident to the ChatGPT Workspace Agent — ONCE. A "Re-arm"
-                        control resets it so a rehearsal doesn't spend the demo.
+                        incident to the ChatGPT Workspace Agent — ONCE per page
+                        load, so a rehearsal doesn't spend the demo.
 
 The ChatGPT access token stays server-side; the browser never sees it.
 
@@ -56,55 +56,48 @@ load_dotenv()
 DB_NAME = "ecommerce"
 COLLECTION_NAME = "payments"
 
-# How long the fake processor takes to confirm. Realistic (real gateways take
-# 1-3 s) and well under CLIENT_TIMEOUT_S, so post-index the page succeeds fast.
+# How long the fake processor takes to confirm — realistic for a real gateway, and
+# well under CLIENT_TIMEOUT_S so post-index the page succeeds fast.
 GATEWAY_DELAY_S = 3.0
 
 # The user-facing budget: how long the shopper watches the spinner before the page
 # gives up. Real checkouts often allow 30 s, but that is a long silence to narrate
-# on stage — 12 s reads as clearly broken while staying brisk. Correctness does not
-# depend on this value (see POLL_DEADLINE_MS), so it is safe to tune for pacing.
-# Must stay comfortably above GATEWAY_DELAY_S or the post-index SUCCESS case breaks.
+# on stage. Correctness does not depend on this value (see POLL_DEADLINE_MS), so it
+# is safe to tune for pacing, as long as it stays comfortably above GATEWAY_DELAY_S
+# or the post-index SUCCESS case breaks.
 CLIENT_TIMEOUT_S = 12.0
 
-# Gap between polls. Real checkout pages poll every 2-3 s rather than hammering.
-# With a 12 s budget this yields 3 visible poll lines, ~5 s apart.
+# Gap between polls. Real checkout pages pace their polls rather than hammering.
 POLL_INTERVAL_MS = 2_500
 
 # Per-request deadline for ONE poll, applied as maxTimeMS. Real services set a
-# per-call deadline (API gateway, service SLO) far below the overall user budget,
-# so having one is normal — but this VALUE is calibrated deliberately:
+# per-call deadline (API gateway, service SLO) below the overall user budget, so
+# having one is normal — but this value is calibrated deliberately: it sits below
+# the fastest COLLSCAN this collection produces, so EVERY pre-index poll is killed
+# server-side before it can complete. No poll ever observes the gateway's
+# confirmation, so checkout always fails regardless of cluster load on the day.
 #
-#   Measured COLLSCANs on this cluster range 4.0-9.0 s. 2.5 s sits below the
-#   fastest of them, so EVERY pre-index poll is killed server-side before it can
-#   complete. No poll ever observes the gateway's confirmation, so checkout
-#   ALWAYS fails — regardless of cluster load on the day.
-#
-# Without this, the outcome depends on scan time vs. the overall budget: a poll
-# that completes after the gateway confirms would find the record and checkout
-# would SUCCEED, silently killing the demo. A 4.0 s burst was measured, so that
-# edge is real, not theoretical. Post-index polls take ~20 ms and are unaffected.
+# Without it the outcome would depend on scan time vs. the overall budget: a poll
+# that completed after the gateway confirms would find the record and checkout
+# would SUCCEED, silently killing the demo. Post-index polls are far faster than
+# this deadline and unaffected.
 POLL_DEADLINE_MS = 2_500
 
 app = FastAPI(title="Leafy Electronics Checkout")
 
-# The MongoDB leaf, copied from the Leafy Roasters inventory demo so both apps use
-# the identical asset. Resolved relative to this file, not the working directory,
-# so the app can be started from anywhere.
+# Resolved relative to this file, not the working directory, so the app can be
+# started from anywhere.
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Module state. Single-process, single-presenter demo; no locking needed.
-state = {
-    "incident_armed": True,
-    "incident_enabled": True,
-    "last_incident": None,
-}
+state = {"incident_armed": True, "incident_enabled": True}
 
 client: MongoClient | None = None
 
-# Strong references to in-flight "processor confirms the payment" tasks. Without
-# this asyncio can garbage-collect them mid-sleep (see RUF006).
+# Strong references to in-flight "processor confirms the payment" tasks: asyncio only
+# holds a weak one, so an unreferenced task can be garbage-collected mid-sleep — which
+# here means the payment is never confirmed and even post-index checkout fails.
 _gateway_tasks: set[asyncio.Task] = set()
 
 
@@ -162,9 +155,6 @@ async def pay():
         "updated_at": now,
     }
     await asyncio.to_thread(coll().insert_one, doc)
-    # Keep a strong reference: asyncio only holds a weak one, so an unreferenced
-    # task can be garbage-collected before it runs — which here would mean the
-    # payment never gets confirmed and even the post-index checkout fails.
     task = asyncio.create_task(confirm_payment_later(session_id))
     _gateway_tasks.add(task)
     task.add_done_callback(_gateway_tasks.discard)
@@ -175,15 +165,10 @@ async def pay():
 async def status(session_id: str, budget_ms: int = POLL_DEADLINE_MS):
     """The checkout poll. THIS is the slow query the whole demo is about.
 
-    The query is bounded by whichever is SMALLER: this poll's own deadline
-    (POLL_DEADLINE_MS) or the checkout's remaining budget passed in as budget_ms.
-    Two different limits, both real:
-
-      * the per-poll deadline is the service's own request SLO, and it's what
-        makes the pre-index failure deterministic (see POLL_DEADLINE_MS);
-      * the remaining-budget cap stops the last poll of a run from overrunning
-        the user-facing timeout, which would let a scan finish AFTER the gateway
-        confirms and turn a should-fail checkout into a success.
+    Bounded by whichever is smaller: this poll's own deadline (POLL_DEADLINE_MS,
+    the service's request SLO, which makes the pre-index failure deterministic) or
+    the checkout's remaining budget passed in as budget_ms, which stops the last
+    poll of a run from overrunning the user-facing timeout.
     """
     budget_ms = max(1, min(budget_ms, POLL_DEADLINE_MS, 60_000))
     t0 = time.perf_counter()
@@ -241,21 +226,11 @@ async def incident():
         return JSONResponse({"fired": False, "reason": str(exc)}, status_code=200)
 
     state["incident_armed"] = False
-    state["last_incident"] = {
-        "incident_id": incident_id,
-        "conversation_url": response.get("conversation_url"),
-    }
     return {
         "fired": True,
         "incident_id": incident_id,
         "conversation_url": response.get("conversation_url"),
     }
-
-
-@app.post("/api/rearm")
-async def rearm():
-    state["incident_armed"] = True
-    return {"armed": True}
 
 
 @app.get("/api/config")
@@ -264,7 +239,6 @@ async def config():
         "client_timeout_s": CLIENT_TIMEOUT_S,
         "poll_interval_ms": POLL_INTERVAL_MS,
         "incident_enabled": state["incident_enabled"],
-        "incident_armed": state["incident_armed"],
     }
 
 
@@ -278,26 +252,20 @@ async def index():
     return PAGE
 
 
-PAGE = """<!doctype html>
+PAGE_TEMPLATE = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Leafy Electronics — Checkout</title>
 <style>
-  /* Same Google Fonts import as the inventory app: Source Sans 3 for UI text,
-     Source Code Pro for the poll panel's monospace figures. */
   @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600;700&display=swap");
 
-  /* Palette and type lifted from the Leafy Roasters inventory demo so the two
-     apps read as one company. MongoDB brand colors, Source Sans 3. */
   :root {
-    --mongodb-green:#00ed64; --mongodb-forest:#00684a; --mongodb-slate:#001e2b;
+    --mongodb-forest:#00684a; --mongodb-slate:#001e2b;
     --ink:#001e2b; --muted:#5c6c75; --subtle:#889397;
     --line:#e4e8eb; --bg:#f4f6f8; --surface:#ffffff;
     --accent:var(--mongodb-forest); --bad:#d0271d; --good:var(--mongodb-forest);
     --panel:var(--mongodb-slate);
-    --radius:12px; --radius-sm:8px; --radius-btn:10px;
-    --shadow:0 1px 3px rgba(0,30,43,.08), 0 1px 2px rgba(0,30,43,.04);
   }
   * { box-sizing:border-box; }
   body { margin:0; font-size:15px; line-height:1.5;
@@ -306,9 +274,7 @@ PAGE = """<!doctype html>
          -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
          color:var(--ink); background:var(--bg); }
   header { background:var(--surface); border-bottom:1px solid var(--line); padding:14px 28px; }
-  /* Same stacked wordmark as the inventory app: company over section label. */
   .brand { display:flex; align-items:center; gap:10px; }
-  /* Same 30px leaf as the inventory app's sidebar brand. */
   .brand-logo { width:30px; height:30px; object-fit:contain; }
   .brand-text { display:flex; flex-direction:column; line-height:1.15; }
   .brand-text strong { font-size:15px; font-weight:700; color:var(--ink); }
@@ -349,8 +315,6 @@ PAGE = """<!doctype html>
   .log .res { color:#8b8b99; }
   .log .hit { color:#7ee08a; }
   .log .to  { color:#ff8a8a; }
-  .log .fire { color:#9fc4ff; }
-  a { color:#9fc4ff; }
 </style>
 </head>
 <body>
@@ -366,9 +330,7 @@ PAGE = """<!doctype html>
 <main>
   <div class="card">
     <h2>Order summary</h2>
-    <div class="row"><span class="n">Wireless Headphones</span><span>$149.00</span></div>
-    <div class="row"><span class="n">USB-C Cable</span><span>$12.00</span></div>
-    <div class="row total"><span>Total</span><span>$161.00</span></div>
+    __ORDER_ROWS__
     <div class="field" style="margin-top:20px">
       <label>Card number</label>
       <div class="fake-input">•••• •••• •••• 4242</div>
@@ -387,7 +349,7 @@ PAGE = """<!doctype html>
 </main>
 <script>
 const $ = id => document.getElementById(id);
-let cfg = { client_timeout_s: 30, poll_interval_ms: 3000 };
+let cfg = { client_timeout_s: 12, poll_interval_ms: 2500 };
 
 // Incident state is intentionally NOT shown on the page — this is a shopper's
 // checkout, not a demo console. Loading this page re-armed the incident, so a
@@ -403,6 +365,8 @@ function line(html) {
   $('log').appendChild(d);
   $('log').scrollTop = $('log').scrollHeight;
 }
+
+const sleep = ms => new Promise(z => setTimeout(z, ms));
 
 $('pay').onclick = async () => {
   $('pay').disabled = true;
@@ -426,35 +390,31 @@ $('pay').onclick = async () => {
 
     while (Date.now() < deadline) {
       n++;
-      // Hand the server our remaining budget so the last poll of a run can't
-      // overrun the checkout timeout.
-      const budget = deadline - Date.now();
-      let r;
       try {
-        r = await (await fetch('/api/status?session_id=' + session_id +
-                               '&budget_ms=' + Math.round(budget))).json();
+        // Hand the server our remaining budget so the last poll of a run can't
+        // overrun the checkout timeout.
+        const budget = Math.round(deadline - Date.now());
+        const r = await (await fetch('/api/status?session_id=' + session_id +
+                                     '&budget_ms=' + budget)).json();
+        const ms = r.elapsed_ms.toLocaleString(undefined, {maximumFractionDigits:0});
+        if (r.confirmed) {
+          line('<span class="lbl">poll ' + n + '</span><span class="ms">' + ms +
+               ' ms</span><span class="hit">confirmed</span>');
+          confirmed = r; break;
+        }
+        line('<span class="lbl">poll ' + n + '</span><span class="ms">' + ms +
+             ' ms</span><span class="res">' +
+             (r.timed_out ? 'gave up' : 'no result') + '</span>');
       } catch (err) {
         // One failed request is not a failed checkout: log it and keep polling
         // until the budget runs out, exactly as a real page would.
         console.error('[demo] poll ' + n + ' failed:', err);
         line('<span class="lbl">poll ' + n + '</span><span class="to">request failed</span>');
-        const left = deadline - Date.now();
-        if (left > 0) await new Promise(z => setTimeout(z, Math.min(cfg.poll_interval_ms, left)));
-        continue;
       }
-      const ms = r.elapsed_ms.toLocaleString(undefined, {maximumFractionDigits:0});
-      if (r.confirmed) {
-        line('<span class="lbl">poll ' + n + '</span><span class="ms">' + ms +
-             ' ms</span><span class="hit">confirmed</span>');
-        confirmed = r; break;
-      }
-      line('<span class="lbl">poll ' + n + '</span><span class="ms">' + ms +
-           ' ms</span><span class="res">' +
-           (r.timed_out ? 'gave up' : 'no result') + '</span>');
       // Real checkout pages pace their polls rather than hammering. Also keeps the
-      // panel readable post-index, where polls take ~20 ms.
+      // panel readable post-index, where polls return in milliseconds.
       const left = deadline - Date.now();
-      if (left > 0) await new Promise(z => setTimeout(z, Math.min(cfg.poll_interval_ms, left)));
+      if (left > 0) await sleep(Math.min(cfg.poll_interval_ms, left));
     }
   } catch (err) {
     // Couldn't even create the payment. Show the shopper a failure rather than an
@@ -500,6 +460,23 @@ $('pay').onclick = async () => {
 </body>
 </html>
 """
+
+
+def _order_rows():
+    """Render the order summary from ORDER, so prices can't drift from the doc."""
+    rows = [
+        f'<div class="row"><span class="n">{item["name"]}</span>'
+        f"<span>${item['qty'] * item['unit_price'] / 100:,.2f}</span></div>"
+        for item in ORDER
+    ]
+    rows.append(
+        f'<div class="row total"><span>Total</span>'
+        f"<span>${ORDER_TOTAL / 100:,.2f}</span></div>"
+    )
+    return "\n    ".join(rows)
+
+
+PAGE = PAGE_TEMPLATE.replace("__ORDER_ROWS__", _order_rows())
 
 
 def main():
