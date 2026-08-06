@@ -90,22 +90,30 @@ MongoDB MCP.
 ### 1. Seed the data
 
 ```bash
-python seed_payments.py               # 300,000 docs, ~1.6 KB gateway payload each
+python seed_payments.py --blob-bytes 3149    # 300,000 docs, ~1 GB on disk
 ```
 
-**Sizing:** 300k docs of ~2 KB is the sweet spot on an M10 with 2 GB RAM. A COLLSCAN
-of the poll query takes several seconds — clearly slow and dramatic in `explain()`,
-yet safely under the MongoDB MCP server's **60 s `maxTimeMS` cap**. Do **not** seed
-millions: a scan that large can exceed the cap, which makes the agent's
-`explain()`/`find()` **error out** during the demo instead of returning stats. Bigger
-is worse, not better.
+**Sizing is the whole ballgame, and it is relative to the cluster — not absolute.**
+What makes the poll query slow is that the collection **outgrows the WiredTiger
+cache** (~50% of host RAM), forcing reads from disk. Target roughly **2x the cache**:
 
-**The scan is only slow if the collection outgrows the WiredTiger cache.** That cache
-is ~50% of host RAM, so a 2 GB M10 gives ~537 MB against this collection's ~0.63 GB —
-scans hit disk and take seconds. On a larger tier the whole collection fits in cache
-and the same query returns in a couple hundred milliseconds, which quietly kills the
-demo's drama. Check `hostInfo.memSizeMB` if the scan comes back suspiciously fast; the
-fix is a smaller tier, not more documents.
+| Host RAM | WiredTiger cache | Target storage | Seed with |
+|---|---|---|---|
+| 2 GB | ~537 MB | ~1.05 GB | `--blob-bytes 3149` (300k docs) |
+| 4 GB | ~1.07 GB | ~2.1 GB | `--blob-bytes 6900`, or `--docs 600000` |
+
+At ~1x the cache scans are **not** reliably slow: once the hot pages stay resident,
+repeated identical scans settle to a few hundred milliseconds even though the plan is
+still a full `COLLSCAN`. That is the trap — the query looks right in `explain()` while
+the checkout page silently *succeeds*. Aim for 2x, not 1.1x.
+
+Do **not** oversize either: a scan slower than the MongoDB MCP server's **60 s
+`maxTimeMS` cap** makes the agent's `explain()`/`find()` **error out** mid-demo
+instead of returning stats.
+
+To size for your own cluster, read the cache off `serverStatus` and the collection off
+`collStats`, then pick `--blob-bytes` so `storageSize ≈ 2 x cache`. `checkout_app.py`
+checks this relationship at startup and warns when it no longer holds.
 
 Document size lives in a realistic `gateway_response` field (an opaque base64
 payload — screenshot-safe, and high-entropy so WiredTiger's compression can't shrink
@@ -261,15 +269,22 @@ nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log
 To rebuild the collection from scratch, `./setup_demo.sh --drop`. By hand:
 
 ```bash
-python seed_payments.py --drop                    # drop, then seed a fresh 300k
-nohup python generate_load.py > load.log 2>&1 &   # warm cache + rebuild Advisor recommendation
+python seed_payments.py --drop --blob-bytes 3149   # drop, then seed a fresh ~1 GB
+nohup python generate_load.py > load.log 2>&1 &    # warm cache + rebuild Advisor recommendation
 ```
 
+Pass the same `--blob-bytes` you sized for your cluster (see [Seed the data](#1-seed-the-data)).
+Reseeding at the default size on a cluster that needs more will leave scans fast enough
+for checkout to succeed — `checkout_app.py` warns about this at startup.
+
 **Always use `--drop` when reseeding.** Running `seed_payments.py` without it *appends*
-another 300k (→ 600k total), which roughly doubles scan time and pushes the cold case
-into the MCP server's 60 s `maxTimeMS` cap — the failure mode 300k is sized to avoid.
+another 300k, which roughly doubles scan time and can push the cold case past the MCP
+server's 60 s `maxTimeMS` cap — making the agent's `explain()` error out mid-demo.
 
 After any reseed, remember:
 - The cache is cold again, so the first scans are slower — let the trickle warm it.
-- The Performance Advisor recommendation resets with the collection — give the trickle
-  ~15–30 min to rebuild it, then confirm with `atlas-get-performance-advisor` before going live.
+- **The Performance Advisor recommendation resets with the collection.** Dropping the
+  collection discards the slow-query history for that namespace, so the Advisor starts
+  from zero. Give the trickle ~15–30 min to rebuild it — or run a denser burst
+  (`python generate_load.py --burst 10 --interval 60 --duration 900`) to get there
+  faster — then confirm with `atlas-get-performance-advisor` before going live.

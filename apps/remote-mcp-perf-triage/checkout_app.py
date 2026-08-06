@@ -22,6 +22,12 @@ Flow when you click "Submit payment":
 
 The ChatGPT access token stays server-side; the browser never sees it.
 
+The pre-index failure depends on scans being slower than POLL_DEADLINE_MS, which
+holds only while the collection stays too big for the cluster's WiredTiger cache.
+A startup preflight times one real scan and warns when that no longer holds —
+swapping clusters or reseeding less data otherwise turns the hang into a silent
+success that still pages the agent. Startup therefore costs one slow scan.
+
 Usage:
     python checkout_app.py                 # http://127.0.0.1:8000
     python checkout_app.py --port 9000
@@ -72,15 +78,23 @@ POLL_INTERVAL_MS = 2_500
 
 # Per-request deadline for ONE poll, applied as maxTimeMS. Real services set a
 # per-call deadline (API gateway, service SLO) below the overall user budget, so
-# having one is normal — but this value is calibrated deliberately: it sits below
-# the fastest COLLSCAN this collection produces, so EVERY pre-index poll is killed
-# server-side before it can complete. No poll ever observes the gateway's
-# confirmation, so checkout always fails regardless of cluster load on the day.
+# having one is normal — and it is also what makes the pre-index failure
+# deterministic: it must sit below the FASTEST scan the cluster can produce.
 #
-# Without it the outcome would depend on scan time vs. the overall budget: a poll
-# that completed after the gateway confirms would find the record and checkout
-# would SUCCEED, silently killing the demo. Post-index polls are far faster than
-# this deadline and unaffected.
+# It must beat the fastest scan, not the typical one. Any single poll that
+# completes after the gateway has confirmed finds the record and turns a
+# should-fail checkout into a success — one lucky poll is enough to kill the demo.
+#
+# This value is NOT independently tunable: it is only safe while the collection is
+# sized to stay disk-bound (see seed_payments.py, which targets ~2x the WiredTiger
+# cache). Scan time is a function of cache residency, not of the query, so a
+# roomier cluster or a smaller collection makes scans fast and this deadline stops
+# separating the two cases. Lowering it to compensate is a trap: it keeps the demo
+# failing but the status panel then shows a ~100 ms request being cut off instead
+# of a genuinely slow scan, which is the one thing the panel exists to show.
+#
+# The startup preflight verifies the relationship still holds and warns when it
+# does not — reseed larger rather than lowering this.
 POLL_DEADLINE_MS = 2_500
 
 app = FastAPI(title="Leafy Electronics Checkout")
@@ -413,8 +427,19 @@ $('pay').onclick = async () => {
       }
       // Real checkout pages pace their polls rather than hammering. Also keeps the
       // panel readable post-index, where polls return in milliseconds.
+      //
+      // Log the wait too. Without it the panel only shows query time, so the poll
+      // latencies visibly sum to less than the "timed out after Ns" line that
+      // follows them — an audience adding up the numbers sees a discrepancy that
+      // looks like a bug in the demo rather than deliberate pacing.
       const left = deadline - Date.now();
-      if (left > 0) await sleep(Math.min(cfg.poll_interval_ms, left));
+      if (left > 0) {
+        const wait = Math.min(cfg.poll_interval_ms, left);
+        line('<span class="lbl">waiting</span><span class="ms">' +
+             wait.toLocaleString(undefined, {maximumFractionDigits:0}) +
+             ' ms</span><span class="res">before next poll</span>');
+        await sleep(wait);
+      }
     }
   } catch (err) {
     // Couldn't even create the payment. Show the shopper a failure rather than an
@@ -479,6 +504,70 @@ def _order_rows():
 PAGE = PAGE_TEMPLATE.replace("__ORDER_ROWS__", _order_rows())
 
 
+def preflight():
+    """Check that the cluster can still produce the demo's failure, and say so.
+
+    The pre-index checkout only fails if EVERY poll is killed at
+    POLL_DEADLINE_MS — which requires scans slower than that deadline. Scan speed
+    is a property of how much of the collection is resident in the WiredTiger
+    cache, so swapping clusters, resizing a tier, or reseeding less data silently
+    turns the failure into a success. This has broken the demo more than once, and
+    always at showtime, because nothing checked it at launch.
+
+    Times one real poll-shaped query and reports what it implies. Warns rather
+    than exits: a slow first scan on a cold cache is normal, and being wrong here
+    should not block a presenter minutes before going on.
+    """
+    # This costs one full COLLSCAN (seconds), so say so before blocking on it —
+    # otherwise startup looks hung. flush=True because stdout is block-buffered
+    # when piped or redirected, which is exactly how setup_demo.sh runs this.
+    print("Preflight: timing one unindexed scan ...", flush=True)
+
+    coll_ = coll()
+    indexes = list(coll_.index_information())
+    demo_index = "session_id_1_status_1"
+    if demo_index in indexes:
+        print(
+            f"WARNING: index {demo_index} EXISTS — checkout will SUCCEED and the "
+            "incident is bogus.\n"
+            "         Reset first: python seed_payments.py --drop-index",
+            flush=True,
+        )
+        return
+
+    q = {"session_id": f"sess_{secrets.token_hex(12)}", "status": "completed"}
+    t0 = time.perf_counter()
+    try:
+        coll_.find_one(q, max_time_ms=30_000)
+    except ExecutionTimeout:
+        print("Preflight: scan exceeded 30 s — comfortably slow enough.", flush=True)
+        return
+    scan_ms = (time.perf_counter() - t0) * 1000
+
+    print(
+        f"Preflight: unindexed scan took {scan_ms:,.0f} ms (deadline {POLL_DEADLINE_MS} ms).",
+        flush=True,
+    )
+    if scan_ms > POLL_DEADLINE_MS * 1.5:
+        print(
+            "           Comfortably slower than the deadline — checkout will fail.",
+            flush=True,
+        )
+        return
+
+    print(
+        f"WARNING: scans are FAST relative to the {POLL_DEADLINE_MS} ms deadline, so a "
+        "poll can\n"
+        "         complete after the gateway confirms and checkout will SUCCEED —\n"
+        "         no hang, and any incident it fires is bogus.\n"
+        "         Cause is usually cache residency: the collection now fits in the\n"
+        "         WiredTiger cache (a roomier cluster, or less data than expected).\n"
+        "         Fix: reseed bigger so storage stays ~2x the cache, e.g.\n"
+        "         python seed_payments.py --drop --blob-bytes <larger>",
+        flush=True,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default="127.0.0.1")
@@ -503,6 +592,8 @@ def main():
         print("Incident dispatch DISABLED (--no-incident): checkout will fail quietly.")
     elif not os.environ.get("AGENT_ACCESS_TOKEN"):
         print("WARNING: AGENT_ACCESS_TOKEN unset — checkout will fail but page no one.")
+
+    preflight()
 
     print(f"Checkout page: http://{args.host}:{args.port}")
     uvicorn.run(app, host=args.host, port=args.port, log_level="warning")
