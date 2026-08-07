@@ -164,13 +164,15 @@ def main():
                 )
 
             if args.interval > 0:
+                # A cycle can overrun the interval: with slow scans, `--burst 10` at
+                # ~12 s each takes ~120 s against a 60 s interval. That is fine — it
+                # just means we are already behind schedule, so start the next cycle
+                # immediately rather than treating it as "no time left" and stopping.
                 sleep_for = args.interval - (time.time() - cycle_start)
-                if sleep_for > 0 and (
-                    deadline is None or time.time() + sleep_for < deadline
-                ):
-                    time.sleep(sleep_for)
-                elif deadline is not None:
+                if deadline is not None and time.time() + max(0, sleep_for) >= deadline:
                     break  # not enough time left for another cycle
+                if sleep_for > 0:
+                    time.sleep(sleep_for)
             elif not latencies:
                 # Continuous mode with a dead connection would spin as fast as the
                 # driver can fail. Back off so the log stays readable.

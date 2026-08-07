@@ -428,18 +428,11 @@ $('pay').onclick = async () => {
       // Real checkout pages pace their polls rather than hammering. Also keeps the
       // panel readable post-index, where polls return in milliseconds.
       //
-      // Log the wait too. Without it the panel only shows query time, so the poll
-      // latencies visibly sum to less than the "timed out after Ns" line that
-      // follows them — an audience adding up the numbers sees a discrepancy that
-      // looks like a bug in the demo rather than deliberate pacing.
+      // Not logged: the panel shows query latency only, so the poll times sum to
+      // less than the "timed out after Ns" line that follows them. That gap is the
+      // pacing, not a missing measurement.
       const left = deadline - Date.now();
-      if (left > 0) {
-        const wait = Math.min(cfg.poll_interval_ms, left);
-        line('<span class="lbl">waiting</span><span class="ms">' +
-             wait.toLocaleString(undefined, {maximumFractionDigits:0}) +
-             ' ms</span><span class="res">before next poll</span>');
-        await sleep(wait);
-      }
+      if (left > 0) await sleep(Math.min(cfg.poll_interval_ms, left));
     }
   } catch (err) {
     // Couldn't even create the payment. Show the shopper a failure rather than an
