@@ -64,6 +64,15 @@ COLLECTION_NAME = "payments"
 
 # How long the fake processor takes to confirm — realistic for a real gateway, and
 # well under CLIENT_TIMEOUT_S so post-index the page succeeds fast.
+#
+# This sets the FLOOR on the post-index success: the page cannot confirm before the
+# processor has, so this — not POLL_INTERVAL_MS — is what the closing beat's wait is
+# made of. Polling faster against an unchanged floor only adds poll lines.
+#
+# Pre-index it is irrelevant: every poll is killed at POLL_DEADLINE_MS long before
+# completing, so no poll ever reads the document and it cannot matter when the
+# processor wrote it. That holds only while scans stay far slower than the deadline —
+# the invariant preflight() checks.
 GATEWAY_DELAY_S = 3.0
 
 # The user-facing budget: how long the shopper watches the spinner before the page
@@ -73,7 +82,15 @@ GATEWAY_DELAY_S = 3.0
 # or the post-index SUCCESS case breaks.
 CLIENT_TIMEOUT_S = 12.0
 
-# Gap between polls. Real checkout pages pace their polls rather than hammering.
+# Gap between polls. Real checkout pages pace their polls rather than hammering,
+# and a slower cadence keeps the panel readable — post-index the polls return in
+# tens of milliseconds, so tighter pacing mostly adds lines to scroll past.
+#
+# This is only the GRANULARITY with which the page notices the gateway's
+# confirmation, not the wait itself — that floor is GATEWAY_DELAY_S.
+#
+# Only affects pacing, never the outcome — every pre-index poll is still killed at
+# POLL_DEADLINE_MS regardless of how often we retry.
 POLL_INTERVAL_MS = 2_500
 
 # Per-request deadline for ONE poll, applied as maxTimeMS. Real services set a

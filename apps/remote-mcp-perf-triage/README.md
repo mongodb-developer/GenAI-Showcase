@@ -127,11 +127,16 @@ the index is **still absent** — so keep a gentle trickle running until showtim
 **do not create the index before the demo**.
 
 ```bash
-python generate_load.py               # default trickle: 3 queries every 5 min, until Ctrl+C
+python generate_load.py               # default trickle: 3 queries every 2 min, until Ctrl+C
 ```
 
 Recency matters more than volume, and the M10 has a burstable CPU, so a light trickle
-is enough (and kinder to the cluster) — no need to hammer it. To run unattended:
+is enough (and kinder to the cluster) — no need to hammer it. Keep the duty cycle low:
+each scan takes seconds, so a burst of 3 fills roughly a third of a 120 s cycle.
+Raising `--burst` or dropping `--interval` much further risks exhausting the M10's CPU
+credits, which makes scan times erratic — including during the demo itself.
+
+To run unattended:
 
 ```bash
 nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log to watch
@@ -285,6 +290,11 @@ After any reseed, remember:
 - The cache is cold again, so the first scans are slower — let the trickle warm it.
 - **The Performance Advisor recommendation resets with the collection.** Dropping the
   collection discards the slow-query history for that namespace, so the Advisor starts
-  from zero. Give the trickle ~15–30 min to rebuild it — or run a denser burst
-  (`python generate_load.py --burst 10 --interval 60 --duration 900`) to get there
-  faster — then confirm with `atlas-get-performance-advisor` before going live.
+  from zero. Let the trickle rebuild it, then confirm with
+  `atlas-get-performance-advisor` before going live. Reseed the day before a demo if
+  you can — a freshly created cluster can take considerably longer than 15–30 min to
+  surface its first recommendation, and extra load does not reliably speed that up.
+  To check whether the server is at least *recording* the queries the Advisor feeds
+  on, look for `"msg":"Slow query"` entries on `ecommerce.payments` with
+  `planSummary: COLLSCAN`; if those are present, the workload is fine and the wait is
+  Advisor-side.

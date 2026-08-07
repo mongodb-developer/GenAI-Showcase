@@ -23,10 +23,15 @@ the M10 has a burstable CPU, so by default this runs a small BURST of queries ev
 INTERVAL seconds rather than hammering continuously. That keeps the recommendation
 alive and the cache warm while being gentle on the cluster.
 
+Cadence is deliberately kept to a low duty cycle. Each scan takes seconds on a
+correctly-sized collection, so a burst of 3 occupies roughly a third of a 120 s
+cycle and the cluster idles the rest. Pushing much past that risks exhausting the
+M10's CPU credits, which makes scan times erratic — including during the demo.
+
 Usage:
     export MONGODB_URI="mongodb+srv://<user>:<pass>@host/"
 
-    # Default trickle: 3 queries every 5 minutes, forever (Ctrl+C to stop).
+    # Default trickle: 3 queries every 2 minutes, forever (Ctrl+C to stop).
     python generate_load.py
 
     # Custom trickle cadence.
@@ -85,7 +90,7 @@ def main():
     parser.add_argument(
         "--interval",
         type=float,
-        default=300,
+        default=120,
         help="seconds between the start of each burst "
         "(0 = continuous / no sleep between bursts)",
     )
