@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -15,8 +15,8 @@ from pydantic import BaseModel
 from .agent import CoffeeInventoryAgent
 from .db import get_database
 from .demo_data import ensure_indexes, ensure_validators, seed_demo_data
-from .graph import InventoryMonitorGraph
 from .mcp_session import MCPUnavailable, get_mcp_session
+from .monitor import InventoryMonitor
 from .memory import close_checkpointer
 from .repository import InventoryRepository
 
@@ -47,16 +47,16 @@ def repository() -> InventoryRepository:
     return InventoryRepository(get_database())
 
 
-def monitor_graph() -> InventoryMonitorGraph:
-    return InventoryMonitorGraph(repository())
+def run_sweep(session_id: str) -> dict | None:
+    """The sweep, off the event loop: the investigator runs its own asyncio loop."""
+    return InventoryMonitor(repository()).run(session_id)
 
 
 async def delayed_monitor(session_id: str, delay_seconds: int) -> None:
     await asyncio.sleep(delay_seconds)
-    repo = repository()
-    if repo.active_alert_for_session(session_id):
+    if repository().active_alert_for_session(session_id):
         return
-    await asyncio.to_thread(monitor_graph().run, session_id)
+    await asyncio.to_thread(run_sweep, session_id)
 
 
 def schedule_monitor_once(session_id: str) -> None:
@@ -113,6 +113,16 @@ app = FastAPI(title="Ambient Inventory Agent", lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
+# StaticFiles sends an ETag but no Cache-Control, so a browser may reuse app.js without
+# revalidating — which shows up as a UI change that "didn't work" until a hard reload.
+@app.middleware("http")
+async def no_store_static(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path == "/" or request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-store, must-revalidate"
+    return response
+
+
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
@@ -147,15 +157,16 @@ async def create_session(payload: SessionRequest) -> dict:
 
 @app.post("/api/demo/start")
 async def start_demo(_: SessionRequest) -> dict:
-    """Start the sweep. Seed separately, before the laptop goes on stage.
+    """Start the sweep, behind the portal's play control.
 
     Deliberately does not reseed: `python seed_demo.py --reset` is a pre-flight
-    step, so pressing this is fast and the start screen is on display for seconds
-    rather than minutes.
+    step, so pressing play spends its time on the MCP handshake rather than on
+    rewriting the database.
 
-    The MCP session is re-minted rather than reused: the laptop may have sat on the
-    podium for a long time before anyone spoke, and a stale OAuth token would
-    otherwise surface as a failure on the agent's first query.
+    The MCP session is re-minted rather than reused: the service-account token is
+    good for an hour, and the laptop may have sat on the podium longer than that
+    before anyone spoke. Minting unconditionally costs a few seconds and behaves the
+    same every time, which is worth more on stage than an occasionally-stale fast path.
     """
     for task in scheduled_tasks.values():
         task.cancel()
@@ -179,9 +190,8 @@ async def start_demo(_: SessionRequest) -> dict:
 async def run_monitor(payload: SessionRequest) -> dict:
     """Run a sweep synchronously — useful for rehearsing without reloading."""
     session_id = payload.session_id or f"session_{uuid4().hex[:10]}"
-    repo = repository()
-    repo.ensure_session(session_id)
-    alert = await asyncio.to_thread(monitor_graph().run, session_id)
+    repository().ensure_session(session_id)
+    alert = await asyncio.to_thread(run_sweep, session_id)
     return {"session_id": session_id, "alert": alert}
 
 

@@ -15,11 +15,16 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 PY=${PY:-.venv/bin/python}
 [[ -x "$PY" ]] || PY=python3
 
+# Sized so the collection stays ~2x the WiredTiger cache, which is what keeps scans
+# disk-bound and therefore slow. Correct for a 2 GB host (~537 MB cache); override on
+# a roomier cluster or checkout will silently SUCCEED. See the README sizing table.
+BLOB_BYTES=${BLOB_BYTES:-3149}
+
 case "${1:-}" in
   "")     echo "==> Dropping the demo index (restores the slow COLLSCAN)"
           "$PY" seed_payments.py --drop-index ;;
-  --drop) echo "==> Full reseed — several minutes"
-          "$PY" seed_payments.py --drop
+  --drop) echo "==> Full reseed at --blob-bytes $BLOB_BYTES — several minutes"
+          "$PY" seed_payments.py --drop --blob-bytes "$BLOB_BYTES"
           echo "!   Cache is cold and the Advisor recommendation reset; allow ~15-30 min of trickle" ;;
   *)      echo "ERROR: unknown option '$1' (only --drop)" >&2; exit 1 ;;
 esac

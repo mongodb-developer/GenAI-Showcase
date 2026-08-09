@@ -14,6 +14,14 @@ const state = {
   pendingOwnerMessage: null,
   submitting: false,
   banner: null,
+  // Set while /api/demo/start is in flight, so the play control can show the
+  // MCP handshake is happening rather than looking like a dead click.
+  starting: false,
+  startError: null,
+  // Latched once the server confirms the sweep is scheduled, so the control does
+  // not fall back to "Run sweep" while waiting for the first poll or the agent's
+  // first logged event.
+  started: false,
 };
 
 const els = {
@@ -23,14 +31,24 @@ const els = {
   navItems: Array.from(document.querySelectorAll(".nav-item")),
 };
 
-// Shown as a timeline while the demo starts. Wording tracks what the server is
-// actually doing in /api/demo/start.
+// The play control calls /api/demo/start, which re-mints the service-account token,
+// reloads the MCP tools, binds a fresh connectionId, and schedules the sweep. The
+// button narrates those steps while they happen rather than covering them with a
+// curtain.
 const START_STEPS = [
-  "Connecting to MongoDB Remote MCP",
-  "Authenticating the service account",
-  "Opening the Atlas cluster connection",
-  "Starting the scheduled inventory sweep",
+  "Authenticating to Atlas",
+  "Loading the MCP tools",
+  "Connecting to the cluster",
 ];
+
+// Roughly how long each handshake step takes, used only to advance the label on the
+// button. The real completion is the API response, which cuts the sequence short or
+// lets it sit on the last step until the server answers.
+const START_STEP_MS = [1500, 2500, 3200];
+
+// The sweep logs each MCP call the moment it happens, so this interval is the only
+// thing standing between a real event and the feed showing it.
+const POLL_MS = 1000;
 
 // Medium is the healthy case for this demo — a reorder point reached with time to
 // spare. Only High warrants red.
@@ -47,9 +65,8 @@ const PAGE_TITLES = {
 // Labels say where each line actually came from: the deterministic monitor, a
 // driver query, or a real Remote MCP tool call made by the model.
 const EVENT_META = {
-  agent_plan: { label: "Agent · plan", cls: "plan" },
+  agent_plan: { label: "Agent · thinking", cls: "plan" },
   mcp_tool: { label: "Agent · MCP", cls: "mcp" },
-  agent_finding: { label: "Agent · finding", cls: "response" },
   agent_response: { label: "Agent · answer", cls: "response" },
   owner_message: { label: "Owner · asked", cls: "plan" },
   agent_message: { label: "Agent · replied", cls: "response" },
@@ -99,6 +116,14 @@ function titleCase(value) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+// Treat "close enough to the bottom" as pinned: an exact comparison fails on
+// fractional scroll heights from zoom or sub-pixel scrolling, silently turning
+// auto-follow off.
+const PIN_SLACK_PX = 24;
+function isPinnedToBottom(el) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight <= PIN_SLACK_PX;
+}
+
 function escapeHtml(value) {
   return String(value == null ? "" : value)
     .replaceAll("&", "&amp;")
@@ -137,6 +162,37 @@ function atRiskProductIds() {
   return ids;
 }
 
+/* Components with an order placed but nothing delivered yet, so the products drawing
+   on them can read as "On order" rather than flipping straight back to "Healthy"
+   when the alert resolves. */
+function inboundInventoryIds() {
+  const ids = new Set();
+  (state.snapshot?.purchase_orders || [])
+    .filter((po) => po.status === "ordered")
+    .forEach((po) => {
+      (po.line_items || []).forEach((line) => {
+        if (line.inventory_id) ids.add(line.inventory_id);
+      });
+    });
+  return ids;
+}
+
+function onOrderProductIds() {
+  const inbound = inboundInventoryIds();
+  if (!inbound.size) return new Set();
+
+  // Any product drawing on an inbound component is waiting on it. Derived from the
+  // bill of materials rather than a cached list, same as the sweep does.
+  const ids = new Set();
+  (state.snapshot?.products || []).forEach((product) => {
+    const waiting = (product.components || []).some((component) =>
+      inbound.has(component.inventory_id),
+    );
+    if (waiting) ids.add(product._id);
+  });
+  return ids;
+}
+
 function blockerInventoryIds() {
   return new Set(activeAlerts().map((alert) => alert.risk?.blocker_inventory_id).filter(Boolean));
 }
@@ -148,12 +204,13 @@ function supplierName(supplierId) {
 
 /* Status comes from the server's cover calculation (finished units plus what the
    limiting component can still make), so this can never contradict the inbox. */
-function productStatus(product, riskIds) {
-  // Only the agent's findings colour this. The server can compute reorder status
-  // itself, but showing it would answer the question before the agent does and
-  // spoil the reveal — the point of the demo is that the risk is invisible until
-  // something goes looking for it.
+function productStatus(product, riskIds, onOrderIds) {
+  // Only the agent's findings colour this: computing reorder status here would answer
+  // the question before the agent does.
   if (riskIds.has(product._id)) return { label: "Reorder", cls: "warning" };
+  // Ordered but not arrived: stock on hand is unchanged and the supplier is still
+  // days out, so this is not "Healthy" yet.
+  if (onOrderIds?.has(product._id)) return { label: "On order", cls: "info" };
   return { label: "Healthy", cls: "success" };
 }
 
@@ -169,50 +226,25 @@ function coverDays(product) {
   return cover ? `${cover.days_of_cover} days` : "—";
 }
 
-/* One line stating the problem and the fix, written by the agent. */
-function alertHeadline(alert) {
-  return alert.summary || "";
+/* The order placed against an alert, if there is one. */
+function orderForAlert(alert) {
+  return (state.snapshot?.purchase_orders || []).find(
+    (po) => po.alert_id === alert._id && po.status === "ordered",
+  );
 }
 
-/* The agent chooses which figures matter, so render what it filed rather than a
-   fixed set of tiles. Falls back to the rule's fields when a rule authored the
-   alert (MCP unavailable). */
-function alertStats(alert) {
-  const stats = alert.risk?.stats;
-  if (Array.isArray(stats) && stats.length) return stats;
-
-  // Last resort only: both the agent and the rule now supply `stats` directly.
-  const risk = alert.risk || {};
-  const affected = 1 + (risk.blocker_shared_with || []).length;
-  const fallback = [
-    { label: "SKUs affected", value: `${affected} products`, emphasis: "critical" },
-    {
-      label: "Stock vs reorder",
-      value:
-        risk.blocker_quantity_on_hand != null && risk.component_reorder_point != null
-          ? `${risk.blocker_quantity_on_hand} / ${risk.component_reorder_point} units`
-          : "—",
-      emphasis: "critical",
-    },
-    {
-      label: "Days left",
-      value:
-        risk.component_days_left != null
-          ? `${Math.floor(risk.component_days_left)} days`
-          : "—",
-      emphasis: "warning",
-    },
-  ];
-  return fallback.filter((stat) => stat.value !== "—");
+/* Whether the order on file is the one recommended here. If the owner ordered from
+   someone else in the chat, this recommendation was never acted on — so the button
+   keeps offering it rather than claiming credit for a different purchase. */
+function recommendationOrdered(alert) {
+  const order = orderForAlert(alert);
+  return Boolean(order && order.supplier_id === (alert.recommendation || {}).supplier_id);
 }
-
 
 /* What closed the alert. Without this the card just collapses and it is not
    obvious an order was actually placed. */
 function resolvedNote(alert) {
-  const order = (state.snapshot?.purchase_orders || []).find(
-    (po) => po.alert_id === alert._id && po.status === "ordered",
-  );
+  const order = orderForAlert(alert);
   if (!order) return "";
   const line = (order.line_items || [])[0] || {};
   return `
@@ -222,24 +254,32 @@ function resolvedNote(alert) {
     </span>`;
 }
 
-
-
-/* Whether the order on file is the one recommended here. If the owner ordered from
-   someone else in the chat, this recommendation was never acted on — so the button
-   keeps offering it rather than claiming credit for a different purchase. */
-function recommendationOrdered(alert) {
-  const order = (state.snapshot?.purchase_orders || []).find(
-    (po) => po.alert_id === alert._id && po.status === "ordered",
-  );
-  return Boolean(order && order.supplier_id === (alert.recommendation || {}).supplier_id);
-}
-
+/* The three risk tiles, formatted here rather than by the agent — they are pure
+   presentation of figures the alert already carries, and asking the model to emit
+   them as well gave those numbers a second source that could disagree with the
+   first. A tile with nothing to show is dropped rather than rendered as a dash. */
 function statTiles(alert) {
-  const tiles = alertStats(alert)
+  const risk = alert.risk || {};
+  // `blocker_shared_with` includes the alert's own product, so this is a length
+  // rather than 1 + length.
+  const affected = (risk.blocker_shared_with || []).length;
+  const stock =
+    risk.blocker_quantity_on_hand != null && risk.component_reorder_point != null
+      ? `${risk.blocker_quantity_on_hand} / ${risk.component_reorder_point} units`
+      : null;
+  const daysLeft =
+    risk.component_days_left != null ? `${Math.floor(risk.component_days_left)} days` : null;
+
+  const tiles = [
+    { label: "SKUs affected", value: affected ? `${affected} products` : null, emphasis: "critical" },
+    { label: "Stock vs reorder", value: stock, emphasis: "critical" },
+    { label: "Days left", value: daysLeft, emphasis: "warning" },
+  ]
+    .filter((stat) => stat.value)
     .map(
       (stat) => `
-        <div class="risk-tile ${escapeHtml(stat.emphasis || "neutral")}">
-          <span>${escapeHtml(stat.label)}</span>
+        <div class="risk-tile ${stat.emphasis}">
+          <span>${stat.label}</span>
           <strong>${escapeHtml(stat.value)}</strong>
         </div>`,
     )
@@ -248,104 +288,128 @@ function statTiles(alert) {
 }
 
 /* ---------- Session ---------- */
-/* Boot into the start curtain and run nothing. Pressing Enter resets the scenario
-   and starts the sweep, so opening the app is always safe — no URL parameter to
-   remember, and a rehearsal leaves nothing behind for the real run.
-
-   An in-progress demo survives a reload: if this session already has activity, skip
-   the curtain and rejoin it. */
+/* Boot into the portal with the shop's data on screen and the agent idle: nothing runs
+   until the play control is pressed. A session is always created, since the portal's
+   tables come from /api/state, and reusing the stored id lets an in-progress demo
+   survive a reload with its alert and feed intact. */
 async function startSession() {
-  const resumed = state.sessionId
-    ? await api("/api/demo/session", {
-        method: "POST",
-        body: JSON.stringify({ session_id: state.sessionId }),
-      }).catch(() => null)
-    : null;
+  const session = await api("/api/demo/session", {
+    method: "POST",
+    body: JSON.stringify({ session_id: state.sessionId }),
+  });
+  state.sessionId = session.session_id;
+  localStorage.setItem("ambientInventorySessionId", state.sessionId);
 
-  if (resumed) {
-    state.sessionId = resumed.session_id;
-    await refreshState();
-  }
-  state.pollHandle = setInterval(refreshState, 2500);
-
-  if ((state.snapshot?.history || []).length) {
-    render(true);
-  } else {
-    renderCurtain();
-  }
+  await refreshState();
+  state.pollHandle = setInterval(refreshState, POLL_MS);
+  render(true);
 }
 
-/* Full-screen start curtain. Reconnects Remote MCP before sweeping, because a
-   long-idle laptop may be holding an expired OAuth token and connectionId. */
-function renderCurtain() {
-  if (document.getElementById("curtain")) return;
-  const node = document.createElement("div");
-  node.id = "curtain";
-  node.className = "curtain";
-  node.innerHTML = `
-    <div class="curtain-card">
-      <img src="/static/mongodb-logo.png" alt="" class="curtain-logo" />
-      <h2>Leafy Roasters</h2>
-      <button id="curtainStart" type="button" class="btn--primary curtain-btn">
-        Start demo
-      </button>
-      <ol id="curtainSteps" class="steps hidden">
-        ${START_STEPS.map(
-          (label) => `<li class="step"><span class="step-dot"></span>${escapeHtml(label)}</li>`,
-        ).join("")}
-      </ol>
-    </div>`;
-  document.body.appendChild(node);
+/* Is the sweep under way? Drives the play control: once it is, the button becomes
+   a live status instead.
 
-  const button = node.querySelector("#curtainStart");
-  button.addEventListener("click", async () => {
-    button.disabled = true;
-    button.textContent = "Starting…";
+   Keyed on the server's `monitor.scheduled` flag rather than on the activity feed
+   having events, since the agent takes a few seconds to log its first line. `started`
+   covers the gap between the API responding and the first poll carrying the flag. */
+function demoStarted() {
+  if (state.started) return true;
+  const monitor = state.snapshot?.monitor || {};
+  return Boolean(
+    monitor.scheduled || monitor.ran || (state.snapshot?.history || []).length,
+  );
+}
 
-    // Progress as a timeline rather than one replaced line: the MCP handshake takes
-    // a few seconds, and seeing completed steps accumulate reads as work rather
-    // than a hang.
-    const list = node.querySelector("#curtainSteps");
-    const items = Array.from(list.querySelectorAll(".step"));
-    list.classList.remove("hidden");
+/* The play control, in the Agent activity card head. Reads as a feature of the
+   portal rather than a demo prop: idle, then the live handshake steps, then a
+   pulsing "Monitoring" once the agent is working. */
+function playControl() {
+  if (state.starting) {
+    return `
+      <span class="agent-status working">
+        <span class="sweep-dot"></span>
+        <span id="startStep">${escapeHtml(START_STEPS[0])}…</span>
+      </span>`;
+  }
+  if (state.startError) {
+    return `
+      <span class="agent-status">
+        <button id="playButton" type="button" class="play-btn" title="Retry">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" /></svg>
+          Retry
+        </button>
+      </span>`;
+  }
+  if (demoStarted()) {
+    return `
+      <span class="agent-status live">
+        <span class="sweep-dot"></span>
+        Monitoring
+      </span>`;
+  }
+  return `
+    <button id="playButton" type="button" class="play-btn" title="Run the inventory sweep">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4" /></svg>
+      Run sweep
+    </button>`;
+}
 
-    let step = 0;
-    const advance = () => {
-      items.forEach((item, index) => {
-        item.classList.toggle("done", index < step);
-        item.classList.toggle("active", index === step);
-      });
-    };
-    advance();
-    const ticker = setInterval(() => {
-      if (step < items.length - 1) {
-        step += 1;
-        advance();
-      }
-    }, 1500);
+/* Start the agent: re-mint the service-account token, rebind the cluster
+   connection, and schedule the sweep. The button walks the handshake steps while
+   the request is in flight — no padding, so it lands on the real response. */
+async function startDemo() {
+  if (state.starting) return;
+  state.starting = true;
+  state.startError = null;
+  // Drop any banner from an earlier attempt, so a stale failure message does not sit
+  // there through the retry.
+  state.banner = null;
+  render(true);
 
-    try {
-      const started = await api("/api/demo/start", {
-        method: "POST",
-        body: JSON.stringify({}),
-      });
-      state.sessionId = started.session_id;
-      localStorage.setItem("ambientInventorySessionId", state.sessionId);
-      clearInterval(ticker);
-      step = items.length;
-      advance();
-      node.remove();
-      await refreshState();
-      render(true);
-    } catch (error) {
-      clearInterval(ticker);
-      items.forEach((item) => item.classList.remove("active", "done"));
-      items[step].classList.add("failed");
-      items[step].append(` — ${String(error.message || error).slice(0, 120)}`);
-      button.disabled = false;
-      button.textContent = "Retry";
+  const label = () => document.getElementById("startStep");
+  let step = 0;
+  let timer = null;
+  const advance = () => {
+    step += 1;
+    const node = label();
+    if (node && step < START_STEPS.length) {
+      node.textContent = `${START_STEPS[step]}…`;
+      timer = setTimeout(advance, START_STEP_MS[step]);
     }
-  });
+  };
+  timer = setTimeout(advance, START_STEP_MS[0]);
+
+  try {
+    const started = await api("/api/demo/start", {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    // A fresh session id, so a previous run's alert and transcript stay behind.
+    state.sessionId = started.session_id;
+    localStorage.setItem("ambientInventorySessionId", state.sessionId);
+    state.selectedAlertId = null;
+    state.prevActiveAlerts = 0;
+    // The sweep is scheduled server-side now. Latch it locally so the control goes
+    // straight to "Monitoring" instead of waiting on the next poll.
+    state.started = true;
+    // Drop the old session's feed and alerts rather than showing them under the new
+    // session for a poll or two.
+    state.snapshot = null;
+  } catch (error) {
+    state.startError = String(error.message || error);
+    // Nothing was scheduled, so clear the latch or the control would claim to be
+    // monitoring a sweep that never began.
+    state.started = false;
+    state.banner = {
+      kind: "danger",
+      sticky: true,
+      text: `Could not start the agent: ${state.startError}`,
+    };
+  } finally {
+    clearTimeout(timer);
+    state.starting = false;
+    await refreshState();
+    render(true);
+  }
 }
 
 async function refreshState() {
@@ -385,10 +449,15 @@ function snapshotBanner(snapshot) {
       text: "Remote MCP is not configured. Set MDB_MCP_API_CLIENT_ID / _SECRET and MDB_MCP_PROJECT_ID in .env — the agent has no tools without it.",
     };
   }
-  if (!mcp.ready) {
+  // Only complain when the handshake has actually FAILED, which the server tells
+  // us by setting `error`. Two normal situations have `ready === false` with no
+  // error, and both used to flash a red banner: the server's own startup connect
+  // on first page load, and the ~6s after pressing play, which drops the old
+  // session before minting a new token. The play control already narrates that.
+  if (!mcp.ready && mcp.error && !state.starting) {
     return {
       kind: "danger",
-      text: `Remote MCP is not connected${mcp.error ? `: ${mcp.error}` : "."} The agent cannot answer until it is.`,
+      text: `Remote MCP is not connected: ${mcp.error} The agent cannot answer until it is.`,
     };
   }
   return null;
@@ -443,7 +512,19 @@ function signature() {
   const pos = (snap.purchase_orders || []).map((po) => `${po._id}:${po.status}`).join(",");
   const messages = (snap.dialogue || []).length;
   const events = (snap.history || []).length;
-  return [state.activeTab, state.selectedAlertId, alerts, pos, messages, events].join("|");
+  // The play control's state is part of the view: without it, flipping to
+  // "starting" would not repaint until some other field happened to change.
+  return [
+    state.activeTab,
+    state.selectedAlertId,
+    alerts,
+    pos,
+    messages,
+    events,
+    state.starting,
+    state.startError,
+    demoStarted(),
+  ].join("|");
 }
 
 function render(force = false, pulse = false) {
@@ -461,12 +542,32 @@ function render(force = false, pulse = false) {
     purchase_orders: purchaseOrdersView,
     suppliers: suppliersView,
   };
+  // Read scroll positions BEFORE the rebuild below throws the old nodes away: after
+  // innerHTML there is nothing left to ask.
+  //
+  // TWO scrollers matter here. `.activity-list` is the feed's own overflow box, and
+  // `.view` — the element being rebuilt — scrolls as well, so replacing its contents
+  // resets the page's scroll position on every poll. Restoring only the inner one
+  // still leaves the view jumping.
+  const oldFeed = els.view.querySelector(".activity-list");
+  const feedWasPinned = oldFeed ? isPinnedToBottom(oldFeed) : true;
+  const feedScroll = oldFeed ? oldFeed.scrollTop : 0;
+  const viewScroll = els.view.scrollTop;
+
   els.view.innerHTML = (views[state.activeTab] || dashboardView)();
   if (state.activeTab === "alerts") wireAlertsView();
-  // The feed appears on both Dashboard and Inbox; keep it pinned to the newest
-  // event wherever it is rendered.
+  const play = els.view.querySelector("#playButton");
+  if (play) play.addEventListener("click", startDemo);
+
+  // Put the page back where it was, unconditionally: a re-render is a data update, and
+  // it should never move the reader.
+  els.view.scrollTop = viewScroll;
+
+  // The feed appears on both Dashboard and Inbox. Follow the newest event only while
+  // the reader is already at the bottom; if they have scrolled up to read an earlier
+  // tool call, hold their position instead of yanking them back down every poll.
   const feed = els.view.querySelector(".activity-list");
-  if (feed) feed.scrollTop = feed.scrollHeight;
+  if (feed) feed.scrollTop = feedWasPinned ? feed.scrollHeight : feedScroll;
 }
 
 /* ---------- Dashboard ---------- */
@@ -474,10 +575,11 @@ function dashboardView() {
   const snap = state.snapshot || {};
   const products = snap.products || [];
   const riskIds = atRiskProductIds();
+  const onOrderIds = onOrderProductIds();
 
   const rows = products
     .map((product) => {
-      const status = productStatus(product, riskIds);
+      const status = productStatus(product, riskIds, onOrderIds);
       return `
         <tr>
           <td>
@@ -506,9 +608,32 @@ function dashboardView() {
         </table>
       </div>
       <div class="card">
-        <div class="card-head"><h2>Agent activity</h2></div>
+        <div class="card-head">
+          <h2>Agent activity</h2>
+          ${playControl()}
+        </div>
         ${activityFeed()}
       </div>
+    </div>`;
+}
+
+/* The agent's working, as one row rather than one row per line.
+
+   Each sampled line arrives as its own event, and rendered individually they were
+   mostly chrome: six copies of the tag and timestamp around six short lines. Grouped,
+   the tag is stated once and the lines below it read as a single derivation — which is
+   what they are. */
+function thinkingRow(lines, time) {
+  const body = lines
+    .map((line) => `<span class="thinking-line">${escapeHtml(line)}</span>`)
+    .join("");
+  return `
+    <div class="event">
+      <div class="event-head">
+        <span class="event-tag plan">${EVENT_META.agent_plan.label}</span>
+        ${time ? `<span class="event-time">${fmtDate(time)}</span>` : ""}
+      </div>
+      <div class="thinking-lines">${body}</div>
     </div>`;
 }
 
@@ -528,7 +653,7 @@ function eventRow({ kind, message, command, time, pending }) {
 }
 
 /* The MCP calls behind one chat answer, rendered as an activity trace. */
-function chatActivity(rawQueries, { pendingTool, answered, thinking, fromMemory } = {}) {
+function chatActivity(rawQueries, { pendingTool, answered, thinking } = {}) {
   // Normalise once: a persisted turn that needed no queries has no `queries` field
   // at all, and an unguarded read here throws and takes the whole alert expansion
   // down with it.
@@ -537,16 +662,8 @@ function chatActivity(rawQueries, { pendingTool, answered, thinking, fromMemory 
   if (thinking) {
     rows.push(eventRow({ kind: "agent_plan", message: thinking, pending: true }));
   }
-  // An answer with no queries means it came from what the agent already knew this
-  // session. Worth stating rather than leaving the trace blank.
-  if (fromMemory && !queries.length) {
-    rows.push(
-      eventRow({
-        kind: "agent_plan",
-        message: "Answered from what this session had already read — no new queries.",
-      }),
-    );
-  }
+  // A turn that needed no queries simply renders no trace. Saying so out loud is
+  // implementation detail the owner does not need.
   queries.forEach((query) =>
     rows.push(eventRow({ kind: "mcp_tool", message: mcpSummary(query), command: query })),
   );
@@ -574,23 +691,22 @@ function chatActivity(rawQueries, { pendingTool, answered, thinking, fromMemory 
   return rows.length ? `<div class="chat-activity">${rows.join("")}</div>` : "";
 }
 
-/* "find(\"products\", …)" -> "Queried products via MCP." */
+/* A rendered command read back as prose: find("products", …) -> "Queried products." */
+const MCP_VERBS = {
+  find: "Queried",
+  aggregate: "Aggregated",
+  count: "Counted",
+  getSchema: "Read the schema for",
+  getIndexes: "Read the indexes for",
+  insertMany: "Inserted into",
+  updateMany: "Updated",
+  listCollections: "Listed the collections",
+};
 function mcpSummary(command) {
   const verb = String(command || "").split("(")[0] || "MCP";
   const collection = (String(command).match(/"([a-z_]+)"/) || [])[1];
-  const labels = {
-    find: "Queried",
-    aggregate: "Aggregated",
-    count: "Counted",
-    getSchema: "Read the schema for",
-    getIndexes: "Read the indexes for",
-    insertMany: "Inserted into",
-    updateMany: "Updated",
-    listCollections: "Listed the collections",
-  };
-  const label = labels[verb] || verb;
-  if (verb === "listCollections") return "Listed the collections.";
-  return collection ? `${label} ${collection}.` : `${label}.`;
+  const label = MCP_VERBS[verb] || verb;
+  return collection && verb !== "listCollections" ? `${label} ${collection}.` : `${label}.`;
 }
 
 function activityFeed() {
@@ -599,31 +715,60 @@ function activityFeed() {
     return `<div class="activity-list"><div class="event"><span class="event-msg">No activity yet.</span></div></div>`;
   }
   // Snapshot returns newest-first; show as a chronological trace.
-  const items = events
-    .slice(0, 24)
-    .reverse()
-    .map((event) =>
-      eventRow({
-        kind: event.event_type,
-        message: event.message,
-        command: event.metadata && event.metadata.command,
-        time: event.created_at,
-      }),
-    )
-    .join("");
-  return `<div class="activity-list">${items}</div>`;
+  const ordered = events.slice(0, 24).reverse();
+
+  // The sweep logs one placeholder — "Writing up the diagnosis…" — to cover the ~30s
+  // turn that composes the alert and logs nothing until it lands. It is persisted like
+  // any other event, so drop it once the write that publishes the alert has appeared,
+  // or it lingers beside the row that replaced it. Walking newest-first means the flag
+  // is already set by the time the placeholder is reached.
+  let alertWritten = false;
+  const kept = ordered.reduceRight((rows, event) => {
+    if (event.metadata?.collection === "alerts") alertWritten = true;
+    if (event.metadata?.pending && alertWritten) return rows;
+    rows.unshift(event);
+    return rows;
+  }, []);
+
+  // Collapse each run of the agent's working into one row. The lines are logged
+  // separately so they appear as the model writes them, but a run of them is one
+  // thought, and rendering it as one row keeps the MCP calls either side legible.
+  const items = [];
+  for (let i = 0; i < kept.length; i += 1) {
+    if (!kept[i].metadata?.thinking) {
+      items.push(
+        eventRow({
+          kind: kept[i].event_type,
+          message: kept[i].message,
+          command: kept[i].metadata?.command,
+          time: kept[i].created_at,
+          pending: Boolean(kept[i].metadata?.pending),
+        }),
+      );
+      continue;
+    }
+    const run = [];
+    const startedAt = kept[i].created_at;
+    while (i < kept.length && kept[i].metadata?.thinking) {
+      run.push(kept[i].message);
+      i += 1;
+    }
+    i -= 1;
+    items.push(thinkingRow(run, startedAt));
+  }
+  return `<div class="activity-list">${items.join("")}</div>`;
 }
 
 /* While the scheduled sweep is running, say so in the inbox — the wait is the
    agent working, and the activity feed shows what it is doing. */
 function sweepRunning() {
   const events = state.snapshot?.history || [];
-  if (!events.length) return false;
-  const startedSweep = events.some((event) => event.event_type === "agent_plan");
-  const finished = events.some(
-    (event) => event.event_type === "agent_finding" || event.event_type === "error",
-  );
-  return startedSweep && !finished;
+  const started = events.some((event) => event.event_type === "agent_plan");
+  // Done when the alert exists — the alert IS the conclusion — or the sweep errored.
+  const finished =
+    (state.snapshot?.alerts || []).length > 0 ||
+    events.some((event) => event.event_type === "error");
+  return started && !finished;
 }
 
 function sweepBanner() {
@@ -661,7 +806,7 @@ function alertsView() {
                   <span class="mono alert-date">${fmtDay(alert.created_at)}</span>
                 </div>
                 <strong>${escapeHtml(alert.title)}</strong>
-                <span class="alert-summary">${escapeHtml(alertHeadline(alert))}</span>
+                <span class="alert-summary">${escapeHtml(alert.summary || "")}</span>
                 ${resolved ? resolvedNote(alert) : ""}
                 <span class="alert-chevron" aria-hidden="true"></span>
               </button>
@@ -687,14 +832,14 @@ function alertExpansion(alert) {
   const messages = (state.snapshot?.dialogue || []).filter((message) => message.alert_id === alert._id);
   const allMessages = messages.length
     ? messages
-    : [{ role: "agent", content: "Ask me about the cause, supplier timing, affected SKUs, or order size — I'll query MongoDB through the MCP server to answer." }];
+    : [{ role: "agent", content: "Ask me about the cause, supplier timing, affected SKUs, or order size." }];
   const chat = allMessages
     .map((message) => {
       // Keep the MCP queries visible after the stream ends: they are the
       // evidence for the answer above them.
       const activity =
         message.role === "agent"
-          ? chatActivity(message.queries, { answered: true, fromMemory: true })
+          ? chatActivity(message.queries, { answered: true })
           : "";
       return `<div class="message ${message.role}">${activity}${escapeHtml(message.content)}</div>`;
     })
@@ -854,8 +999,10 @@ function handleStreamEvent(event) {
     // matching tool_call event replaces it with the real query.
     state.streamTools.push({ tool: event.tool, command: null, pending: true });
   } else if (event.type === "tool_call") {
-    // Resolve the oldest pending placeholder for this tool. Argument streaming
-    // and call finalization can interleave, so match on tool name only.
+    // Resolve the oldest pending placeholder for this tool, then drop any others
+    // still pending for it: argument streaming can announce the same tool several
+    // times before the call is finalized, and those extras are duplicates. Matching
+    // on tool name only, because the streamed announcement carries no call id.
     const pending = state.streamTools.find(
       (entry) => entry.pending && entry.tool === event.tool,
     );
@@ -865,15 +1012,8 @@ function handleStreamEvent(event) {
     } else {
       state.streamTools.push({ tool: event.tool, command: event.command });
     }
-    // Any placeholder still pending for a tool that has now reported a real
-    // command is a duplicate from argument streaming; drop it.
     state.streamTools = state.streamTools.filter(
-      (entry, index) =>
-        !entry.pending ||
-        !state.streamTools.some(
-          (other, otherIndex) =>
-            otherIndex !== index && !other.pending && other.tool === entry.tool,
-        ),
+      (entry) => !(entry.pending && entry.tool === event.tool),
     );
   } else if (event.type === "error") {
     state.streamError = event.message;
@@ -886,6 +1026,9 @@ function handleStreamEvent(event) {
 function renderStream() {
   const container = els.view.querySelector("#chatMessages");
   if (!container) return;
+  // Sampled before the live message is mutated below, for the same reason as the
+  // activity feed: a reader scrolled up mid-answer should stay where they are.
+  const wasPinned = isPinnedToBottom(container);
 
   let pending = container.querySelector(".message.owner.pending");
   if (state.pendingOwnerMessage && !pending) {
@@ -923,7 +1066,7 @@ function renderStream() {
     body = `<span class="stream-wait">Thinking</span>`;
   }
   live.innerHTML = `${tools}${body}`;
-  container.scrollTop = container.scrollHeight;
+  if (wasPinned) container.scrollTop = container.scrollHeight;
 }
 
 async function approveOrder() {
@@ -969,11 +1112,12 @@ function productsView() {
   const products = snap.products || [];
   const items = snap.inventory_items || [];
   const riskIds = atRiskProductIds();
+  const onOrderIds = onOrderProductIds();
   const blockerIds = blockerInventoryIds();
 
   const productRows = products
     .map((product) => {
-      const status = productStatus(product, riskIds);
+      const status = productStatus(product, riskIds, onOrderIds);
       return `
         <tr>
           <td>
@@ -999,12 +1143,15 @@ function productsView() {
     });
   });
 
+  const inboundIds = inboundInventoryIds();
+
   const itemRows = items
     .map((item) => {
       const isBlocker = blockerIds.has(item._id);
-      const status = isBlocker
-        ? { label: "Blocking", cls: "danger" }
-        : { label: "In stock", cls: "success" };
+      let status;
+      if (isBlocker) status = { label: "Blocking", cls: "danger" };
+      else if (inboundIds.has(item._id)) status = { label: "On order", cls: "info" };
+      else status = { label: "In stock", cls: "success" };
       const sharers = usedBy[item._id] || [];
       return `
         <tr>

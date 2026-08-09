@@ -6,7 +6,7 @@
 #
 # Reseeding every run is required: approving the order writes a purchase_orders doc for
 # the shared component, and the next sweep skips the alert because an order is already
-# inbound. Pressing "Start demo" in the UI does not reseed.
+# inbound. Pressing "Run sweep" in the UI does not reseed.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
