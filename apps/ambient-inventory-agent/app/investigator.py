@@ -214,8 +214,6 @@ def _readable_thought(line: str) -> str:
     return line if len(line) <= 400 else f"{line[:397]}…"
 
 
-
-
 INVESTIGATOR_PROMPT = """\
 You are the inventory monitor for Leafy Roasters, a coffee roaster, running on a \
 schedule against the `{database}` MongoDB database. Find the component that has \
@@ -319,7 +317,10 @@ class AlertInvestigator:
             document = self.repository.build_alert_document(
                 self._session_id, self._sweep_id, fields
             )
-            payload = {"collection": "alerts", "documents": [_as_extended_json(document)]}
+            payload = {
+                "collection": "alerts",
+                "documents": [_as_extended_json(document)],
+            }
             result = await insert.ainvoke(payload)
             if "E11000" in str(result) or "duplicate key" in str(result).lower():
                 return "An alert for this component already exists; not filing again."

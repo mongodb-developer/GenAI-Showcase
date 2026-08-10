@@ -16,8 +16,8 @@ from .agent import CoffeeInventoryAgent
 from .db import get_database
 from .demo_data import ensure_indexes, ensure_validators, seed_demo_data
 from .mcp_session import MCPUnavailable, get_mcp_session
-from .monitor import InventoryMonitor
 from .memory import close_checkpointer
+from .monitor import InventoryMonitor
 from .repository import InventoryRepository
 
 STATIC_DIR = Path(__file__).parent / "static"
