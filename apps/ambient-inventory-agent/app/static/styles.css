@@ -17,8 +17,13 @@
   --border-strong: #d3dade;
 
   --ink: #001e2b;
-  --muted: #5c6c75;
-  --subtle: #889397;
+  /* Three-level text hierarchy, each clearing WCAG AA (4.5:1) on the LIGHTEST
+     surface it lands on — which is --bg, not white. --subtle was #889397 (2.91:1
+     on --bg), so table headers and card sub-labels failed even the 3:1 large-text
+     bar. --muted darkened alongside it so the three levels stay visually distinct
+     instead of collapsing into two. */
+  --muted: #4f5f68;
+  --subtle: #697174;
 
   --accent: var(--mongodb-green);
   --accent-strong: var(--mongodb-forest);
@@ -31,6 +36,38 @@
   --success: var(--mongodb-forest);
   --success-soft: #e3fcef;
 
+  /* Text that sits ON a filled accent/danger surface rather than on the page. */
+  --on-solid: #ffffff;
+  /* Ink on the bright-green accent FILL. Distinct from --on-solid because that
+     is white for danger/forest fills, and white on #00ed64 fails AA. */
+  --on-accent-fill: var(--mongodb-slate);
+  --accent-hover: #00d557;
+  --accent-border: #bff3d8;
+
+  --danger-ink: #8c1d18;
+  --danger-ink-strong: #b3261e;
+  --danger-border: #f5c6c2;
+  /* Bare RGB triples: these feed rgba() in the badge pulse and focus rings, where
+     a hex token cannot be interpolated. */
+  --danger-rgb: 208, 39, 29;
+  --focus-blue-rgb: 1, 107, 248;
+  --focus-green-rgb: 0, 237, 100;
+
+  /* Event-tag and pill pairs. Each is a soft background plus an ink chosen to be
+     legible on it, so the two must move together when the theme flips. */
+  --info-soft: #e7f0fe;
+  /* A shade darker than brand blue: #016bf8 only reaches 4.1:1 on --info-soft.
+     The focus ring keeps brand blue, since a border is non-text UI (3:1 bar). */
+  --info-ink: #0d5ed9;
+  --focus-ring: var(--mongodb-blue);
+  --plan-soft: #f3edff;
+  --plan-ink: #6d43c9;
+  --plan-border: #e3d9f7;
+  --db-soft: #eef4ff;
+  --db-ink: #3b62b5;
+  --neutral-soft: #eaf0f2;
+  --code-bg: #f7faf9;
+
   --shadow-sm: 0 1px 2px rgba(0, 30, 43, 0.06);
   --shadow: 0 1px 3px rgba(0, 30, 43, 0.08), 0 1px 2px rgba(0, 30, 43, 0.04);
   --shadow-md: 0 4px 16px rgba(0, 30, 43, 0.08);
@@ -41,6 +78,68 @@
   --radius-btn: 10px;
 
   font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ---------- Dark theme ----------
+   Driven by [data-theme="dark"] rather than prefers-color-scheme alone so the
+   in-app toggle can override the OS: a presenter's laptop is often set to light
+   while the room's projector reads better dark, or the reverse.
+
+   Only tokens are redefined here — no rule below is theme-aware, which is why the
+   previously-hardcoded colours had to become tokens first.
+
+   The soft/ink pairs are NOT mechanical inversions. Each light tint (#e7f0fe)
+   becomes a deep wash and its ink lightens to stay legible on it; every pair is
+   contrast-checked against its own background rather than eyeballed. */
+[data-theme="dark"] {
+  --bg: #000e15;
+  --surface: #001521;
+  --surface-subtle: #04202e;
+  --border: #1d3341;
+  --border-strong: #2a4553;
+
+  --ink: #e8edf0;
+  --muted: #a3b2ba;
+  --subtle: #8798a1;
+
+  /* Forest green is unreadable on a dark surface, so accent-strong brightens
+     rather than darkening. */
+  --accent: var(--mongodb-green);
+  --accent-strong: #4ade80;
+  --accent-soft: #06301f;
+  --accent-border: #10643f;
+  --accent-hover: #00ed64;
+  /* Filled accent surfaces flip to dark text — white on bright green fails AA. */
+  --on-solid: #001e2b;
+
+  --danger: #ff5247;
+  --danger-soft: #2c100e;
+  --danger-ink: #ff9d95;
+  --danger-ink-strong: #ff8078;
+  --danger-border: #5c221e;
+  --danger-rgb: 255, 82, 71;
+
+  --warning: #fbbf24;
+  --warning-soft: #2e2008;
+  --success: #4ade80;
+  --success-soft: #06301f;
+
+  --info-soft: #0a2039;
+  --info-ink: #7cb2ff;
+  --focus-ring: #4d94ff;
+  --plan-soft: #1e1533;
+  --plan-ink: #c4a6ff;
+  --plan-border: #3a2d5c;
+  --db-soft: #101d33;
+  --db-ink: #96b4f0;
+  --neutral-soft: #10242f;
+  --code-bg: #04202e;
+
+  /* Shadows barely register on dark surfaces; deepen them so cards keep the
+     separation they get for free in light mode. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
 }
 
 * {
@@ -180,7 +279,7 @@ input {
   justify-content: center;
   border-radius: 999px;
   background: var(--danger);
-  color: #ffffff;
+  color: var(--on-solid);
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -193,13 +292,13 @@ input {
 
 @keyframes badge-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(208, 39, 29, 0.5);
+    box-shadow: 0 0 0 0 rgba(var(--danger-rgb), 0.5);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(208, 39, 29, 0);
+    box-shadow: 0 0 0 8px rgba(var(--danger-rgb), 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(208, 39, 29, 0);
+    box-shadow: 0 0 0 0 rgba(var(--danger-rgb), 0);
   }
 }
 
@@ -242,7 +341,7 @@ input {
   height: 34px;
   border-radius: 50%;
   background: var(--accent-strong);
-  color: #ffffff;
+  color: var(--on-solid);
   font-size: 12.5px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -250,6 +349,37 @@ input {
   text-indent: 0.02em;
   flex-shrink: 0;
   user-select: none;
+}
+
+/* Sits left of the avatar in the topbar. Icon-only so it reads as app chrome
+   rather than competing with the page's own controls. */
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+  color: var(--ink);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .view {
@@ -398,8 +528,10 @@ input {
 }
 
 .pill.info {
-  background: #e7f0fe;
-  color: var(--mongodb-blue);
+  background: var(--info-soft);
+  /* --info-ink, not raw --mongodb-blue: brand blue only clears 3.5:1 on the dark
+     wash, so the ink has to lighten with the theme. */
+  color: var(--info-ink);
 }
 
 /* ---------- Buttons ---------- */
@@ -428,7 +560,7 @@ input {
   border: 1px solid var(--accent);
   border-radius: var(--radius-btn);
   background: var(--accent);
-  color: var(--mongodb-slate);
+  color: var(--on-accent-fill);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -436,8 +568,8 @@ input {
 }
 
 .btn--primary:hover {
-  border-color: #00d557;
-  background: #00d557;
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
 .btn--primary:disabled {
@@ -642,7 +774,7 @@ input {
 }
 
 .risk-tile.critical strong {
-  color: #8c1d18;
+  color: var(--danger-ink);
 }
 
 .risk-tile.warning {
@@ -711,7 +843,7 @@ input {
 .message.owner {
   justify-self: end;
   background: var(--accent-soft);
-  border: 1px solid #bff3d8;
+  border: 1px solid var(--accent-border);
   border-bottom-right-radius: 3px;
   color: var(--accent-strong);
 }
@@ -740,7 +872,7 @@ input {
 }
 
 .stream-error {
-  color: #b3261e;
+  color: var(--danger-ink-strong);
 }
 
 .risk-note {
@@ -762,9 +894,9 @@ input {
 }
 
 .banner.danger {
-  background: #fdecea;
-  border: 1px solid #f5c6c2;
-  color: #8c1d18;
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-ink);
 }
 
 .quick-prompts {
@@ -805,21 +937,23 @@ input {
 }
 
 .chat-form input:focus {
-  border-color: var(--mongodb-blue);
-  box-shadow: 0 0 0 3px rgba(1, 107, 248, 0.12);
+  /* Tokenised so the ring tracks the theme. Brand blue passes the 3:1 bar for
+     non-text UI on dark, but only just — --focus-ring brightens it there. */
+  border-color: var(--focus-ring);
+  box-shadow: 0 0 0 3px rgba(var(--focus-blue-rgb), 0.12);
 }
 
 .chat-form .btn {
   border-color: var(--accent);
   background: var(--accent);
-  color: var(--mongodb-slate);
+  color: var(--on-accent-fill);
   font-weight: 600;
 }
 
 .chat-form .btn:hover {
   background: var(--accent);
   border-radius: 40px;
-  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.22);
+  box-shadow: 0 0 0 3px rgba(var(--focus-green-rgb), 0.22);
 }
 
 .note {
@@ -868,13 +1002,13 @@ input {
 }
 
 .event-tag.db {
-  background: #eef4ff;
-  color: #3b62b5;
+  background: var(--db-soft);
+  color: var(--db-ink);
 }
 
 .event-tag.plan {
-  background: #f3edff;
-  color: #6d43c9;
+  background: var(--plan-soft);
+  color: var(--plan-ink);
 }
 
 /* Reserved for real Remote MCP tool calls made by the agent. */
@@ -884,13 +1018,13 @@ input {
 }
 
 .event-tag.response {
-  background: #eaf0f2;
+  background: var(--neutral-soft);
   color: var(--ink);
 }
 
 .event-tag.danger {
-  background: #fdecea;
-  color: #b3261e;
+  background: var(--danger-soft);
+  color: var(--danger-ink-strong);
 }
 
 .event-time {
@@ -915,7 +1049,7 @@ input {
   flex-direction: column;
   gap: 4px;
   padding-left: 10px;
-  border-left: 2px solid #e3d9f7;
+  border-left: 2px solid var(--plan-border);
 }
 
 .thinking-line {
@@ -931,7 +1065,7 @@ input {
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #f7faf9;
+  background: var(--code-bg);
   color: var(--accent-strong);
   font-family: "Source Code Pro", monospace;
   font-size: 11.5px;

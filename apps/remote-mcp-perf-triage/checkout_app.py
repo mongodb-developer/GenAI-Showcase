@@ -288,15 +288,55 @@ PAGE_TEMPLATE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <title>Leafy Electronics — Checkout</title>
+<script>
+// Inline and BEFORE the stylesheet on purpose: setting data-theme after first paint
+// makes the page flash light before going dark, which looks broken on a projector.
+// Stored choice wins over the OS so a presenter can force either look.
+(function () {
+  var saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (e) { /* private mode */ }
+  var dark = saved ? saved === 'dark'
+                   : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+})();
+</script>
 <style>
   @import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:wght@300;400;500;600;700&display=swap");
 
   :root {
     --mongodb-forest:#00684a; --mongodb-slate:#001e2b;
-    --ink:#001e2b; --muted:#5c6c75; --subtle:#889397;
+    /* Three text levels, each clearing WCAG AA (4.5:1) on the lightest surface it
+       lands on — which is --bg, not white. --subtle was #889397 (2.91:1 on --bg);
+       --muted moved with it so the levels stay distinct. Same values as the
+       inventory demo, so the two apps read as one design system. */
+    --ink:#001e2b; --muted:#4f5f68; --subtle:#697174;
     --line:#e4e8eb; --bg:#f4f6f8; --surface:#ffffff;
     --accent:var(--mongodb-forest); --bad:#d0271d; --good:var(--mongodb-forest);
     --panel:var(--mongodb-slate);
+    --on-accent:#ffffff; --input-bg:#fafafb; --disabled:#9db8d4;
+    --spinner-track:#cfd8e3;
+    /* Poll-panel ink. Tokenised because the panel is already dark in light mode,
+       so dark mode has to lift it rather than invert it. */
+    --panel-ink:#e8e8ee; --panel-dim:#8b8b99;
+    --panel-ms:#ffd479; --panel-hit:#7ee08a; --panel-to:#ff8a8a;
+  }
+
+  /* Dark theme. Applied via [data-theme] rather than only prefers-color-scheme so
+     the toggle can override the OS — a presenter's laptop is often set to light
+     while the projector reads better dark, or vice versa.
+     Contrast checked against WCAG AA: --ink on --bg is 13.6:1, --muted 5.9:1. */
+  [data-theme="dark"] {
+    --ink:#e8edf0; --muted:#a3b2ba; --subtle:#8798a1;
+    --line:#243b47; --bg:#000e15; --surface:#001521;
+    /* Forest green is too dark to read on a dark surface; MongoDB's brighter
+       green carries the accent instead, with dark text on top of it. */
+    --accent:#00c866; --good:#4ade80; --bad:#ff6b5f;
+    --on-accent:#001e2b; --input-bg:#001b28; --disabled:#2c4553;
+    --spinner-track:#2a4250;
+    /* The panel must stay visually distinct from the page. In light mode it is
+       darker than the card; in dark mode it has to be LIGHTER, or the whole
+       layout flattens into one black rectangle. */
+    --panel:#04263a; --panel-dim:#93a3ad;
   }
   * { box-sizing:border-box; }
   body { margin:0; font-size:15px; line-height:1.5;
@@ -312,7 +352,7 @@ PAGE_TEMPLATE = """<!doctype html>
   .brand-text span { font-size:12px; color:var(--subtle); }
   main { max-width:940px; margin:32px auto; padding:0 20px;
          display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start; }
-  .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:22px; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:22px; }
   h2 { margin:0 0 16px; font-size:15px; font-weight:650; }
   .row { display:flex; justify-content:space-between; padding:7px 0; }
   .row .n { color:var(--muted); }
@@ -320,32 +360,40 @@ PAGE_TEMPLATE = """<!doctype html>
   .field { margin:14px 0; }
   label { display:block; font-size:12px; color:var(--muted); margin-bottom:5px; }
   .fake-input { border:1px solid var(--line); border-radius:7px; padding:10px 12px;
-                background:#fafafb; font-variant-numeric:tabular-nums; }
+                background:var(--input-bg); font-variant-numeric:tabular-nums; }
   button.pay { width:100%; margin-top:8px; padding:13px; font-size:15px; font-weight:600;
-        color:#fff; background:var(--accent); border:0; border-radius:7px; cursor:pointer; }
-  button.pay:disabled { background:#9db8d4; cursor:not-allowed; }
+        color:var(--on-accent); background:var(--accent); border:0; border-radius:7px; cursor:pointer; }
+  button.pay:disabled { background:var(--disabled); cursor:not-allowed; }
   .status { margin-top:18px; padding-top:16px; border-top:1px solid var(--line);
             display:none; }
   .status.show { display:block; }
   .spinner { display:inline-block; width:13px; height:13px; margin-right:8px;
-             border:2px solid #cfd8e3; border-top-color:var(--accent);
+             border:2px solid var(--spinner-track); border-top-color:var(--accent);
              border-radius:50%; animation:spin .8s linear infinite; vertical-align:-2px; }
   @keyframes spin { to { transform:rotate(360deg); } }
   .msg { font-weight:600; }
   .msg.fail { color:var(--bad); }
   .msg.ok { color:var(--good); }
   .sub { color:var(--muted); font-size:13px; margin-top:5px; }
-  .panel { background:var(--panel); border-radius:10px; padding:18px 20px; color:#e8e8ee;
+  .panel { background:var(--panel); border-radius:10px; padding:18px 20px; color:var(--panel-ink);
            font:12.5px/1.7 "Source Code Pro",ui-monospace,SFMono-Regular,Menlo,monospace; }
   .panel h3 { margin:0 0 12px; font:600 11px/1 -apple-system,sans-serif;
-              letter-spacing:.09em; text-transform:uppercase; color:#8b8b99; }
+              letter-spacing:.09em; text-transform:uppercase; color:var(--panel-dim); }
   .log { min-height:190px; }
   .log div { display:flex; gap:10px; white-space:pre; }
-  .log .lbl { color:#8b8b99; }
-  .log .ms { color:#ffd479; font-variant-numeric:tabular-nums; }
-  .log .res { color:#8b8b99; }
-  .log .hit { color:#7ee08a; }
-  .log .to  { color:#ff8a8a; }
+  .log .lbl { color:var(--panel-dim); }
+  .log .ms { color:var(--panel-ms); font-variant-numeric:tabular-nums; }
+  .log .res { color:var(--panel-dim); }
+  .log .hit { color:var(--panel-hit); }
+  .log .to  { color:var(--panel-to); }
+  header .brand { justify-content:space-between; }
+  /* Icon-only so it reads as chrome rather than part of the checkout flow — the
+     shopper's page shouldn't look like it has a demo control on it. */
+  .theme-toggle { margin-left:auto; width:32px; height:32px; padding:0; cursor:pointer;
+                  display:grid; place-items:center; font-size:15px; line-height:1;
+                  color:var(--muted); background:transparent;
+                  border:1px solid var(--line); border-radius:8px; }
+  .theme-toggle:hover { color:var(--ink); border-color:var(--subtle); }
 </style>
 </head>
 <body>
@@ -356,6 +404,8 @@ PAGE_TEMPLATE = """<!doctype html>
       <strong>Leafy Electronics</strong>
       <span>Checkout</span>
     </div>
+    <button class="theme-toggle" id="themeToggle" type="button"
+            aria-label="Toggle dark mode" title="Toggle dark mode"></button>
   </div>
 </header>
 <main>
@@ -380,6 +430,26 @@ PAGE_TEMPLATE = """<!doctype html>
 </main>
 <script>
 const $ = id => document.getElementById(id);
+
+// Theme toggle. The pre-paint script in <head> already applied the stored choice;
+// this only handles clicks and keeps the icon in sync.
+(function () {
+  const root = document.documentElement;
+  const btn = $('themeToggle');
+  const paint = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    // Show the theme you would switch TO, which is the convention users expect.
+    btn.textContent = dark ? '☀' : '☾';
+  };
+  btn.onclick = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    if (dark) root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', 'dark');
+    try { localStorage.setItem('theme', dark ? 'light' : 'dark'); } catch (e) {}
+    paint();
+  };
+  paint();
+})();
 let cfg = { client_timeout_s: 12, poll_interval_ms: 2500 };
 
 // Incident state is intentionally NOT shown on the page — this is a shopper's
