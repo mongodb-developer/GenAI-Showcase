@@ -243,7 +243,9 @@ def _model_facing_schema(args_schema: Any) -> dict[str, Any]:
     This is the tool's SIGNATURE — which arguments `find` takes. Nothing to do with
     document shape: the agent discovers that itself via `collection-schema`.
     """
-    properties = args_schema.get("properties") if isinstance(args_schema, dict) else None
+    properties = (
+        args_schema.get("properties") if isinstance(args_schema, dict) else None
+    )
     if not isinstance(properties, dict):
         return {"type": "object", "properties": {}}
 
@@ -518,9 +520,7 @@ def stream_messages(chunk: Any) -> list[Any]:
     ]
 
 
-def new_tool_calls(
-    msg: Any, seen: set[str]
-) -> list[tuple[str, dict[str, Any], str]]:
+def new_tool_calls(msg: Any, seen: set[str]) -> list[tuple[str, dict[str, Any], str]]:
     """(name, args, rendered command) for each tool call not yet reported.
 
     A streamed message is re-delivered as later chunks arrive, so `seen` — the call

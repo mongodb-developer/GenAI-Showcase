@@ -4,6 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Leafy Roasters Inventory Assistant</title>
+    <script>
+      // Inline and BEFORE the stylesheet on purpose: applying data-theme after first
+      // paint makes the page flash light before going dark, which looks broken on a
+      // projector. A stored choice wins over the OS so either look can be forced.
+      (function () {
+        var saved = null;
+        try { saved = localStorage.getItem('theme'); } catch (e) { /* private mode */ }
+        var dark = saved
+          ? saved === 'dark'
+          : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+      })();
+    </script>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
@@ -48,9 +61,13 @@
             <h1 id="pageTitle">Dashboard</h1>
           </div>
 
-          <!-- Decorative only: this demo has no auth. Stands in for the shop owner the
-               agent is talking to, so the dashboard reads as somebody's account. -->
-          <span class="avatar">DW</span>
+          <div class="topbar-actions">
+            <button class="theme-toggle" id="themeToggle" type="button"
+                    aria-label="Toggle dark mode" title="Toggle dark mode"></button>
+            <!-- Decorative only: this demo has no auth. Stands in for the shop owner the
+                 agent is talking to, so the dashboard reads as somebody's account. -->
+            <span class="avatar">DW</span>
+          </div>
         </header>
 
         <main id="view" class="view"></main>

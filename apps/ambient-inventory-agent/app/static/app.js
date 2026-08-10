@@ -29,6 +29,7 @@ const els = {
   pageTitle: document.getElementById("pageTitle"),
   alertBadge: document.getElementById("alertBadge"),
   navItems: Array.from(document.querySelectorAll(".nav-item")),
+  themeToggle: document.getElementById("themeToggle"),
 };
 
 // The play control calls /api/demo/start, which re-mints the service-account token,
@@ -1278,6 +1279,30 @@ els.navItems.forEach((item) => {
     render(true);
   });
 });
+
+/* ---------- Theme toggle ---------- */
+// The pre-paint script in index.html already applied the stored choice; this only
+// handles clicks and keeps the icon in sync.
+function paintThemeIcon() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  // Show the theme you would switch TO, which is the convention users expect.
+  els.themeToggle.textContent = dark ? "☀" : "☾";
+}
+
+els.themeToggle.addEventListener("click", () => {
+  const root = document.documentElement;
+  const dark = root.getAttribute("data-theme") === "dark";
+  if (dark) root.removeAttribute("data-theme");
+  else root.setAttribute("data-theme", "dark");
+  try {
+    localStorage.setItem("theme", dark ? "light" : "dark");
+  } catch (e) {
+    // Private browsing — the toggle still works for this page load.
+  }
+  paintThemeIcon();
+});
+
+paintThemeIcon();
 
 /* ---------- Boot ---------- */
 render(true);
