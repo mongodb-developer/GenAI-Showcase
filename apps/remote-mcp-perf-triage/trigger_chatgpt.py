@@ -219,7 +219,9 @@ def build_parser():
     parser.add_argument("--service", default="Checkout API")
     parser.add_argument("--service-id", default="PF9KMXH")
     parser.add_argument("--environment", default="production")
-    parser.add_argument("--region", default="us-west-1")
+    # Matches the demo cluster's actual Atlas region, so the alert's region and the
+    # cluster the agent inspects over MCP agree if anyone checks.
+    parser.add_argument("--region", default="us-west-2")
     parser.add_argument("--timeout-rate", type=float, default=18.6)
     parser.add_argument("--assignee", default="Dana Whitfield")
     parser.add_argument("--team", default="Payments Platform")
