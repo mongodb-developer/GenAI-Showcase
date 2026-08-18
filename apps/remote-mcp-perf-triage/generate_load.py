@@ -23,10 +23,15 @@ the M10 has a burstable CPU, so by default this runs a small BURST of queries ev
 INTERVAL seconds rather than hammering continuously. That keeps the recommendation
 alive and the cache warm while being gentle on the cluster.
 
+Cadence is deliberately kept to a low duty cycle. Each scan takes seconds on a
+correctly-sized collection, so a burst of 3 occupies roughly a third of a 120 s
+cycle and the cluster idles the rest. Pushing much past that risks exhausting the
+M10's CPU credits, which makes scan times erratic — including during the demo.
+
 Usage:
     export MONGODB_URI="mongodb+srv://<user>:<pass>@host/"
 
-    # Default trickle: 3 queries every 5 minutes, forever (Ctrl+C to stop).
+    # Default trickle: 3 queries every 2 minutes, forever (Ctrl+C to stop).
     python generate_load.py
 
     # Custom trickle cadence.
@@ -35,13 +40,9 @@ Usage:
     # Continuous (hammer) mode: back-to-back queries, no sleep between bursts.
     python generate_load.py --interval 0
 
-    # Run unattended in the background, logging to a file:
+    # Run unattended in the background, logging to a file (or use ./trickle.sh):
     nohup python generate_load.py > load.log 2>&1 &
     # ...check on it later:  tail -f load.log ;  stop it:  kill %1  (or the PID)
-
-    # Or via cron — a burst every 15 minutes (no long-running process):
-    #   */15 * * * * cd /path/to/apps/remote-mcp-perf-triage && \
-    #     MONGODB_URI="mongodb+srv://..." python generate_load.py --burst 3 --interval 0 --duration 30
 """
 
 import argparse
@@ -63,7 +64,9 @@ load_dotenv()
 DB_NAME = "ecommerce"
 COLLECTION_NAME = "payments"
 
-POLL_FILTER_STATUS = "completed"
+# Latency above which Atlas logs a query as slow — the threshold that decides
+# whether a poll feeds Performance Advisor at all.
+SLOW_QUERY_MS = 100
 
 
 def run_query(coll):
@@ -75,7 +78,7 @@ def run_query(coll):
     """
     session_id = f"sess_{secrets.token_hex(12)}"
     t0 = time.perf_counter()
-    coll.find_one({"session_id": session_id, "status": POLL_FILTER_STATUS})
+    coll.find_one({"session_id": session_id, "status": "completed"})
     return (time.perf_counter() - t0) * 1000
 
 
@@ -87,7 +90,7 @@ def main():
     parser.add_argument(
         "--interval",
         type=float,
-        default=300,
+        default=120,
         help="seconds between the start of each burst "
         "(0 = continuous / no sleep between bursts)",
     )
@@ -133,12 +136,10 @@ def main():
             cycle_start = time.time()
             ts = datetime.now().strftime("%H:%M:%S")
 
-            # Survive transient trouble instead of dying. This process is meant to
-            # run unattended for hours before a demo, across laptop sleep, wifi
-            # handoffs and Atlas blips — any of which raises PyMongoError. Losing
-            # the trickle means Performance Advisor's recommendation goes stale,
-            # so a failed burst is logged and skipped, never fatal. pymongo
-            # reconnects on its own; we just have to keep asking.
+            # Survive transient trouble instead of dying: this runs unattended for
+            # hours across laptop sleep, wifi handoffs and Atlas blips, any of which
+            # raises PyMongoError. A failed burst is logged and skipped, never
+            # fatal — pymongo reconnects on its own; we just keep asking.
             latencies = []
             failures = []
             for _ in range(args.burst):
@@ -152,11 +153,11 @@ def main():
 
             if latencies:
                 avg = sum(latencies) / len(latencies)
-                slow = 100 * sum(1 for x in latencies if x > 100) / len(latencies)
+                slow = sum(x > SLOW_QUERY_MS for x in latencies) / len(latencies)
                 suffix = f"  |  {len(failures)} failed" if failures else ""
                 print(
                     f"  {ts}  burst of {len(latencies)}: avg {avg:7.1f} ms  |  "
-                    f"{slow:3.0f}% over 100 ms  |  {total:,} total{suffix}",
+                    f"{slow:3.0%} over {SLOW_QUERY_MS} ms  |  {total:,} total{suffix}",
                     flush=True,
                 )
             else:
@@ -168,13 +169,15 @@ def main():
                 )
 
             if args.interval > 0:
+                # A cycle can overrun the interval: with slow scans, `--burst 10` at
+                # ~12 s each takes ~120 s against a 60 s interval. That is fine — it
+                # just means we are already behind schedule, so start the next cycle
+                # immediately rather than treating it as "no time left" and stopping.
                 sleep_for = args.interval - (time.time() - cycle_start)
-                if sleep_for > 0 and (
-                    deadline is None or time.time() + sleep_for < deadline
-                ):
-                    time.sleep(sleep_for)
-                elif deadline is not None:
+                if deadline is not None and time.time() + max(0, sleep_for) >= deadline:
                     break  # not enough time left for another cycle
+                if sleep_for > 0:
+                    time.sleep(sleep_for)
             elif not latencies:
                 # Continuous mode with a dead connection would spin as fast as the
                 # driver can fail. Back off so the log stays readable.

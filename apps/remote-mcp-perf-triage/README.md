@@ -26,7 +26,7 @@ does *not* identify MongoDB, a collection, a query, or an index. Pinpointing the
 database cause is the agent's job.
 
 **Triage (live, via MCP):**
-1. Agent inspects the slow query and runs `explain()` → `COLLSCAN`, every document examined (~5 s).
+1. Agent inspects the slow query and runs `explain()` → `COLLSCAN`, every document examined.
 2. Agent consults the **Performance Advisor** → confirms a missing index on `session_id`.
 3. Agent proposes the index `{ session_id: 1, status: 1 }` and waits for approval.
 4. After approval, the agent creates the index and re-runs `explain()` → `IXSCAN`,
@@ -46,7 +46,7 @@ would normally require a developer who knows exactly where to look.
   PagerDuty incident resource to the Workspace Agents API. The incident contains
   application symptoms, but no database namespace, query shape, root cause, or index
   recommendation. Also staged: the payment processor's confirmation webhook, which
-  `checkout_app.py` simulates with a ~2 s delay, and PagerDuty's on-call resolution —
+  `checkout_app.py` simulates with a short delay, and PagerDuty's on-call resolution —
   the assignee is a fixed name, not resolved from a real schedule.
 
 ## Files
@@ -59,7 +59,6 @@ would normally require a developer who knows exactly where to look.
 | `seed_payments.py` | Seeds a large, realistic `payments` collection (no index on `session_id`); `--drop-index` resets the demo. |
 | `generate_load.py` | Runs the checkout status-poll query repeatedly to feed Performance Advisor. |
 | `trigger_chatgpt.py` | Sends a realistic PagerDuty-style incident to a published ChatGPT Workspace Agent and prints the conversation URL. |
-| `trigger_slack.py` | Posts that *same* incident to a Slack channel, on demand — shows the fan-out to a second surface. |
 | `requirements.txt` | `pymongo`, `python-dotenv`, and FastAPI/uvicorn for the checkout page. |
 
 ## Prerequisites
@@ -72,7 +71,6 @@ would normally require a developer who knows exactly where to look.
 - A published ChatGPT Workspace Agent with an API channel and the MongoDB MCP plugin.
 - A Workspace Agent access token. An admin must enable Workspace Agents and
   **Allow users to create personal access tokens** under Admin > Permissions & roles.
-- Optional: a **Slack incoming webhook** URL if you also want the alert shown in Slack.
 
 ## Setup
 
@@ -92,22 +90,30 @@ MongoDB MCP.
 ### 1. Seed the data
 
 ```bash
-python seed_payments.py               # ~300,000 docs, ~1.6 KB gateway payload each
+python seed_payments.py --blob-bytes 3149    # 300,000 docs, ~1 GB on disk
 ```
 
-**Sizing (measured on M10, 2 GB RAM):** 300k docs of ~2 KB is the sweet spot. A
-COLLSCAN of the poll query runs **~9 s cold** and settles to **~5 s warm** — clearly
-slow and dramatic in `explain()`, yet safely under the MongoDB MCP server's **60 s
-`maxTimeMS` cap**. Do **not** seed millions: a scan that large can exceed the 60 s
-cap, which makes the agent's `explain()`/`find()` **error out** during the demo
-instead of returning stats. Bigger is worse, not better.
+**Sizing is the whole ballgame, and it is relative to the cluster — not absolute.**
+What makes the poll query slow is that the collection **outgrows the WiredTiger
+cache** (~50% of host RAM), forcing reads from disk. Target roughly **2x the cache**:
 
-**The scan is only slow if the collection outgrows the WiredTiger cache.** That cache
-is ~50% of host RAM, so a 2 GB M10 gives ~537 MB against this collection's ~0.63 GB —
-scans hit disk and take seconds. On a larger tier the whole collection fits in cache
-and the same query returns in **~200 ms**, which quietly kills the demo's drama (it
-was measured at 222 ms on a 4 GB host). Check `hostInfo.memSizeMB` if the scan comes
-back suspiciously fast; the fix is a smaller tier, not more documents.
+| Host RAM | WiredTiger cache | Target storage | Seed with |
+|---|---|---|---|
+| 2 GB | ~537 MB | ~1.05 GB | `--blob-bytes 3149` (300k docs) |
+| 4 GB | ~1.07 GB | ~2.1 GB | `--blob-bytes 6900`, or `--docs 600000` |
+
+At ~1x the cache scans are **not** reliably slow: once the hot pages stay resident,
+repeated identical scans settle to a few hundred milliseconds even though the plan is
+still a full `COLLSCAN`. That is the trap — the query looks right in `explain()` while
+the checkout page silently *succeeds*. Aim for 2x, not 1.1x.
+
+Do **not** oversize either: a scan slower than the MongoDB MCP server's **60 s
+`maxTimeMS` cap** makes the agent's `explain()`/`find()` **error out** mid-demo
+instead of returning stats.
+
+To size for your own cluster, read the cache off `serverStatus` and the collection off
+`collStats`, then pick `--blob-bytes` so `storageSize ≈ 2 x cache`. `checkout_app.py`
+checks this relationship at startup and warns when it no longer holds.
 
 Document size lives in a realistic `gateway_response` field (an opaque base64
 payload — screenshot-safe, and high-entropy so WiredTiger's compression can't shrink
@@ -121,11 +127,16 @@ the index is **still absent** — so keep a gentle trickle running until showtim
 **do not create the index before the demo**.
 
 ```bash
-python generate_load.py               # default trickle: 3 queries every 5 min, until Ctrl+C
+python generate_load.py               # default trickle: 3 queries every 2 min, until Ctrl+C
 ```
 
 Recency matters more than volume, and the M10 has a burstable CPU, so a light trickle
-is enough (and kinder to the cluster) — no need to hammer it. To run unattended:
+is enough (and kinder to the cluster) — no need to hammer it. Keep the duty cycle low:
+each scan takes seconds, so a burst of 3 fills roughly a third of a 120 s cycle.
+Raising `--burst` or dropping `--interval` much further risks exhausting the M10's CPU
+credits, which makes scan times erratic — including during the demo itself.
+
+To run unattended:
 
 ```bash
 nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log to watch
@@ -133,7 +144,8 @@ nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log
 
 Notes:
 - Give Performance Advisor ~15–30 min of traffic to first surface the recommendation.
-- Warm the cache before demoing (let the trickle run a bit) so scans are ~5 s, not ~9 s.
+- Warm the cache before demoing (let the trickle run a bit) so scans are at their
+  faster warm time rather than the slower cold one.
 - Confirm readiness with `atlas-get-performance-advisor` (expect a suggested index on
   `{ session_id: 1, status: 1 }` for `ecommerce.payments`).
 
@@ -151,21 +163,22 @@ python checkout_app.py --no-incident   # rehearse without paging the agent
 ```
 
 Click **Submit payment**. A real `pending` payment is inserted, a simulated processor
-confirms it ~2 s later, and the page polls for the confirmation. Pre-index each poll is
-a ~6 s COLLSCAN, so the page blows its 10 s budget and fails — then fires the PagerDuty
-incident to the Workspace Agent automatically. The status panel shows each poll's
-latency, so the audience sees *why* it hung.
+confirms it a few seconds later, and the page polls for the confirmation. Pre-index
+every poll is a multi-second COLLSCAN, so the page blows its budget and fails — then
+fires the PagerDuty incident to the Workspace Agent automatically. The status panel
+shows each poll's latency, so the audience sees *why* it hung.
 
 After the agent's index is approved, click **Submit payment** again: polls drop to
-~20 ms and checkout confirms in ~2.5 s. That's the demo's closing beat.
+milliseconds and checkout confirms as soon as the processor does. That's the demo's
+closing beat.
 
 The incident fires **once**, so a rehearsal or a double-click doesn't spend the demo or
-litter your workspace with conversations. The **Re-arm** control in the status panel
-resets it. The ChatGPT token stays server-side; the browser never sees it.
+litter your workspace with conversations. Reloading the page re-arms it. The ChatGPT
+token stays server-side; the browser never sees it.
 
 Each poll passes its *remaining* budget as `maxTimeMS`, so a slow scan can't outlive the
-checkout timeout. Without that a 6 s poll starting at t=9.9 s would finish at t=15.9 s —
-after the gateway confirmed the payment — and a checkout that should fail would succeed.
+checkout timeout — otherwise a scan that started near the deadline could finish after
+the gateway confirmed the payment, and a checkout that should fail would succeed.
 
 Because the page is a server, it survives laptop sleep: start it before you leave, wake
 the machine on stage with the tab already open, and click. Nothing to type.
@@ -197,31 +210,6 @@ credentials or a network call:
 ```bash
 python trigger_chatgpt.py --dry-run
 ```
-
-### Showing the Slack fan-out (optional)
-
-The same incident can land in Slack as well as ChatGPT — one webhook event, two
-surfaces. This never happens automatically; run it when you want the beat:
-
-```bash
-export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/XXX/YYY/ZZZ"
-python trigger_slack.py --dry-run                 # preview, sends nothing
-python trigger_slack.py                           # post it
-```
-
-To make it obviously *one* incident on screen, pass the same ID to both and link the
-Slack message back to the agent's conversation:
-
-```bash
-python trigger_chatgpt.py --incident-id PY1Z69L
-python trigger_slack.py --incident-id PY1Z69L \
-  --conversation-url "https://chatgpt.com/c/..."   # adds an "Open agent triage" button
-```
-
-The incident comes from `trigger_chatgpt.build_pagerduty_incident()`, so the two
-channels cannot drift apart — only the rendering differs. Note that nothing reads the
-Slack message back: it shows the incident *reaching* Slack, not a conversation with
-the agent there. A real deployment would need a Slack app wired to the agent for that.
 
 The Workspace Agents API accepts a caller-defined `conversation_key`. The simulator
 uses the PagerDuty incident ID for that key, so future webhook events for the same
@@ -286,15 +274,27 @@ nohup python generate_load.py > load.log 2>&1 &   # background; tail -f load.log
 To rebuild the collection from scratch, `./setup_demo.sh --drop`. By hand:
 
 ```bash
-python seed_payments.py --drop                    # drop, then seed a fresh 300k
-nohup python generate_load.py > load.log 2>&1 &   # warm cache + rebuild Advisor recommendation
+python seed_payments.py --drop --blob-bytes 3149   # drop, then seed a fresh ~1 GB
+nohup python generate_load.py > load.log 2>&1 &    # warm cache + rebuild Advisor recommendation
 ```
 
+Pass the same `--blob-bytes` you sized for your cluster (see [Seed the data](#1-seed-the-data)).
+Reseeding at the default size on a cluster that needs more will leave scans fast enough
+for checkout to succeed — `checkout_app.py` warns about this at startup.
+
 **Always use `--drop` when reseeding.** Running `seed_payments.py` without it *appends*
-another 300k (→ 600k total), which roughly doubles scan time and pushes the cold case
-into the MCP server's 60 s `maxTimeMS` cap — the failure mode 300k is sized to avoid.
+another 300k, which roughly doubles scan time and can push the cold case past the MCP
+server's 60 s `maxTimeMS` cap — making the agent's `explain()` error out mid-demo.
 
 After any reseed, remember:
-- The cache is cold again (first scans ~9 s, settling to ~5 s) — let the trickle warm it.
-- The Performance Advisor recommendation resets with the collection — give the trickle
-  ~15–30 min to rebuild it, then confirm with `atlas-get-performance-advisor` before going live.
+- The cache is cold again, so the first scans are slower — let the trickle warm it.
+- **The Performance Advisor recommendation resets with the collection.** Dropping the
+  collection discards the slow-query history for that namespace, so the Advisor starts
+  from zero. Let the trickle rebuild it, then confirm with
+  `atlas-get-performance-advisor` before going live. Reseed the day before a demo if
+  you can — a freshly created cluster can take considerably longer than 15–30 min to
+  surface its first recommendation, and extra load does not reliably speed that up.
+  To check whether the server is at least *recording* the queries the Advisor feeds
+  on, look for `"msg":"Slow query"` entries on `ecommerce.payments` with
+  `planSummary: COLLSCAN`; if those are present, the workload is fine and the wait is
+  Advisor-side.

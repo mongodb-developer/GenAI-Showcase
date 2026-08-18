@@ -1,0 +1,13 @@
+Polling ecommerce.payments — trickle (10 queries / 60s), 1200s. Each query is a full COLLSCAN (no index on session_id).
+  15:35:07  burst of 10: avg 12187.3 ms  |  100% over 100 ms  |  10 total
+  15:37:09  burst of 10: avg 12428.3 ms  |  100% over 100 ms  |  20 total
+  15:39:13  burst of 10: avg 12251.1 ms  |  100% over 100 ms  |  30 total
+  15:41:16  burst of 10: avg 13056.5 ms  |  100% over 100 ms  |  40 total
+  15:43:26  burst of 10: avg 13322.2 ms  |  100% over 100 ms  |  50 total
+  15:45:39  burst of 10: avg 13177.7 ms  |  100% over 100 ms  |  60 total
+  15:47:51  burst of 10: avg 13339.7 ms  |  100% over 100 ms  |  70 total
+  15:50:05  burst of 10: avg 14108.9 ms  |  100% over 100 ms  |  80 total
+  15:52:26  burst of 10: avg 12992.5 ms  |  100% over 100 ms  |  90 total
+  15:54:36  burst of 10: avg 13149.1 ms  |  100% over 100 ms  |  100 total
+
+Stopped after 100 queries.

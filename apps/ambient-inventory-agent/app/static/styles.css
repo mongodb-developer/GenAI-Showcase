@@ -17,8 +17,13 @@
   --border-strong: #d3dade;
 
   --ink: #001e2b;
-  --muted: #5c6c75;
-  --subtle: #889397;
+  /* Three-level text hierarchy, each clearing WCAG AA (4.5:1) on the LIGHTEST
+     surface it lands on — which is --bg, not white. --subtle was #889397 (2.91:1
+     on --bg), so table headers and card sub-labels failed even the 3:1 large-text
+     bar. --muted darkened alongside it so the three levels stay visually distinct
+     instead of collapsing into two. */
+  --muted: #4f5f68;
+  --subtle: #697174;
 
   --accent: var(--mongodb-green);
   --accent-strong: var(--mongodb-forest);
@@ -31,6 +36,38 @@
   --success: var(--mongodb-forest);
   --success-soft: #e3fcef;
 
+  /* Text that sits ON a filled accent/danger surface rather than on the page. */
+  --on-solid: #ffffff;
+  /* Ink on the bright-green accent FILL. Distinct from --on-solid because that
+     is white for danger/forest fills, and white on #00ed64 fails AA. */
+  --on-accent-fill: var(--mongodb-slate);
+  --accent-hover: #00d557;
+  --accent-border: #bff3d8;
+
+  --danger-ink: #8c1d18;
+  --danger-ink-strong: #b3261e;
+  --danger-border: #f5c6c2;
+  /* Bare RGB triples: these feed rgba() in the badge pulse and focus rings, where
+     a hex token cannot be interpolated. */
+  --danger-rgb: 208, 39, 29;
+  --focus-blue-rgb: 1, 107, 248;
+  --focus-green-rgb: 0, 237, 100;
+
+  /* Event-tag and pill pairs. Each is a soft background plus an ink chosen to be
+     legible on it, so the two must move together when the theme flips. */
+  --info-soft: #e7f0fe;
+  /* A shade darker than brand blue: #016bf8 only reaches 4.1:1 on --info-soft.
+     The focus ring keeps brand blue, since a border is non-text UI (3:1 bar). */
+  --info-ink: #0d5ed9;
+  --focus-ring: var(--mongodb-blue);
+  --plan-soft: #f3edff;
+  --plan-ink: #6d43c9;
+  --plan-border: #e3d9f7;
+  --db-soft: #eef4ff;
+  --db-ink: #3b62b5;
+  --neutral-soft: #eaf0f2;
+  --code-bg: #f7faf9;
+
   --shadow-sm: 0 1px 2px rgba(0, 30, 43, 0.06);
   --shadow: 0 1px 3px rgba(0, 30, 43, 0.08), 0 1px 2px rgba(0, 30, 43, 0.04);
   --shadow-md: 0 4px 16px rgba(0, 30, 43, 0.08);
@@ -41,6 +78,68 @@
   --radius-btn: 10px;
 
   font-family: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ---------- Dark theme ----------
+   Driven by [data-theme="dark"] rather than prefers-color-scheme alone so the
+   in-app toggle can override the OS: a presenter's laptop is often set to light
+   while the room's projector reads better dark, or the reverse.
+
+   Only tokens are redefined here — no rule below is theme-aware, which is why the
+   previously-hardcoded colours had to become tokens first.
+
+   The soft/ink pairs are NOT mechanical inversions. Each light tint (#e7f0fe)
+   becomes a deep wash and its ink lightens to stay legible on it; every pair is
+   contrast-checked against its own background rather than eyeballed. */
+[data-theme="dark"] {
+  --bg: #000e15;
+  --surface: #001521;
+  --surface-subtle: #04202e;
+  --border: #1d3341;
+  --border-strong: #2a4553;
+
+  --ink: #e8edf0;
+  --muted: #a3b2ba;
+  --subtle: #8798a1;
+
+  /* Forest green is unreadable on a dark surface, so accent-strong brightens
+     rather than darkening. */
+  --accent: var(--mongodb-green);
+  --accent-strong: #4ade80;
+  --accent-soft: #06301f;
+  --accent-border: #10643f;
+  --accent-hover: #00ed64;
+  /* Filled accent surfaces flip to dark text — white on bright green fails AA. */
+  --on-solid: #001e2b;
+
+  --danger: #ff5247;
+  --danger-soft: #2c100e;
+  --danger-ink: #ff9d95;
+  --danger-ink-strong: #ff8078;
+  --danger-border: #5c221e;
+  --danger-rgb: 255, 82, 71;
+
+  --warning: #fbbf24;
+  --warning-soft: #2e2008;
+  --success: #4ade80;
+  --success-soft: #06301f;
+
+  --info-soft: #0a2039;
+  --info-ink: #7cb2ff;
+  --focus-ring: #4d94ff;
+  --plan-soft: #1e1533;
+  --plan-ink: #c4a6ff;
+  --plan-border: #3a2d5c;
+  --db-soft: #101d33;
+  --db-ink: #96b4f0;
+  --neutral-soft: #10242f;
+  --code-bg: #04202e;
+
+  /* Shadows barely register on dark surfaces; deepen them so cards keep the
+     separation they get for free in light mode. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55);
 }
 
 * {
@@ -180,7 +279,7 @@ input {
   justify-content: center;
   border-radius: 999px;
   background: var(--danger);
-  color: #ffffff;
+  color: var(--on-solid);
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -193,13 +292,13 @@ input {
 
 @keyframes badge-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(208, 39, 29, 0.5);
+    box-shadow: 0 0 0 0 rgba(var(--danger-rgb), 0.5);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(208, 39, 29, 0);
+    box-shadow: 0 0 0 8px rgba(var(--danger-rgb), 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(208, 39, 29, 0);
+    box-shadow: 0 0 0 0 rgba(var(--danger-rgb), 0);
   }
 }
 
@@ -242,7 +341,7 @@ input {
   height: 34px;
   border-radius: 50%;
   background: var(--accent-strong);
-  color: #ffffff;
+  color: var(--on-solid);
   font-size: 12.5px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -250,6 +349,37 @@ input {
   text-indent: 0.02em;
   flex-shrink: 0;
   user-select: none;
+}
+
+/* Sits left of the avatar in the topbar. Icon-only so it reads as app chrome
+   rather than competing with the page's own controls. */
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+  color: var(--ink);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .view {
@@ -398,8 +528,10 @@ input {
 }
 
 .pill.info {
-  background: #e7f0fe;
-  color: var(--mongodb-blue);
+  background: var(--info-soft);
+  /* --info-ink, not raw --mongodb-blue: brand blue only clears 3.5:1 on the dark
+     wash, so the ink has to lighten with the theme. */
+  color: var(--info-ink);
 }
 
 /* ---------- Buttons ---------- */
@@ -428,7 +560,7 @@ input {
   border: 1px solid var(--accent);
   border-radius: var(--radius-btn);
   background: var(--accent);
-  color: var(--mongodb-slate);
+  color: var(--on-accent-fill);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -436,8 +568,8 @@ input {
 }
 
 .btn--primary:hover {
-  border-color: #00d557;
-  background: #00d557;
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
 .btn--primary:disabled {
@@ -617,29 +749,6 @@ input {
 }
 
 /* ---------- Alert detail ---------- */
-.detail-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.detail-header h2 {
-  font-size: 19px;
-  font-weight: 700;
-}
-
-.eyebrow {
-  margin-bottom: 5px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--danger);
-  font-family: "Source Code Pro", monospace;
-}
-
 /* The agent decides how many stats matter (3-5), so the grid flows rather than
    assuming a fixed count. */
 .risk-grid {
@@ -665,7 +774,7 @@ input {
 }
 
 .risk-tile.critical strong {
-  color: #8c1d18;
+  color: var(--danger-ink);
 }
 
 .risk-tile.warning {
@@ -691,13 +800,6 @@ input {
 .risk-tile strong {
   font-size: 14.5px;
   line-height: 1.25;
-}
-
-.conversation-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 16px;
-  align-items: start;
 }
 
 .chat-panel {
@@ -741,7 +843,7 @@ input {
 .message.owner {
   justify-self: end;
   background: var(--accent-soft);
-  border: 1px solid #bff3d8;
+  border: 1px solid var(--accent-border);
   border-bottom-right-radius: 3px;
   color: var(--accent-strong);
 }
@@ -770,7 +872,7 @@ input {
 }
 
 .stream-error {
-  color: #b3261e;
+  color: var(--danger-ink-strong);
 }
 
 .risk-note {
@@ -792,9 +894,9 @@ input {
 }
 
 .banner.danger {
-  background: #fdecea;
-  border: 1px solid #f5c6c2;
-  color: #8c1d18;
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-ink);
 }
 
 .quick-prompts {
@@ -835,53 +937,23 @@ input {
 }
 
 .chat-form input:focus {
-  border-color: var(--mongodb-blue);
-  box-shadow: 0 0 0 3px rgba(1, 107, 248, 0.12);
+  /* Tokenised so the ring tracks the theme. Brand blue passes the 3:1 bar for
+     non-text UI on dark, but only just — --focus-ring brightens it there. */
+  border-color: var(--focus-ring);
+  box-shadow: 0 0 0 3px rgba(var(--focus-blue-rgb), 0.12);
 }
 
 .chat-form .btn {
   border-color: var(--accent);
   background: var(--accent);
-  color: var(--mongodb-slate);
+  color: var(--on-accent-fill);
   font-weight: 600;
 }
 
 .chat-form .btn:hover {
   background: var(--accent);
   border-radius: 40px;
-  box-shadow: 0 0 0 3px rgba(0, 237, 100, 0.22);
-}
-
-.order-panel {
-  padding: 16px;
-  align-self: start;
-}
-
-.order-panel h3 {
-  margin-bottom: 12px;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.proposal-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 9px 0;
-  border-top: 1px solid var(--border);
-  font-size: 13.5px;
-}
-
-.proposal-row span {
-  color: var(--muted);
-}
-
-.proposal-row strong {
-  text-align: right;
-}
-
-.order-panel .btn--primary {
-  margin-top: 14px;
+  box-shadow: 0 0 0 3px rgba(var(--focus-green-rgb), 0.22);
 }
 
 .note {
@@ -930,13 +1002,13 @@ input {
 }
 
 .event-tag.db {
-  background: #eef4ff;
-  color: #3b62b5;
+  background: var(--db-soft);
+  color: var(--db-ink);
 }
 
 .event-tag.plan {
-  background: #f3edff;
-  color: #6d43c9;
+  background: var(--plan-soft);
+  color: var(--plan-ink);
 }
 
 /* Reserved for real Remote MCP tool calls made by the agent. */
@@ -946,13 +1018,13 @@ input {
 }
 
 .event-tag.response {
-  background: #eaf0f2;
+  background: var(--neutral-soft);
   color: var(--ink);
 }
 
 .event-tag.danger {
-  background: #fdecea;
-  color: #b3261e;
+  background: var(--danger-soft);
+  color: var(--danger-ink-strong);
 }
 
 .event-time {
@@ -969,13 +1041,31 @@ input {
   line-height: 1.45;
 }
 
+/* The agent's working: several lines under one tag, set apart from the feed's own
+   narration by a rule down the left so it reads as the model's voice rather than the
+   app's. Slightly muted — it is context for the alert, not the alert. */
+.thinking-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 10px;
+  border-left: 2px solid var(--plan-border);
+}
+
+.thinking-line {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
 .event-cmd {
   display: block;
   margin-top: 7px;
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: #f7faf9;
+  background: var(--code-bg);
   color: var(--accent-strong);
   font-family: "Source Code Pro", monospace;
   font-size: 11.5px;
@@ -1080,135 +1170,57 @@ input {
   font-family: "Source Code Pro", monospace;
 }
 
-/* ---------- Start curtain ---------- */
-/* Covers the app until the presenter is ready. Nothing runs behind it, so the
-   laptop can sit on the podium indefinitely without burning the demo. */
-.curtain {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
+/* ---------- Agent play control ---------- */
+/* Lives in the Agent activity card head. Deliberately understated — a small
+   control inside an existing panel, so the portal reads as software the shop
+   already runs rather than a demo with a start screen. */
+.play-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: var(--mongodb-slate);
-}
-
-.curtain-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  max-width: 480px;
-  padding: 48px 44px;
-  text-align: center;
-  color: #ffffff;
-}
-
-.curtain-logo {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-}
-
-.curtain-card h2 {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.curtain-card p {
-  color: #b8c4c9;
-  font-size: 14.5px;
-  line-height: 1.55;
-}
-
-/* Startup progress as a vertical timeline: a green track with a dot per step, so
-   completed work stays visible instead of being replaced by the next line. */
-.steps {
-  margin: 6px 0 0;
-  padding: 0 0 0 22px;
-  list-style: none;
-  text-align: left;
-  position: relative;
-}
-
-.steps::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 7px;
-  bottom: 7px;
-  width: 2px;
-  background: rgba(0, 237, 100, 0.22);
-}
-
-.step {
-  position: relative;
-  padding: 7px 0;
-  color: #6b7d85;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-btn);
+  background: var(--surface);
+  color: var(--ink);
   font-size: 13px;
-  line-height: 1.4;
-  transition: color 0.25s ease;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.step-dot {
-  position: absolute;
-  left: -22px;
-  top: 11px;
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(0, 237, 100, 0.3);
-  border-radius: 999px;
-  background: var(--mongodb-slate);
-  transition: background 0.25s ease, border-color 0.25s ease;
+.play-btn:hover {
+  border-color: var(--accent-strong);
+  background: var(--accent-soft);
 }
 
-.step.done {
-  color: #9fb2ba;
+.play-btn svg {
+  width: 11px;
+  height: 11px;
+  fill: var(--accent-strong);
+  stroke: none;
 }
 
-.step.done .step-dot {
-  border-color: var(--accent);
-  background: var(--accent);
+/* Handshake in progress, and the steady state once the agent is working. Same
+   shape as the button it replaces, so the card head does not reflow. */
+.agent-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
-.step.active {
-  color: #ffffff;
+.agent-status.live {
+  color: var(--accent-strong);
   font-weight: 600;
 }
 
-.step.active .step-dot {
-  border-color: var(--accent);
-  background: var(--accent);
-  box-shadow: 0 0 0 4px rgba(0, 237, 100, 0.18);
-}
-
-.step.failed {
-  color: #ff8f85;
-}
-
-.step.failed .step-dot {
-  border-color: var(--danger);
-  background: var(--danger);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .step,
-  .step-dot {
-    transition: none;
-  }
-}
-
-.curtain-btn:disabled {
-  border-color: rgba(0, 237, 100, 0.35);
-  background: transparent;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.curtain-btn {
-  min-width: 190px;
-  min-height: 46px;
-  font-size: 15px;
+.agent-status.working {
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Responsive ---------- */
@@ -1237,7 +1249,6 @@ input {
 
     .grid-2,
   .alerts-layout,
-  .conversation-layout,
   .risk-grid {
     grid-template-columns: 1fr;
   }

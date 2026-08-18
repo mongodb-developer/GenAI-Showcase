@@ -320,16 +320,15 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "_id": "bag_12oz_valve",
                 "name": "12oz Kraft Valve Bags",
                 "kind": "packaging",
-                # Just below its reorder point: 4 SKUs draw ~39/day and the primary
-                # supplier needs 8 days, so ~429 is the trigger level. The demo is
-                # about catching the crossing, not surviving a crisis.
+                # Set just below its reorder point: the demo is about catching the
+                # crossing, not surviving a crisis.
                 "quantity_on_hand": 402,
                 "unit": "each",
                 "supplier_id": "pacific_bagworks",
                 "backup_supplier_id": "quickpack_west",
-                # No denormalized `shared_by` list: which products use a component
-                # is derivable from products.components.inventory_id, and a cached
-                # copy here went stale the moment new 12oz SKUs were added.
+                # No denormalized `shared_by` list: which products use a component is
+                # derivable from products.components.inventory_id, and a copy here goes
+                # stale as soon as a 12oz SKU is added.
             },
             {
                 "_id": "label_espresso_12oz",
@@ -474,11 +473,10 @@ def seed_demo_data(db: Database, reset: bool = False) -> None:
                 "minimum_order": {"bag_12oz_valve": 2000},
             },
             {
-                # The middle option, and the reason the demo has a conversation in
-                # it. The agent correctly recommends the cheapest supplier that
-                # fits the window, but 8 days against 10.3 days of stock is a thin
-                # margin — so an owner can reasonably say "that's too close" and
-                # ask for something faster without jumping to the rush vendor.
+                # The middle option, and the reason the demo has a conversation in it.
+                # The agent recommends the cheapest supplier that fits the window, but
+                # its lead time is a thin margin — so the owner can reasonably ask for
+                # something faster without jumping to the rush vendor.
                 "_id": "harborline_supply",
                 "name": "Harborline Supply",
                 "vendor_type": "Secondary packaging supplier",
