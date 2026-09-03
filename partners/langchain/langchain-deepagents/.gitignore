@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Vendored source (reference only, not shipped)
+_vendored_vfs/
+
+# Claude Code
+CLAUDE.md
+
+# Internal feedback (not for publication)
+INTEGRATION_FEEDBACK.md
+
+# OS
+.DS_Store
+Thumbs.db

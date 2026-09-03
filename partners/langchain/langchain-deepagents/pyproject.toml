@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langchain-deepagents-mongodb-vfs-demo"
+version = "0.1.0"
+description = "Multi-agent pipeline demo: MongoDB Atlas VFS for LangChain Deep Agents"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+
+dependencies = [
+    # Pin to commit SHA until PyPI release lands — see plan §5a
+    "langchain-mongodb-deepagents-vfs @ git+https://github.com/langchain-ai/langchain-mongodb.git@main#subdirectory=libs/langchain-mongodb-deepagents-vfs",
+    "deepagents>=0.6.0",
+    "langchain-openai>=0.3.0",
+    "pymongo>=4.7",
+    "boto3>=1.34",
+    "python-dotenv>=1.0",
+    "tiktoken>=0.7",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.30"]
+bedrock = ["langchain-aws>=0.2"]
+dev = ["ruff", "pytest"]
