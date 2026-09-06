@@ -1,0 +1,19 @@
+# docker-compose.yml
+
+services:
+  rag_app:
+    build: ./backend
+    container_name: rag_app_mistral
+    ports:
+      - "8501:8501"
+    environment:
+      - INDEX_NAME=rail_rulebook
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - MISTRAL_CHAT_MODEL=${MISTRAL_CHAT_MODEL:-mistral-small-latest}
+      - MISTRAL_EMBED_MODEL=${MISTRAL_EMBED_MODEL:-mistral-embed}
+      - MONGODB_URI=${MONGODB_URI}
+      - NORMALIZE_EMBEDDINGS=true
+    volumes:
+      - ./backend:/app
+      - ./backend/corpus:/app/corpus
+    restart: unless-stopped
