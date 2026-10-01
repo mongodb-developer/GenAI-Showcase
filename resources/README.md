@@ -8,8 +8,8 @@ Use these resources to plan, structure, and accelerate your generative AI projec
 | Resource                                  | Description                                                                 | Link |
 |-------------------------------------------|-----------------------------------------------------------------------------|------|
 | Agentic POC Canvas                        | Lightweight canvas to frame problem, users, data, and an initial agent POC | [Link](./agent-canvas/MongoDB-agentic-poc-canvas.pdf) |
-| Agent Productionization Canvas            | Checklist + canvas for hardening Scaling for production (ops, SLAs, cost, risk) | [Link](./agent-canvas/MongoDB-agent-productionization-canvas.pdf.pdf) |
-| Agentic POC & Project Planning Canvas (Full) | End-to-end planning canvas that combines POC scoping + Productionization planning         | [Link](./agent-canvas/MongoDB-combined-agentic-AI-planning-canvas.xslx) |
+| Agent Productionization Canvas            | Checklist + canvas for hardening Scaling for production (ops, SLAs, cost, risk) | [Link](./agent-canvas/MongoDB-agent-productionization-canvas.pdf) |
+| Agentic POC & Project Planning Canvas (Full) | End-to-end planning canvas that combines POC scoping + Productionization planning         | [Link](./agent-canvas/MongoDB-combined-agentic-AI-planning-canvas.xlsx) |
 |                                           |                                                                             |      |
 |                                           |                                                                             |      |
 
