@@ -1,0 +1,16 @@
+# Advanced RAG + Claude Code/MCP workshop notebooks
+# Pinned to versions verified on 2026-10-14 (Python 3.12).
+# Colab: run the first cell of each notebook, which installs these.
+langchain==1.4.5
+langchain-core==1.6.10
+langchain-mongodb==0.12.1
+langchain-anthropic==1.7.6
+langgraph==1.2.15
+langchain-mcp-adapters==0.3.2
+pymongo==4.18.3
+python-dotenv==1.2.4
+requests==2.34.2
+
+# Local development / testing only (not needed to run the notebooks):
+jupyterlab==4.6.4
+pytest==9.1.1
