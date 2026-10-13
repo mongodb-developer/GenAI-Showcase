@@ -183,8 +183,8 @@ describe('loadNotebookConfig', () => {
     expect(config.summary).toContain('sample_mflix');
   });
 
-  it('finds the repository .env from its default location', () => {
-    // No envPath: the default must resolve to the repo root .env, which is the whole
+  it('finds the .env from its default location', () => {
+    // No envPath: the default must resolve to partners/mastra/.env, which is the whole
     // point of the zero-argument call every notebook makes.
     const config = loadNotebookConfig();
     expect(config.mongodbUri).toMatch(/^mongodb(\+srv)?:\/\//);

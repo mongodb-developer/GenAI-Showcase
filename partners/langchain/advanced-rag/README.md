@@ -16,13 +16,13 @@ Run them in order; each builds on indexes and concepts from the previous one.
 
 ## What you need
 
-- A free Atlas **M0** cluster with the **sample dataset** loaded (see the [root README](../../../README.md)).
+- A free Atlas **M0** cluster with the **sample dataset** loaded (see [Load Sample Data](https://www.mongodb.com/docs/atlas/sample-data/)).
 - An **Atlas API key**. The notebooks call MongoDB's hosted embedding and rerank services at
   `ai.mongodb.com`.
 - A **Claude API key** for the RAG generation step. An Anthropic-compatible gateway works too; set
-  `ANTHROPIC_BASE_URL` (see [`.env.example`](../../../.env.example)).
+  `ANTHROPIC_BASE_URL` (see [`.env.example`](../.env.example)).
 
-Copy `../../../.env.example` to `../../../.env` and fill it in, or let the notebooks prompt you for each value.
+Copy `partners/langchain/.env.example` to `partners/langchain/.env` and fill it in, or let the notebooks prompt you for each value.
 
 ## How the data is set up
 

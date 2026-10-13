@@ -67,7 +67,7 @@ function readEnvFile(path: string): Record<string, string> {
 }
 
 /**
- * Find the repository .env by walking up from the working directory.
+ * Find the .env by walking up from the working directory.
  *
  * Deliberately NOT `new URL('../../../.env', import.meta.url)`. tslab -- the notebook
  * kernel -- transpiles to CommonJS while this package is `"type": "module"`, so Node
@@ -79,9 +79,10 @@ function readEnvFile(path: string): Record<string, string> {
  *
  * Returns the deepest `.env` found at or above the start directory, or the start
  * directory's own path when there is none, so the "no .env, use the shell" path still
- * has a sensible name to report.
+ * has a sensible name to report. The scripts start from this package's directory,
+ * so they read the same file the notebooks do.
  */
-function findEnvFile(startDir: string): string {
+export function findEnvFile(startDir: string): string {
   let directory = resolve(startDir);
   for (;;) {
     const candidate = join(directory, '.env');
@@ -93,10 +94,10 @@ function findEnvFile(startDir: string): string {
 }
 
 /**
- * Resolve everything a notebook needs from the repository .env.
+ * Resolve everything a notebook needs from the .env.
  *
  * `envPath` defaults to the nearest `.env` at or above the working directory, which is
- * the repository root one whether a notebook runs from `partners/mastra/` or the root.
+ * `partners/mastra/.env` when a notebook runs from `partners/mastra/`.
  */
 export function loadNotebookConfig(
   opts: { envPath?: string; env?: Record<string, string | undefined> } = {},

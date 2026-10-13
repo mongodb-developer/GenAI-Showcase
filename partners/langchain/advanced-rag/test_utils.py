@@ -3,8 +3,8 @@
 Run from the advanced-rag/ directory:  python -m pytest test_utils.py -v
 These use in-memory fakes only -- no live Atlas, no network, no keys required.
 """
-import pytest
 
+import pytest
 import utils
 
 
@@ -32,8 +32,9 @@ def test_get_secret_treats_blank_env_as_missing(monkeypatch):
 # build_llm_kwargs: gateway vs direct Anthropic auth
 # --------------------------------------------------------------------------
 def test_build_llm_kwargs_direct_anthropic():
-    kw = utils.build_llm_kwargs(api_key="sk-ant-xxx", model="claude-haiku-4-5",
-                                base_url=None, max_tokens=256)
+    kw = utils.build_llm_kwargs(
+        api_key="sk-ant-xxx", model="claude-haiku-4-5", base_url=None, max_tokens=256
+    )
     assert kw["model"] == "claude-haiku-4-5"
     assert kw["api_key"] == "sk-ant-xxx"
     assert kw["max_tokens"] == 256
@@ -59,14 +60,22 @@ def test_build_llm_kwargs_gateway_never_sends_a_placeholder_x_api_key():
     # The SDK always turns api_key into an x-api-key header. A gateway that reads
     # x-api-key before api-key 401s on a placeholder there, so it must carry the
     # real key too.
-    kw = utils.build_llm_kwargs(api_key="gw-key", model="m",
-                                base_url="https://gw.example.net/anthropic", max_tokens=1)
+    kw = utils.build_llm_kwargs(
+        api_key="gw-key",
+        model="m",
+        base_url="https://gw.example.net/anthropic",
+        max_tokens=1,
+    )
     assert kw["api_key"] == "gw-key"
 
 
 def test_build_llm_kwargs_gateway_root_url_untouched():
-    kw = utils.build_llm_kwargs(api_key="gw-key", model="m",
-                                base_url="https://gw.example.net/anthropic", max_tokens=1)
+    kw = utils.build_llm_kwargs(
+        api_key="gw-key",
+        model="m",
+        base_url="https://gw.example.net/anthropic",
+        max_tokens=1,
+    )
     assert kw["base_url"] == "https://gw.example.net/anthropic"
 
 
@@ -102,8 +111,9 @@ class _FakeResp:
 def test_embed_uses_single_model_for_both_by_default():
     # sample_mflix ships one model (voyage-3-large); queries must match it.
     poster = FakePoster(dims=2048)
-    emb = utils.AtlasEmbeddings(api_key="k", model="voyage-3-large", dimensions=2048,
-                                poster=poster)
+    emb = utils.AtlasEmbeddings(
+        api_key="k", model="voyage-3-large", dimensions=2048, poster=poster
+    )
     emb.embed_documents(["a"])
     emb.embed_query("q")
     assert poster.calls[0]["json"]["model"] == "voyage-3-large"
@@ -112,8 +122,9 @@ def test_embed_uses_single_model_for_both_by_default():
 
 def test_embed_documents_returns_vectors_and_uses_document_input_type():
     poster = FakePoster(dims=2048)
-    emb = utils.AtlasEmbeddings(api_key="k", model="voyage-3-large", dimensions=2048,
-                                poster=poster)
+    emb = utils.AtlasEmbeddings(
+        api_key="k", model="voyage-3-large", dimensions=2048, poster=poster
+    )
     out = emb.embed_documents(["a", "b"])
     assert len(out) == 2 and len(out[0]) == 2048
     assert poster.calls[0]["json"]["input_type"] == "document"
@@ -123,8 +134,9 @@ def test_embed_documents_returns_vectors_and_uses_document_input_type():
 
 def test_embed_query_uses_query_input_type():
     poster = FakePoster(dims=2048)
-    emb = utils.AtlasEmbeddings(api_key="k", model="voyage-3-large", dimensions=2048,
-                                poster=poster)
+    emb = utils.AtlasEmbeddings(
+        api_key="k", model="voyage-3-large", dimensions=2048, poster=poster
+    )
     v = emb.embed_query("hello")
     assert len(v) == 2048
     assert poster.calls[0]["json"]["input_type"] == "query"
@@ -132,8 +144,13 @@ def test_embed_query_uses_query_input_type():
 
 def test_embed_optional_asymmetric_query_model():
     poster = FakePoster(dims=1024)
-    emb = utils.AtlasEmbeddings(api_key="k", model="voyage-4", query_model="voyage-4-lite",
-                                dimensions=1024, poster=poster)
+    emb = utils.AtlasEmbeddings(
+        api_key="k",
+        model="voyage-4",
+        query_model="voyage-4-lite",
+        dimensions=1024,
+        poster=poster,
+    )
     emb.embed_documents(["a"])
     emb.embed_query("q")
     assert poster.calls[0]["json"]["model"] == "voyage-4"
@@ -142,23 +159,28 @@ def test_embed_optional_asymmetric_query_model():
 
 def test_embed_dimension_guard_raises_on_mismatch():
     poster = FakePoster(dims=512)  # server returns wrong size
-    emb = utils.AtlasEmbeddings(api_key="k", model="voyage-3-large", dimensions=2048,
-                                poster=poster)
+    emb = utils.AtlasEmbeddings(
+        api_key="k", model="voyage-3-large", dimensions=2048, poster=poster
+    )
     with pytest.raises(utils.EmbeddingDimensionMismatch):
         emb.embed_query("hello")
 
 
 def test_embed_raises_on_http_error():
     poster = FakePoster(status=401)
-    emb = utils.AtlasEmbeddings(api_key="bad", model="voyage-3-large", dimensions=2048,
-                                poster=poster)
+    emb = utils.AtlasEmbeddings(
+        api_key="bad", model="voyage-3-large", dimensions=2048, poster=poster
+    )
     with pytest.raises(RuntimeError):
         emb.embed_query("hello")
 
 
 def test_embeddings_is_langchain_embeddings():
     from langchain_core.embeddings import Embeddings
-    emb = utils.AtlasEmbeddings(api_key="k", model="voyage-3-large", poster=FakePoster())
+
+    emb = utils.AtlasEmbeddings(
+        api_key="k", model="voyage-3-large", poster=FakePoster()
+    )
     assert isinstance(emb, Embeddings)
 
 
@@ -172,8 +194,10 @@ class FakeRerankPoster:
 
     def __call__(self, url, headers, json, timeout):
         self.calls.append({"url": url, "json": json})
-        results = [{"index": i, "relevance_score": 1.0 - n * 0.1}
-                   for n, i in enumerate(self.order)]
+        results = [
+            {"index": i, "relevance_score": 1.0 - n * 0.1}
+            for n, i in enumerate(self.order)
+        ]
         return _FakeResp(200, {"data": results})
 
 
@@ -248,7 +272,9 @@ def test_list_all_search_indexes_skips_collections_it_cannot_introspect():
             return super().__getitem__(name)
 
     db = Exploding({"a_view": [], "embedded_movies": ["movies_vector_index"]})
-    assert utils.list_all_search_indexes(db) == [("embedded_movies", "movies_vector_index")]
+    assert utils.list_all_search_indexes(db) == [
+        ("embedded_movies", "movies_vector_index")
+    ]
 
 
 def test_assert_room_for_index_allows_creation_below_the_limit():

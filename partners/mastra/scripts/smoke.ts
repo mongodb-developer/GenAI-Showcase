@@ -1,7 +1,7 @@
 /**
  * Live smoke test: cross every boundary the notebooks cross, in one run.
  *
- *   npm run smoke          # from partners/mastra/, needs a populated ../../.env
+ *   npm run smoke          # from partners/mastra/, needs a populated .env
  *
  * The unit tests use fakes. This uses nothing but the real thing -- real Atlas, real
  * Voyage, real Claude, real Mastra store -- because the failures that matter here are
@@ -26,7 +26,7 @@
  *    skipped unless there is room, and says so.
  */
 import { readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 
 import { Agent } from '@mastra/core/agent';
 import { Memory } from '@mastra/memory';
@@ -35,6 +35,7 @@ import { MongoClient } from 'mongodb';
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 
+import { findEnvFile } from '../src/config.js';
 import {
   APP_NAME,
   MFLIX_FULLTEXT_INDEX,
@@ -47,15 +48,16 @@ import {
   getSecret,
 } from '../src/utils.js';
 
-const REPO_ROOT = resolve(import.meta.dirname, '../../..');
+/** The .env the notebooks read: the nearest one at or above partners/mastra/. */
+const ENV_PATH = findEnvFile(resolve(import.meta.dirname, '..'));
 
-/** Parse ../../.env. tsx does not read .env, and neither does node. */
+/** Parse the .env. tsx does not read .env, and neither does node. */
 function parseEnvFile(): Record<string, string> {
   let contents: string;
   try {
-    contents = readFileSync(join(REPO_ROOT, '.env'), 'utf8');
+    contents = readFileSync(ENV_PATH, 'utf8');
   } catch {
-    console.error(`No .env at ${REPO_ROOT}. Copy .env.example and fill it in.`);
+    console.error(`No .env at ${ENV_PATH}. Copy .env.example to it and fill it in.`);
     process.exit(1);
   }
   const parsed: Record<string, string> = {};

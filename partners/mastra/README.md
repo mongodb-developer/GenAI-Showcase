@@ -42,7 +42,7 @@ before running anything yourself.
   notebook 04 calls a model, but `loadNotebookConfig` validates all three secrets up front,
   so the key has to be present for any of them to start.
 
-Copy [`.env.example`](../../.env.example) at the repository root to `.env` and fill it in.
+Copy [`.env.example`](./.env.example) to `.env` in this folder and fill it in.
 
 ## Setup
 
@@ -137,7 +137,7 @@ already taken on your cluster -- it refuses to reuse a collection it did not cre
 Two modules hold the setup boilerplate the notebooks share. Teaching code stays in the
 notebooks where you can read it.
 
-- **`src/config.ts`** reads the repository `.env` and validates what it finds. One
+- **`src/config.ts`** reads `partners/mastra/.env` and validates what it finds. One
   deliberate difference from the Python set: a tunable the file omits falls back to its
   documented default rather than to the surrounding shell. A stray `ANTHROPIC_MODEL` left in
   a shell by unrelated work is otherwise silently the model your notebook uses, and the
@@ -154,9 +154,9 @@ npm run smoke       # 8 steps against real Atlas, real Voyage, real Claude
 ```
 
 `npm test` needs no cluster and no keys. It also runs
-`scripts/check-notebook-outputs.ts`, which scans all eight notebooks in the repository for
-connection strings and API keys in committed output, including the live values in your
-`.env`. That check is why these notebooks can ship their results.
+`scripts/check-notebook-outputs.ts`, which scans these four notebooks and the four LangChain
+ones in `partners/langchain/` for connection strings and API keys in committed output,
+including the live values in your `.env`. That check is why these notebooks can ship their results.
 
 `npm run smoke` is the opposite tier: it needs a populated `.env` and crosses every
 boundary the notebooks cross in a single run. The failures it exists to catch are the ones

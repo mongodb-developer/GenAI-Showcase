@@ -14,8 +14,8 @@ around it is assembled.
 
 ## What you need
 
-- A free Atlas **M0** cluster with **Load Sample Dataset** run (see the
-  [root README](../../README.md)).
+- A free Atlas **M0** cluster with **Load Sample Dataset** run (see
+  [Load Sample Data](https://www.mongodb.com/docs/atlas/sample-data/)).
 - An **Atlas API key** for the hosted embedding and rerank services at `ai.mongodb.com`.
 - A **Claude API key**, or an Anthropic-compatible gateway via `ANTHROPIC_BASE_URL`.
 - **Node.js 20+** for the MCP set only. The MCP Server runs on Node.
@@ -25,12 +25,12 @@ around it is assembled.
 ```bash
 cd partners/langchain
 pip install -r requirements.txt
-cp ../../.env.example ../../.env      # then fill in your connection string and keys
+cp .env.example .env      # then fill in your connection string and keys
 jupyter lab
 ```
 
 `requirements.txt` pins every version, verified together on Python 3.12. The notebooks read
-credentials from the repository `.env` when there is one and prompt for anything missing,
+credentials from `partners/langchain/.env` when there is one and prompt for anything missing,
 which is what lets the same notebook run in Colab or on your machine.
 
 Or click the **Open in Colab** badge at the top of any notebook and skip the install.

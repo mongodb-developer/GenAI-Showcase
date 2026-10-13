@@ -9,11 +9,12 @@ Nothing here talks to the network at import time, so it is safe to `import utils
 in any cell. The one HTTP dependency (`requests`) is injected as a `poster` seam so
 the unit tests in test_utils.py run without a network or API keys.
 """
+
 from __future__ import annotations
 
 import getpass
 import os
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List
 from urllib.parse import urlparse, urlunparse
 
 from langchain_core.embeddings import Embeddings
@@ -34,7 +35,7 @@ class EmbeddingDimensionMismatch(RuntimeError):
 # --------------------------------------------------------------------------
 # Secrets: environment first, interactive prompt as a fallback.
 # --------------------------------------------------------------------------
-def get_secret(name: str, prompt: Optional[str] = None) -> str:
+def get_secret(name: str, prompt: str | None = None) -> str:
     """Return a secret from the environment, or prompt for it if unset/blank.
 
     Reading the environment first lets a local `.env` (loaded via python-dotenv)
@@ -92,7 +93,7 @@ def build_llm_kwargs(
     *,
     api_key: str,
     model: str,
-    base_url: Optional[str],
+    base_url: str | None,
     max_tokens: int = 1024,
 ) -> dict:
     """Build kwargs for ChatAnthropic for either a direct or gateway connection.
@@ -141,7 +142,7 @@ class AtlasEmbeddings(Embeddings):
         *,
         api_key: str,
         model: str = "voyage-3-large",
-        query_model: Optional[str] = None,
+        query_model: str | None = None,
         dimensions: int = 2048,
         url: str = ATLAS_EMBEDDINGS_URL,
         timeout: float = 60.0,
@@ -155,7 +156,9 @@ class AtlasEmbeddings(Embeddings):
         self.timeout = timeout
         self._poster = poster
 
-    def _embed(self, texts: List[str], *, model: str, input_type: str) -> List[List[float]]:
+    def _embed(
+        self, texts: List[str], *, model: str, input_type: str
+    ) -> List[List[float]]:
         resp = self._poster(
             self.url,
             headers={
@@ -197,7 +200,7 @@ def atlas_rerank(
     documents: List[str],
     *,
     api_key: str,
-    top_n: Optional[int] = None,
+    top_n: int | None = None,
     model: str = "rerank-2.5",
     url: str = ATLAS_RERANK_URL,
     timeout: float = 60.0,
@@ -222,7 +225,9 @@ def atlas_rerank(
         raise RuntimeError(
             f"Atlas rerank request failed ({resp.status_code}): {resp.text[:300]}"
         )
-    results = sorted(resp.json()["data"], key=lambda r: r["relevance_score"], reverse=True)
+    results = sorted(
+        resp.json()["data"], key=lambda r: r["relevance_score"], reverse=True
+    )
     ordered = [documents[r["index"]] for r in results]
     return ordered[:top_n] if top_n is not None else ordered
 
@@ -303,7 +308,7 @@ class ScratchCollectionExists(RuntimeError):
             "overwrite one it did not create -- the contents might be yours.\n\n"
             "If it is a leftover from an interrupted run of this notebook, drop it (and "
             f"any search index on it) and re-run. If it is your data, set {env_var} in "
-            "the repository .env to a name this notebook can own."
+            "your .env to a name this notebook can own."
         )
 
 

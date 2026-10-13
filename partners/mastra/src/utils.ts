@@ -48,7 +48,7 @@ export class EmbeddingDimensionMismatch extends Error {
 export class MissingSecretError extends Error {
   constructor(name: string) {
     super(
-      `${name} is not set. Add it to the repository's .env file (see .env.example) ` +
+      `${name} is not set. Add it to partners/mastra/.env (see .env.example) ` +
         `and restart the kernel, or export it before launching Jupyter.`,
     );
     this.name = 'MissingSecretError';
@@ -474,7 +474,7 @@ export class ScratchCollectionExists extends Error {
         `create -- the contents might be yours.\n\n` +
         `If it is a leftover from an interrupted run of this notebook, drop it (and any ` +
         `search index on it) and re-run. If it is your data, set MASTRA_REVIEWS_COLLECTION ` +
-        `in the repository .env to a name this notebook can own.`,
+        `in your .env to a name this notebook can own.`,
     );
     this.name = 'ScratchCollectionExists';
   }
