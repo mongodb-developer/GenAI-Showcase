@@ -1,0 +1,1552 @@
+<PRORULE>
+            <PREAMB>
+                <PRTPAGE P="21512"/>
+                <AGENCY TYPE="F">DEPARTMENT OF ENERGY</AGENCY>
+                <CFR>10 CFR Part 430</CFR>
+                <DEPDOC>[EERE-2021-BT-STD-0035]</DEPDOC>
+                <RIN>RIN 1904-AF46</RIN>
+                <SUBJECT>Energy Conservation Program: Energy Conservation Standards for Air Cleaners</SUBJECT>
+                <AGY>
+                    <HD SOURCE="HED">AGENCY:</HD>
+                    <P>Office of Energy Efficiency and Renewable Energy, Department of Energy.</P>
+                </AGY>
+                <ACT>
+                    <HD SOURCE="HED">ACTION:</HD>
+                    <P>Notice of proposed rulemaking.</P>
+                </ACT>
+                <SUM>
+                    <HD SOURCE="HED">SUMMARY:</HD>
+                    <P>
+                        The Energy Policy and Conservation Act, as amended (“EPCA”), authorizes the Secretary of Energy to classify additional types of consumer products as covered products upon determining that: classifying the product as a covered product is necessary for the purposes of EPCA; and the average annual per-household energy use by products of such type is likely to exceed 100 kilowatt-hours per year (“kWh/yr”). In a final determination published on July 15, 2022, DOE determined that classifying air cleaners as a covered product is necessary or appropriate to carry out the purposes of EPCA, and that the average U.S. household energy use for air cleaners is likely to exceed 100 kWh/yr. In this notice of proposed rulemaking (“NOPR”), DOE proposes new energy conservation standards for air cleaners identical to those set forth in a direct final rule published elsewhere in this
+                        <E T="04">Federal Register</E>
+                        . If DOE receives adverse comment and determines that such comment may provide a reasonable basis for withdrawal, DOE will publish a notice withdrawing the direct final rule and will proceed with this proposed rule.
+                    </P>
+                </SUM>
+                <EFFDATE>
+                    <HD SOURCE="HED">DATES:</HD>
+                    <P>
+                        DOE will accept comments, data, and information regarding this NOPR no later than July 31, 2023. Comments regarding the likely competitive impact of the proposed standard should be sent to the Department of Justice contact listed in the
+                        <E T="02">ADDRESSES</E>
+                         section on or before May 11, 2023.
+                    </P>
+                </EFFDATE>
+                <ADD>
+                    <HD SOURCE="HED">ADDRESSES: </HD>
+                    <P>
+                        See section III, “Public Participation,” for details. If DOE withdraws the direct final rule published elsewhere in today's
+                        <E T="04">Federal Register</E>
+                        <E T="03">,</E>
+                         DOE will hold a public meeting to allow for additional comment on this proposed rule. DOE will publish notice of any meeting in the
+                        <E T="04">Federal Register</E>
+                        .
+                    </P>
+                    <P>
+                        Interested persons are encouraged to submit comments using the Federal eRulemaking Portal at
+                        <E T="03">www.regulations.gov</E>
+                         under docket number EERE-2021-BT-STD-0035. Follow the instructions for submitting comments. Alternatively, interested persons may submit comments, identified by docket number EERE-2021-BT-STD-0035, by any of the following methods:
+                        <E T="03">Email: AirCleaners2021STD0035@ee.doe.gov.</E>
+                         Include the docket number EERE-2021-BT-STD-0035 in the subject line of the message.
+                    </P>
+                    <P>
+                        <E T="03">Postal Mail:</E>
+                         Appliance and Equipment Standards Program, U.S. Department of Energy, Building Technologies Office, Mailstop EE-5B, 1000 Independence Avenue SW, Washington, DC 20585-0121. Telephone: (202) 287-1445. If possible, please submit all items on a compact disc (“CD”), in which case it is not necessary to include printed copies.
+                    </P>
+                    <P>
+                        <E T="03">Hand Delivery/Courier:</E>
+                         Appliance and Equipment Standards Program, U.S. Department of Energy, Building Technologies Office, 950 L'Enfant Plaza SW, 6th Floor, Washington, DC 20024. Telephone: (202) 287-1445. If possible, please submit all items on a CD, in which case it is not necessary to include printed copies. No telefacsimiles (“faxes”) will be accepted. For detailed instructions on submitting comments and additional information on this process, see section III of this document.
+                    </P>
+                    <P>
+                        <E T="03">Docket:</E>
+                         The docket for this activity, which includes
+                        <E T="04">Federal Register</E>
+                         notices, comments, and other supporting documents/materials, is available for review at
+                        <E T="03">www.regulations.gov.</E>
+                         All documents in the docket are listed in the
+                        <E T="03">www.regulations.gov</E>
+                         index. However, not all documents listed in the index may be publicly available, such as information that is exempt from public disclosure.
+                    </P>
+                    <P>
+                        The docket web page can be found at
+                        <E T="03">www.regulations.gov/docket/EERE-2021-BT-STD-0035.</E>
+                         The docket web page contains instructions on how to access all documents, including public comments, in the docket. See section III of this document for information on how to submit comments through
+                        <E T="03">www.regulations.gov.</E>
+                    </P>
+                    <P>
+                        EPCA requires the Attorney General to provide DOE a written determination of whether the proposed standard is likely to lessen competition. The U.S. Department of Justice Antitrust Division invites input from market participants and other interested persons with views on the likely competitive impact of the proposed standard. Interested persons may contact the Division at
+                        <E T="03">energy.standards@usdoj.gov</E>
+                         on or before the date specified in the
+                        <E T="02">DATES</E>
+                         section. Please indicate in the “Subject” line of your email the title and Docket Number of this proposed rulemaking.
+                    </P>
+                </ADD>
+                <FURINF>
+                    <HD SOURCE="HED">FOR FURTHER INFORMATION CONTACT:</HD>
+                    <P>
+                        Mr. Troy Watson, U.S. Department of Energy, Office of Energy Efficiency and Renewable Energy, Building Technologies Office, EE-5B, 1000 Independence Avenue SW, Washington, DC 20585-0121. Telephone: (240) 449-9387. Email:
+                        <E T="03">ApplianceStandardsQuestions@ee.doe.gov.</E>
+                    </P>
+                    <P>
+                        Ms. Amelia Whiting, U.S. Department of Energy, Office of the General Counsel, GC-33, 1000 Independence Avenue SW, Washington, DC 20585-0121. Telephone: (202) 586-2588. Email:
+                        <E T="03">Amelia.Whiting@hq.doe.gov.</E>
+                    </P>
+                    <P>
+                        For further information on how to submit a comment, or review other public comments on the docket, contact the Appliance and Equipment Standards Program staff at (202) 287-1445 or by email:
+                        <E T="03">ApplianceStandardsQuestions@ee.doe.gov.</E>
+                    </P>
+                </FURINF>
+            </PREAMB>
+            <SUPLINF>
+                <HD SOURCE="HED">SUPPLEMENTARY INFORMATION:</HD>
+                <P/>
+                <HD SOURCE="HD1">Table of Contents</HD>
+                <EXTRACT>
+                    <FP SOURCE="FP-2">I. Introduction</FP>
+                    <FP SOURCE="FP1-2">A. Authority</FP>
+                    <FP SOURCE="FP1-2">B. Background</FP>
+                    <FP SOURCE="FP1-2">1. Current Standards</FP>
+                    <FP SOURCE="FP1-2">2. History of Standards Rulemaking for Air Cleaners</FP>
+                    <FP SOURCE="FP-2">II. Proposed Standards</FP>
+                    <FP SOURCE="FP1-2">A. Benefits and Burdens of TSLs Considered for Air Cleaners Standards</FP>
+                    <FP SOURCE="FP1-2">B. Annualized Benefits and Costs of the Adopted Standards</FP>
+                    <FP SOURCE="FP-2">III. Public Participation</FP>
+                    <FP SOURCE="FP1-2">A. Submission of Comments</FP>
+                    <FP SOURCE="FP1-2">B. Public Meeting</FP>
+                    <FP SOURCE="FP-2">
+                        IV. Procedural Issues and Regulatory Review
+                        <PRTPAGE P="21513"/>
+                    </FP>
+                    <FP SOURCE="FP1-2">A. Review Under the Regulatory Flexibility Act</FP>
+                    <FP SOURCE="FP1-2">1. Description of Reasons Why Action Is Being Considered</FP>
+                    <FP SOURCE="FP1-2">2. Objectives of, and Legal Basis for, Rule</FP>
+                    <FP SOURCE="FP1-2">3. Description on Estimated Number of Small Entities Regulated</FP>
+                    <FP SOURCE="FP1-2">4. Description and Estimate of Compliance Requirements Including Differences in Cost, if Any, for Different Groups of Small Entities</FP>
+                    <FP SOURCE="FP1-2">5. Duplication, Overlap, and Conflict with Other Rules and Regulations</FP>
+                    <FP SOURCE="FP1-2">6. Significant Alternatives to the Rule</FP>
+                    <FP SOURCE="FP-2">V. Approval of the Office of the Secretary</FP>
+                </EXTRACT>
+                <HD SOURCE="HD1">I. Introduction</HD>
+                <P>The following section briefly discusses the statutory authority underlying this proposed rule, as well as some of the relevant historical background related to the establishment of standards for air cleaners.</P>
+                <HD SOURCE="HD2">A. Authority</HD>
+                <P>
+                    The Energy Policy and Conservation Act, as amended (“EPCA”),
+                    <SU>1</SU>
+                    <FTREF/>
+                     grants the U.S. Department of Energy (“DOE”) authority to prescribe an energy conservation standard for any type (or class) of covered products of a type specified in 42 U.S.C. 6292(a)(20) if the requirements of 42 U.S.C. 6295(o) and 42 U.S.C. 6295(p) are met and the Secretary determines that—
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>1</SU>
+                         All references to EPCA in this document refer to the statute as amended through the Energy Act of 2020, Public Law 116-260 (Dec. 27, 2020), which reflect the last statutory amendments that impact Parts A and A-1 of EPCA.
+                    </P>
+                </FTNT>
+                <P>(A) The average per household energy use within the United States by products of such type (or class) exceeded 150 kWh (or its Btu equivalent) for any 12-month period ending before such determination;</P>
+                <P>(B) The aggregate household energy use within the United States by products of such type (or class) exceeded 4,200,000,000 kWh (or its Btu equivalent) for any such 12-month period;</P>
+                <P>(C) Substantial improvement in the energy efficiency of products of such type (or class) is technologically feasible; and</P>
+                <P>
+                    (D) The application of a labeling rule under 42 U.S.C. 6294 to such type (or class) is not likely to be sufficient to induce manufacturers to produce, and consumers and other persons to purchase, covered products of such type (or class) which achieve the maximum energy efficiency which is technologically feasible and economically justified. (42 U.S.C. 6295(
+                    <E T="03">l</E>
+                    )(1))
+                </P>
+                <P>
+                    DOE has determined that air cleaners meet the four criteria outlined in 42 U.S.C. 6295(l)(1) for prescribing energy conservation standards for newly covered products. First, in a final determination published on July 15, 2022 (“July 2022 Final Determination”), DOE noted that the U.S. Environmental Protection Agency's (“EPA's”) ENERGY STAR database 
+                    <SU>2</SU>
+                    <FTREF/>
+                     includes a range of portable configurations of air cleaners with an average annual energy consumption of 299 kWh, which exceeded the 150 kWh threshold. 87 FR 42297, 42305. DOE further noted that the average energy consumption of non-ENERGY STAR qualified models is likely higher.
+                    <E T="03">Id.</E>
+                     EPCA specifies that the term “energy use” means the quantity of energy directly consumed by a consumer product at point of use determined in accordance with test procedures under 42 U.S.C. 6293 (42 U.S.C. 6291(4)) Although the values of annual energy consumption discussed in the July 2022 Final Determination were obtained prior to the establishment of the DOE air cleaners test procedure, they were measured using substantively the same methodology as in the newly established test procedure. Therefore, DOE has determined that for a 12-month period ending before its determination for this notice of proposed rulemaking (“NOPR”), the average per household energy use within the United States by air cleaners exceeded 150 kWh.
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>2</SU>
+                         Available at:
+                        <E T="03">https://data.energystar.gov/Active-Specifications/ENERGY-STAR-Certified-Room-Air-Cleaners/jmck-i55n/data.</E>
+                         Last accessed: December 2022.
+                    </P>
+                </FTNT>
+                <P>
+                    DOE has also determined that 21.8 million households in the United States use at least one air cleaner (see chapter 10 of the direct final rule technical support document (“TSD”) available in the docket for this rulemaking). Based on an average annual energy consumption per unit of at least 299 kWh, as measured by the DOE test procedure for air cleaners, the aggregate household energy use within the United States by air cleaners was at least 6,518,000,000 kWh, which exceeded 4,200,000,000 kWh (or its Btu equivalent) for the 12-month period ending before the determination in this NOPR. Further, DOE has determined that substantial energy improvement in the energy efficiency of air cleaners is technologically feasible (see chapter 5 of the direct final rule TSD available in the docket for this rulemaking.), and has determined that the application of a labeling rule under 42 U.S.C. 6294 to air cleaners is not likely to be sufficient to induce manufacturers to produce, and consumers and other persons to purchase, air cleaners that achieve the maximum energy efficiency which is technologically feasible and economically justified (see chapter 17 of the direct final rule TSD available in the docket for this rulemaking.).
+                    <SU>3</SU>
+                    <FTREF/>
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>3</SU>
+                         DOE estimated that such a labeling program would lead to approximately 41% of the energy savings DOE estimated for the new standards.
+                        <E T="03">See</E>
+                         chapter 17 of the direct final rule TSD available in the docket for this rulemaking for more information.
+                    </P>
+                </FTNT>
+                <P>The energy conservation program under EPCA consists essentially of four parts: (1) testing, (2) labeling, (3) the establishment of Federal energy conservation standards, and (4) certification and enforcement procedures. Relevant provisions of EPCA specifically include definitions (42 U.S.C. 6291), test procedures (42 U.S.C. 6293), labeling provisions (42 U.S.C. 6294), energy conservation standards (42 U.S.C. 6295), and the authority to require information and reports from manufacturers (42 U.S.C. 6296).</P>
+                <P>
+                    Federal energy efficiency requirements for covered products established under EPCA generally supersede State laws and regulations concerning energy conservation testing, labeling, and standards. (42 U.S.C. 6297(a)-(c)) DOE may, however, grant waivers of Federal preemption for particular State laws or regulations, in accordance with the procedures and other provisions set forth under EPCA. (
+                    <E T="03">See</E>
+                     42 U.S.C. 6297(d))
+                </P>
+                <P>Subject to certain criteria and conditions, DOE is required to develop test procedures to measure the energy efficiency, energy use, or estimated annual operating cost of each covered product. (42 U.S.C. 6295(o)(3)(A) and 42 U.S.C. 6295(r)) Manufacturers of covered products must use the prescribed DOE test procedure as the basis for certifying to DOE that their products comply with the applicable energy conservation standards adopted under EPCA and when making representations to the public regarding the energy use or efficiency of those products. (42 U.S.C. 6293(c) and 42 U.S.C. 6295(s)) Similarly, DOE must use these test procedures to determine whether the products comply with standards adopted pursuant to EPCA. (42 U.S.C. 6295(s)) The DOE test procedures for air cleaners appear at title 10 of the Code of Federal Regulations (“CFR”) part 430, subpart B, appendix FF (“appendix FF”).</P>
+                <P>
+                    DOE must follow specific statutory criteria for prescribing new or amended standards for covered products, including air cleaners. Any new or amended standard for a covered product must be designed to achieve the maximum improvement in energy efficiency that the Secretary of Energy determines is technologically feasible
+                    <PRTPAGE P="21514"/>
+                    and economically justified. (42 U.S.C. 6295(o)(2)(A) and 42 U.S.C. 6295(o)(3)(B)) Furthermore, DOE may not adopt any standard that would not result in the significant conservation of energy. (42 U.S.C. 6295(o)(3)) Moreover, DOE may not prescribe a standard: (1) for certain products, including air cleaners, if no test procedure has been established for the product, or (2) if DOE determines by rule that the standard is not technologically feasible or economically justified. (42 U.S.C. 6295(o)(3)(A)-(B)) In deciding whether a proposed standard is economically justified, DOE must determine whether the benefits of the standard exceed its burdens. (42 U.S.C. 6295(o)(2)(B)(i)) DOE must make this determination after receiving comments on the proposed standard, and by considering, to the greatest extent practicable, the following seven statutory factors:
+                </P>
+                <EXTRACT>
+                    <P>(1) The economic impact of the standard on manufacturers and consumers of the products subject to the standard;</P>
+                    <P>(2) The savings in operating costs throughout the estimated average life of the covered products in the type (or class) compared to any increase in the price, initial charges, or maintenance expenses for the covered products that are likely to result from the standard;</P>
+                    <P>(3) The total projected amount of energy (or as applicable, water) savings likely to result directly from the standard;</P>
+                    <P>(4) Any lessening of the utility or the performance of the covered products likely to result from the standard;</P>
+                    <P>(5) The impact of any lessening of competition, as determined in writing by the Attorney General, that is likely to result from the standard;</P>
+                    <P>(6) The need for national energy and water conservation; and</P>
+                    <P>(7) Other factors the Secretary of Energy (“Secretary”) considers relevant.</P>
+                </EXTRACT>
+                <P>(42 U.S.C. 6295(o)(2)(B)(i)(I)-(VII))</P>
+                <P>Further, EPCA establishes a rebuttable presumption that a standard is economically justified if the Secretary finds that the additional cost to the consumer of purchasing a product complying with an energy conservation standard level will be less than three times the value of the energy savings during the first year that the consumer will receive as a result of the standard, as calculated under the applicable test procedure. (42 U.S.C. 6295(o)(2)(B)(iii))</P>
+                <P>EPCA also contains what is known as an “anti-backsliding” provision, which prevents the Secretary from prescribing any amended standard that either increases the maximum allowable energy use or decreases the minimum required energy efficiency of a covered product. (42 U.S.C. 6295(o)(1)) Also, the Secretary may not prescribe an amended or new standard if interested persons have established by a preponderance of the evidence that the standard is likely to result in the unavailability in the United States in any covered product type (or class) of performance characteristics (including reliability), features, sizes, capacities, and volumes that are substantially the same as those generally available in the United States. (42 U.S.C. 6295(o)(4))</P>
+                <P>
+                    Additionally, EPCA specifies requirements when promulgating an energy conservation standard for a covered product that has two or more subcategories. DOE must specify a different standard level for a type or class of product that has the same function or intended use, if DOE determines that products within such group: (A) consume a different kind of energy from that consumed by other covered products within such type (or class); or (B) have a capacity or other performance-related feature which other products within such type (or class) do not have and such feature justifies a higher or lower standard. (42 U.S.C. 6295(q)(1)) In determining whether a performance-related feature justifies a different standard for a group of products, DOE must consider such factors as the utility to the consumer of the feature and other factors DOE deems appropriate.
+                    <E T="03">Id.</E>
+                     Any rule prescribing such a standard must include an explanation of the basis on which such higher or lower level was established. (42 U.S.C. 6295(q)(2))
+                </P>
+                <P>Additionally, pursuant to the amendments contained in the Energy Independence and Security Act of 2007 (“EISA 2007”), Public Law 110-140, any final rule for new or amended energy conservation standards promulgated after July 1, 2010, is required to address standby mode and off mode energy use. (42 U.S.C. 6295(gg)(3)) Specifically, when DOE adopts a standard for a covered product after that date, it must, if justified by the criteria for adoption of standards under EPCA (42 U.S.C. 6295(o)), incorporate standby mode and off mode energy use into a single standard, or, if that is not feasible, adopt a separate standard for such energy use for that product. (42 U.S.C. 6295(gg)(3)(A)-(B)) DOE's current test procedures for air cleaners address standby mode and off mode energy use, through the integrated energy factor (“IEF”) metric. IEF includes annual energy consumption in standby mode as part of the annual energy consumption parameter and DOE is proposing standards for air cleaners based on IEF; therefore, the standards in this NOPR account for standby mode of an air cleaner.</P>
+                <P>Finally, EISA 2007 amended EPCA, in relevant part, to grant DOE authority to issue a final rule (hereinafter referred to as a “direct final rule”) establishing an energy conservation standard on receipt of a statement submitted jointly by interested persons that are fairly representative of relevant points of view (including representatives of manufacturers of covered products, States, and efficiency advocates), as determined by the Secretary, that contains recommendations with respect to an energy or water conservation standard that are in accordance with the provisions of 42 U.S.C. 6295(o). (42 U.S.C. 6295(p)(4))</P>
+                <P>
+                    A NOPR that proposes an identical energy efficiency standard must be published simultaneously with the direct final rule, and DOE must provide a public comment period of at least 110 days on this proposal. (42 U.S.C. 6295(p)(4)(A)-(B)) Based on the comments received during this period, the direct final rule will either become effective, or DOE will withdraw it not later than 120 days after its issuance if (1) one or more adverse comments is received, and (2) DOE determines that those comments, when viewed in light of the rulemaking record related to the direct final rule, may provide a reasonable basis for withdrawal of the direct final rule under 42 U.S.C. 6295(o). (42 U.S.C. 6295(p)(4)(C)) Receipt of an alternative joint recommendation may also trigger a DOE withdrawal of the direct final rule in the same manner.
+                    <E T="03">Id.</E>
+                     After withdrawing a direct final rule, DOE must proceed with the notice of proposed rulemaking published simultaneously with the direct final rule and publish in the
+                    <E T="04">Federal Register</E>
+                     the reasons why the direct final rule was withdrawn.
+                    <E T="03">Id.</E>
+                </P>
+                <HD SOURCE="HD2">B. Background</HD>
+                <HD SOURCE="HD3">1. Current Standards</HD>
+                <P>Air cleaners are not currently subject to energy conservation standards.</P>
+                <HD SOURCE="HD3">2. History of Standards Rulemaking for Air Cleaners</HD>
+                <P>
+                    DOE has not previously conducted an energy conservation standards rulemaking for air cleaners. On January 25, 2022, DOE published a request for information (“January 2022 RFI”), seeking comments on potential test procedure and energy conservation standards for air cleaners. 87 FR 3702. In the January 2022 RFI, DOE requested information to aid in the development of the technical and economic analyses to support energy conservation standards for air cleaners, should they be warranted. 87 FR 3702, 3705.
+                    <PRTPAGE P="21515"/>
+                </P>
+                <P>DOE determined in the July 2022 Final Determination that coverage of air cleaners is necessary or appropriate to carry out the purposes of EPCA; the average U.S. household energy use for air cleaners is likely to exceed 100 kWh/yr; and thus, air cleaners qualify as a “covered product” under EPCA. 87 FR 42297.</P>
+                <P>
+                    On August 23, 2022, groups representing manufacturers, energy and environmental advocates, and consumer groups, hereinafter referred to as “the Joint Stakeholders,” 
+                    <SU>4</SU>
+                    <FTREF/>
+                     submitted a “Joint Statement of Joint Stakeholder Proposal On Recommended Energy Conservation Standards And Test Procedure For Consumer Room Air Cleaners” (“Joint Proposal”),
+                    <SU>5</SU>
+                    <FTREF/>
+                     which urged DOE to publish final rules adopting the consumer room air cleaner test procedure and standards and compliance dates contained in the Joint Proposal, as soon as possible, but not later than December 31, 2022. (Joint Stakeholders, No. 16 at p. 1) The Joint Proposal also recommended that DOE adopt the Association of Home Appliance Manufacturers' (“AHAM's”) industry standard, AHAM AC-7-2022, “Energy Test Method for Consumer Room Air Cleaners,” as the DOE test procedure. (
+                    <E T="03">Id.</E>
+                     at p. 6) In regards to energy conservation standards, the Joint Proposal specified two-tiered Tier 1 and Tier 2 standard levels, as shown in Table I.1, for conventional room air cleaners with proposed compliance dates of December 31, 2023, and December 31, 2025, respectively. (
+                    <E T="03">Id.</E>
+                     at p. 9)
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>4</SU>
+                         The Joint Stakeholders include the Association of Home Appliance Manufacturers (“AHAM”), Appliance Standards Awareness Project (“ASAP”), American Council for an Energy-Efficient Economy (“ACEEE”), Consumer Federation of America (“CFA”), Natural Resources Defense Council (“NRDC”), the New York State Energy Research and Development Authority (“NYSERDA”), and the Pacific Gas and Electric Company (“PG&amp;E”). AHAM is representing the companies who manufacture consumer room air cleaners and are members of the Portable Appliance Division (DOE has included names of all manufacturers listed in the footnote on page 1 of the Joint Proposal and the signatories listed on pages 13-14): 3M Co.; Access Business Group, LLC; ACCO Brands Corporation; Air King, Air King Ventilation Products; Airgle Corporation; Alticor, Inc.; Beijing Smartmi Electronic Technology Co., Ltd.; BISSELL Inc.; Blueair Inc.; BSH Home Appliances Corporation; De'Longhi America, Inc.; Dyson Limited; Essick Air Products; Fellowes Inc.; Field Controls; Foxconn Technology Group; GE Appliances, a Haier company; Gree Electric Appliances Inc.; Groupe SEB; Guardian Technologies, LLC; Haier Smart Home Co., Ltd.; Helen of Troy-Health &amp; Home; iRobot; Lasko Products, Inc.; Molekule Inc.; Newell Brands Inc.; Oransi LLC; Phillips Domestic Appliances NA Corporation; SharkNinja Operating, LLC; Sharp Electronics Corporation; Sharp Electronics of Canada Ltd.; Sunbeam Products, Inc.; Trovac Industries Ltd; Vornado Air LLC; Whirlpool Corporation; Winix Inc.; and Zojirushi America Corporation.
+                    </P>
+                </FTNT>
+                <FTNT>
+                    <P>
+                        <SU>5</SU>
+                         Available as document number 16 in the docket for this rulemaking.
+                    </P>
+                </FTNT>
+                <GPOTABLE COLS="3" OPTS="L2,i1" CDEF="s100,18,18">
+                    <TTITLE>Table I.1—Tier 1 and Tier 2 Standards Proposed by the Joint Stakeholders in the Joint Proposal</TTITLE>
+                    <BOXHD>
+                        <CHED H="1">Product description</CHED>
+                        <CHED H="1">
+                            IEF (PM
+                            <E T="0732">2.5</E>
+                             CADR/W)
+                            <LI>tier 1 *</LI>
+                        </CHED>
+                        <CHED H="1">
+                            IEF (PM
+                            <E T="0732">2.5</E>
+                             CADR/W)
+                            <LI>tier 2 **</LI>
+                        </CHED>
+                    </BOXHD>
+                    <ROW>
+                        <ENT I="01">
+                            10 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 100
+                        </ENT>
+                        <ENT>1.69</ENT>
+                        <ENT>1.89</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            100 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 150
+                        </ENT>
+                        <ENT>1.90</ENT>
+                        <ENT>2.39</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PM
+                            <E T="0732">2.5</E>
+                             CADR ≥ 150
+                        </ENT>
+                        <ENT>2.01</ENT>
+                        <ENT>2.91</ENT>
+                    </ROW>
+                    <TNOTE>* Tier 1 standards would have an effective date of December 31, 2023.</TNOTE>
+                    <TNOTE>** Tier 2 standards would have an effective date of December 31, 2025.</TNOTE>
+                </GPOTABLE>
+                <P>
+                    The Tier 1 standards are equivalent to the state standards established by the States of Maryland, Nevada, and New Jersey, and the District of Columbia. (
+                    <E T="03">Id.</E>
+                     at p. 9) Tier 2 standards are equivalent to the voluntary standards specified in EPA's ENERGY STAR Version 2.0 Room Air Cleaners Specification, Rev. May 2022, (“ENERGY STAR V. 2.0”) and those adopted by the State of Washington. (
+                    <E T="03">Id.</E>
+                    ) While the standards established by the States and those specified in ENERGY STAR V. 2.0 are based on smoke clean air delivery rate (“CADR”) and include only active mode energy consumption in the calculation of the CADR per watt (“CADR/W”) metric, the Joint Stakeholders presented data to show that there is a strong relationship between the PM
+                    <E T="52">2.5</E>
+                     CADR calculation, which is the metric specified in appendix FF, and the measured smoke and dust CADR values. (
+                    <E T="03">Id.</E>
+                     at p. 6) Additionally, DOE compared the IEF metric, calculated using PM
+                    <E T="52">2.5</E>
+                     CADR and annual energy consumption in active mode and standby mode, to the smoke CADR/W metric, calculated using smoke CADR and active mode power consumption, using the ENERGY STAR database, and found a strong relationship between IEF and the CADR/W metric specified in ENERGY STAR V. 2.0 and the State standards. The Joint Stakeholders stated that the Tier 1 and Tier 2 standards are estimated to save 1.9 quads of FFC energy nationally over 30 years of sales. (
+                    <E T="03">Id.</E>
+                     at p. 9)
+                </P>
+                <P>After carefully considering the consensus recommendations for establishing energy conservation standards for air cleaners submitted by the Joint Stakeholders, DOE has determined that these recommendations are in accordance with the statutory requirements of 42 U.S.C. 6295(p)(4) for the issuance of a direct final rule.</P>
+                <P>
+                    More specifically, these recommendations comprise a statement submitted by interested persons who are fairly representative of relevant points of view on this matter. In appendix A to subpart C of 10 CFR part 430 (“appendix A”), DOE explained that to be “fairly representative of relevant points of view,” the group submitting a joint statement must, where appropriate, include larger concerns and small business in the regulated industry/manufacturer community, energy advocates, energy utilities, consumers, and States. However, it will be necessary to evaluate the meaning of “fairly representative” on a case-by-case basis, subject to the circumstances of a particular rulemaking, to determine whether fewer or additional parties must be part of a joint statement in order to be “fairly representative of relevant points of view.” Section 10 of appendix A. In reaching this determination, DOE took into consideration the fact that the Joint Stakeholders consist of representatives of manufacturers of the covered product at issue, a state corporation, and efficiency advocates—all of which are groups specifically identified by Congress as relevant parties to any consensus recommendation. (42 U.S.C. 6295(p)(4)(A)) As delineated previously, the Joint Proposal was signed and submitted by a broad cross-section of interests, including the trade association representing small and large manufacturers who produce the subject products, consumer groups, climate and health advocates, and energy-efficiency advocacy organizations, each of which signed the Joint Proposal on behalf of their respective manufacturers and efficiency advocacy organizations,
+                    <PRTPAGE P="21516"/>
+                    which includes consumer groups, utilities, and a state corporation. Moreover, DOE does not read the statute as requiring a statement submitted by all interested parties before the Department may proceed with issuance of a direct final rule, nor does appendix A require the statement be submitted by all interested parties listed in the appendix. By explicit language of the statute, the Secretary has the discretion to determine when a joint recommendation for an energy or water conservation standard has met the requirement for representativeness (
+                    <E T="03">i.e.,</E>
+                     “as determined by the Secretary”).
+                    <E T="03">Id.</E>
+                </P>
+                <P>DOE also evaluated whether the recommendation satisfies 42 U.S.C. 6295(o), as applicable. In making this determination, DOE conducted an analysis to evaluate whether the potential energy conservation standards under consideration achieve the maximum improvement in energy efficiency that is technologically feasible and economically justified and result in significant energy conservation. The evaluation is the same comprehensive approach that DOE typically conducts whenever it considers potential energy conservation standards for a given type of product or equipment.</P>
+                <P>Upon review, the Secretary determined that the Joint Proposal comports with the standard-setting criteria set forth under 42 U.S.C. 6295(p)(4)(A). Accordingly, the consensus-recommended efficiency levels were included as the “recommended TSL” for air cleaners.</P>
+                <P>
+                    In sum, as the relevant criteria under 42 U.S.C. 6295(p)(4) have been satisfied, the Secretary has determined that it is appropriate to adopt the consensus-recommended new energy conservation standards for air cleaners through the issuance of a direct final rule. As a result, DOE has published a direct final rule establishing energy conservation standards for air cleaners elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>If DOE receives adverse comments that may provide a reasonable basis for withdrawal and withdraws the direct final rule, DOE will consider those comments and any other comments received in determining how to proceed with this proposed rule.</P>
+                <P>
+                    For further background information on these proposed standards and the supporting analyses, please see the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    . That document includes additional discussion on the EPCA requirements for promulgation of the energy conservation standards, the history of the standards rulemakings establishing such standards, as well as information on the test procedures used to measure the energy efficiency of air cleaners. The document also contains in-depth discussion of the analyses conducted in support of this proposed rulemaking, the methodologies DOE used in conducting those analyses, and the analytical results.
+                </P>
+                <HD SOURCE="HD1">II. Proposed Standards</HD>
+                <P>When considering new or amended energy conservation standards, the standards that DOE adopts for any type (or class) of covered product must be designed to achieve the maximum improvement in energy efficiency that the Secretary determines is technologically feasible and economically justified. (42 U.S.C. 6295(o)(2)(A)) In determining whether a standard is economically justified, the Secretary must determine whether the benefits of the standard exceed its burdens by, to the greatest extent practicable, considering the seven statutory factors discussed previously. (42 U.S.C. 6295(o)(2)(B)(i)) The new or amended standard must also result in significant conservation of energy. (42 U.S.C. 6295(o)(3)(B))</P>
+                <P>DOE considered the impacts of standards for air cleaners at each trial standard level (“TSL”), beginning with the maximum technologically feasible (“max-tech”) level, to determine whether that level was economically justified. Where the max-tech level was not justified, DOE then considered the next most efficient level and undertook the same evaluation until it reached the highest efficiency level that is both technologically feasible and economically justified and saves a significant amount of energy. DOE refers to this process as the “walk-down” analysis.</P>
+                <P>To aid the reader as DOE discusses the benefits and/or burdens of each TSL, tables in this section present a summary of the results of DOE's quantitative analysis for each TSL. In addition to the quantitative results presented in the tables, DOE also considers other burdens and benefits that affect economic justification. These include the impacts on identifiable subgroups of consumers who may be disproportionately affected by a national standard and impacts on employment.</P>
+                <P>DOE also notes that the economics literature provides a wide-ranging discussion of how consumers trade off upfront costs and energy savings in the absence of government intervention. Much of this literature attempts to explain why consumers appear to undervalue energy efficiency improvements. There is evidence that consumers undervalue future energy savings as a result of (1) a lack of information; (2) a lack of sufficient salience of the long-term or aggregate benefits; (3) a lack of sufficient savings to warrant delaying or altering purchases; (4) excessive focus on the short term, in the form of inconsistent weighting of future energy cost savings relative to available returns on other investments; (5) computational or other difficulties associated with the evaluation of relevant tradeoffs; and (6) a divergence in incentives (for example, between renters and owners, or builders and purchasers). Having less than perfect foresight and a high degree of uncertainty about the future, consumers may trade off these types of investments at a higher than expected rate between current consumption and uncertain future energy cost savings.</P>
+                <P>
+                    In DOE's current regulatory analysis, potential changes in the benefits and costs of a regulation due to changes in consumer purchase decisions are included in two ways. First, if consumers forgo the purchase of a product in the standards case, this decreases sales for product manufacturers, and the impact on manufacturers attributed to lost revenue is included in the MIA. Second, DOE accounts for energy savings attributable only to products actually used by consumers in the standards case; if a standard decreases the number of products purchased by consumers, this decreases the potential energy savings from an energy conservation standard. DOE provides estimates of shipments and changes in the volume of product purchases in chapter 9 of the direct final rule TSD available in the docket for this proposed rulemaking. However, DOE's current analysis does not explicitly control for heterogeneity in consumer preferences, preferences across subcategories of products or specific features, or consumer price sensitivity variation according to household income.
+                    <SU>6</SU>
+                    <FTREF/>
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>6</SU>
+                         P.C. Reiss and M.W. White. Household Electricity Demand, Revisited.
+                        <E T="03">Review of Economic Studies.</E>
+                         2005. 72(3): pp. 853-883. doi:
+                        <E T="03">10.1111/0034-6527.00354.</E>
+                    </P>
+                </FTNT>
+                <P>
+                    While DOE is not prepared at present to provide a fuller quantifiable framework for estimating the benefits and costs of changes in consumer purchase decisions due to an energy conservation standard, DOE is committed to developing a framework that can support empirical quantitative tools for improved assessment of the consumer welfare impacts of appliance standards. DOE has posted a paper that discusses the issue of consumer welfare impacts of appliance energy
+                    <PRTPAGE P="21517"/>
+                    conservation standards, and potential enhancements to the methodology by which these impacts are defined and estimated in the regulatory process.
+                    <SU>7</SU>
+                    <FTREF/>
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>7</SU>
+                         Sanstad, A. H.
+                        <E T="03">Notes on the Economics of Household Energy Consumption and Technology Choice.</E>
+                         2010. Lawrence Berkeley National Laboratory.
+                        <E T="03">www1.eere.energy.gov/buildings/appliance_standards/pdfs/consumer_ee_theory.pdf</E>
+                         (last accessed July 1, 2021).
+                    </P>
+                </FTNT>
+                <P>DOE welcomes comments on how to more fully assess the potential impact of energy conservation standards on consumer choice and how to quantify this impact in its regulatory analysis in future rulemakings.</P>
+                <HD SOURCE="HD2">A. Benefits and Burdens of TSLs Considered for Air Cleaners Standards</HD>
+                <P>
+                    Table II.1 and Table II.2 summarize the quantitative impacts estimated for each TSL for air cleaners. The national impacts are measured over the lifetime of air cleaners purchased in the analysis period that begins in the anticipated year of compliance with standards (2024-2057 for TSL3 and 2028-2057 for the other TSLs). The energy savings, emissions reductions, and value of emissions reductions refer to full-fuel-cycle (“FFC”) results. The efficiency levels contained in each TSL are described in section V.A of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <GPOTABLE COLS="6" OPTS="L2,i1" CDEF="s100,8,8,8,8,8">
+                    <TTITLE>Table II.1—Summary of Analytical Results for Air Cleaners TSLs: National Impacts</TTITLE>
+                    <BOXHD>
+                        <CHED H="1">Category</CHED>
+                        <CHED H="1">TSL 1</CHED>
+                        <CHED H="1">TSL 2</CHED>
+                        <CHED H="1">TSL 3</CHED>
+                        <CHED H="1">TSL 4</CHED>
+                        <CHED H="1">TSL 5</CHED>
+                    </BOXHD>
+                    <ROW EXPSTB="05" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Cumulative FFC National Energy Savings</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00" RUL="s">
+                        <ENT I="01">Quads</ENT>
+                        <ENT>0.76</ENT>
+                        <ENT>1.73</ENT>
+                        <ENT>1.80</ENT>
+                        <ENT>4.05</ENT>
+                        <ENT>4.59</ENT>
+                    </ROW>
+                    <ROW EXPSTB="05" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Cumulative FFC Emissions Reduction</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">
+                            CO
+                            <E T="0732">2</E>
+                             (million metric tons)
+                        </ENT>
+                        <ENT>24.1</ENT>
+                        <ENT>55.0</ENT>
+                        <ENT>57.7</ENT>
+                        <ENT>128.5</ENT>
+                        <ENT>145.7</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            CH
+                            <E T="0732">4</E>
+                             (thousand tons)
+                        </ENT>
+                        <ENT>173.0</ENT>
+                        <ENT>394.8</ENT>
+                        <ENT>411.4</ENT>
+                        <ENT>922.8</ENT>
+                        <ENT>1,046.1</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            N
+                            <E T="0732">2</E>
+                            O (thousand tons)
+                        </ENT>
+                        <ENT>0.2</ENT>
+                        <ENT>0.5</ENT>
+                        <ENT>0.6</ENT>
+                        <ENT>1.2</ENT>
+                        <ENT>1.4</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            SO
+                            <E T="0732">2</E>
+                             (thousand tons)
+                        </ENT>
+                        <ENT>10.0</ENT>
+                        <ENT>22.8</ENT>
+                        <ENT>24.2</ENT>
+                        <ENT>53.2</ENT>
+                        <ENT>60.4</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            NO
+                            <E T="0732">X</E>
+                             (thousand tons)
+                        </ENT>
+                        <ENT>38.2</ENT>
+                        <ENT>87.2</ENT>
+                        <ENT>91.2</ENT>
+                        <ENT>203.7</ENT>
+                        <ENT>231.0</ENT>
+                    </ROW>
+                    <ROW RUL="s">
+                        <ENT I="01">Hg (tons)</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.2</ENT>
+                        <ENT>0.3</ENT>
+                        <ENT>0.4</ENT>
+                    </ROW>
+                    <ROW EXPSTB="05" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Present Value of Benefits and Costs (</E>
+                            <E T="02">3% discount rate, billion 2021$</E>
+                            <E T="02">)</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">Consumer Operating Cost Savings</ENT>
+                        <ENT>5.6</ENT>
+                        <ENT>13.2</ENT>
+                        <ENT>14.1</ENT>
+                        <ENT>(5.9)</ENT>
+                        <ENT>(0.8)</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Climate Benefits *</ENT>
+                        <ENT>1.1</ENT>
+                        <ENT>2.6</ENT>
+                        <ENT>2.8</ENT>
+                        <ENT>6.1</ENT>
+                        <ENT>6.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Health Benefits **</ENT>
+                        <ENT>1.9</ENT>
+                        <ENT>4.4</ENT>
+                        <ENT>4.7</ENT>
+                        <ENT>10.2</ENT>
+                        <ENT>11.6</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Total Benefits †</ENT>
+                        <ENT>8.6</ENT>
+                        <ENT>20.2</ENT>
+                        <ENT>21.6</ENT>
+                        <ENT>10.4</ENT>
+                        <ENT>17.7</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Consumer Incremental Product Costs</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.4</ENT>
+                        <ENT>0.5</ENT>
+                        <ENT>2.4</ENT>
+                        <ENT>3.7</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Consumer Net Benefits</ENT>
+                        <ENT>5.4</ENT>
+                        <ENT>12.8</ENT>
+                        <ENT>13.7</ENT>
+                        <ENT>(8.4)</ENT>
+                        <ENT>(4.5)</ENT>
+                    </ROW>
+                    <ROW RUL="s">
+                        <ENT I="01">Total Net Benefits</ENT>
+                        <ENT>8.5</ENT>
+                        <ENT>19.8</ENT>
+                        <ENT>21.1</ENT>
+                        <ENT>7.9</ENT>
+                        <ENT>14.0</ENT>
+                    </ROW>
+                    <ROW EXPSTB="05" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Present Value of Benefits and Costs (</E>
+                            <E T="02">7% discount rate, billion 2021$</E>
+                            <E T="02">)</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">Consumer Operating Cost Savings</ENT>
+                        <ENT>2.2</ENT>
+                        <ENT>5.3</ENT>
+                        <ENT>6.0</ENT>
+                        <ENT>(2.3)</ENT>
+                        <ENT>(0.2)</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Climate Benefits *</ENT>
+                        <ENT>1.1</ENT>
+                        <ENT>2.6</ENT>
+                        <ENT>2.8</ENT>
+                        <ENT>6.1</ENT>
+                        <ENT>6.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Health Benefits **</ENT>
+                        <ENT>0.7</ENT>
+                        <ENT>1.6</ENT>
+                        <ENT>1.8</ENT>
+                        <ENT>3.7</ENT>
+                        <ENT>4.2</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Total Benefits †</ENT>
+                        <ENT>4.1</ENT>
+                        <ENT>9.5</ENT>
+                        <ENT>10.6</ENT>
+                        <ENT>7.5</ENT>
+                        <ENT>10.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Consumer Incremental Product Costs</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.2</ENT>
+                        <ENT>0.2</ENT>
+                        <ENT>1.1</ENT>
+                        <ENT>1.7</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Consumer Net Benefits</ENT>
+                        <ENT>2.2</ENT>
+                        <ENT>5.1</ENT>
+                        <ENT>5.8</ENT>
+                        <ENT>(3.4)</ENT>
+                        <ENT>(1.9)</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Total Net Benefits</ENT>
+                        <ENT>4.0</ENT>
+                        <ENT>9.3</ENT>
+                        <ENT>10.3</ENT>
+                        <ENT>6.4</ENT>
+                        <ENT>9.2</ENT>
+                    </ROW>
+                    <TNOTE>
+                        <E T="02">Note:</E>
+                         This table presents the costs and benefits associated with air cleaners shipped from the compliance year through 2057. These results include benefits to consumers which accrue after 2057 from the products shipped starting in the compliance year up through 2057.
+                    </TNOTE>
+                    <TNOTE>
+                        * Climate benefits are calculated using four different estimates of the SC-CO
+                        <E T="0732">2</E>
+                        , SC-CH
+                        <E T="0732">4</E>
+                         and SC-N
+                        <E T="0732">2</E>
+                        O. Together, these represent the global SC-GHG. For presentational purposes of this table, the climate benefits associated with the average SC-GHG at a 3 percent discount rate are shown, but the Department does not have a single central SC-GHG point estimate. To monetize the benefits of reducing greenhouse gas emissions this analysis uses the interim estimates presented in the
+                        <E T="03">Technical Support Document: Social Cost of Carbon, Methane, and Nitrous Oxide Interim Estimates Under Executive Order 13990</E>
+                         published in February 2021 by the Interagency Working Group on the Social Cost of Greenhouse Gases (IWG).
+                    </TNOTE>
+                    <TNOTE>
+                        ** Health benefits are calculated using benefit-per-ton values for NO
+                        <E T="0732">X</E>
+                         and SO
+                        <E T="0732">2</E>
+                        . DOE is currently only monetizing (for NO
+                        <E T="0732">X</E>
+                         and SO
+                        <E T="0732">2</E>
+                        ) PM
+                        <E T="0732">2.5</E>
+                         precursor health benefits and (for NO
+                        <E T="0732">X</E>
+                        ) ozone precursor health benefits, but will continue to assess the ability to monetize other effects such as health benefits from reductions in direct PM
+                        <E T="0732">2.5</E>
+                         emissions. The health benefits are presented at real discount rates of 3 and 7 percent. See section IV.L of this document for more details.
+                    </TNOTE>
+                    <TNOTE>† Total and net benefits include consumer, climate, and health benefits. For presentation purposes, total and net benefits for both the 3-percent and 7-percent cases are presented using the average SC-GHG with 3-percent discount rate, but the Department does not have a single central SC-GHG point estimate. DOE emphasizes the importance and value of considering the benefits calculated using all four sets of SC-GHG estimates.</TNOTE>
+                </GPOTABLE>
+                <GPOTABLE COLS="7" OPTS="L2,p7,7/8,i1" CDEF="s50,12,12,12,12,12,12">
+                    <TTITLE>Table II.2—Summary of Analytical Results for Air Cleaner TSLs: Manufacturer and Consumer Impacts</TTITLE>
+                    <BOXHD>
+                        <CHED H="1">Category</CHED>
+                        <CHED H="1">TSL 1</CHED>
+                        <CHED H="1">TSL 2</CHED>
+                        <CHED H="1">TSL 3</CHED>
+                        <CHED H="2">Tier 1</CHED>
+                        <CHED H="2">Tier 2</CHED>
+                        <CHED H="1">TSL 4</CHED>
+                        <CHED H="1">TSL 5</CHED>
+                    </BOXHD>
+                    <ROW EXPSTB="06" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Manufacturer Impacts</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">Industry NPV (million 2021$) (No-new-standards case INPV = 1,565.9)</ENT>
+                        <ENT>1,528 to 1,536</ENT>
+                        <ENT>1,504 to 1,528</ENT>
+                        <ENT>1,479 to 1,479</ENT>
+                        <ENT>1,499 to 1,525</ENT>
+                        <ENT>1,422 to 1,536</ENT>
+                        <ENT>1,394 to 1,574</ENT>
+                    </ROW>
+                    <ROW RUL="s">
+                        <PRTPAGE P="21518"/>
+                        <ENT I="01">Industry NPV (% change)</ENT>
+                        <ENT>(2) to (2)</ENT>
+                        <ENT>(4) to (2)</ENT>
+                        <ENT>(2) to (2)</ENT>
+                        <ENT>(4) to (3)</ENT>
+                        <ENT>(9) to (2)</ENT>
+                        <ENT>(11) to 1</ENT>
+                    </ROW>
+                    <ROW EXPSTB="06" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Consumer Average LCC Savings (</E>
+                            <E T="0714">2021$</E>
+                            <E T="02">)</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">
+                            PC1: 10 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 100
+                        </ENT>
+                        <ENT>$18</ENT>
+                        <ENT>$12</ENT>
+                        <ENT>$18</ENT>
+                        <ENT>$12</ENT>
+                        <ENT>($87)</ENT>
+                        <ENT>($87)</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC2: 100 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 150
+                        </ENT>
+                        <ENT>$38</ENT>
+                        <ENT>$50</ENT>
+                        <ENT>$38</ENT>
+                        <ENT>$50</ENT>
+                        <ENT>($60)</ENT>
+                        <ENT>$11</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC3: PM
+                            <E T="0732">2.5</E>
+                             CADR ≥ 150
+                        </ENT>
+                        <ENT>$105</ENT>
+                        <ENT>$94</ENT>
+                        <ENT>$105</ENT>
+                        <ENT>$94</ENT>
+                        <ENT>$29</ENT>
+                        <ENT>$20</ENT>
+                    </ROW>
+                    <ROW RUL="s">
+                        <ENT I="01">Shipment-Weighted Average *</ENT>
+                        <ENT>$67</ENT>
+                        <ENT>$62</ENT>
+                        <ENT>$67</ENT>
+                        <ENT>$62</ENT>
+                        <ENT>($23)</ENT>
+                        <ENT>($10)</ENT>
+                    </ROW>
+                    <ROW EXPSTB="06" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Consumer Simple PBP (years)</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">
+                            PC1: 10 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 100
+                        </ENT>
+                        <ENT>0.9</ENT>
+                        <ENT>1.4</ENT>
+                        <ENT>0.9</ENT>
+                        <ENT>1.4</ENT>
+                        <ENT>NA</ENT>
+                        <ENT>NA</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC2: 100 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 150
+                        </ENT>
+                        <ENT>0.4</ENT>
+                        <ENT>0.5</ENT>
+                        <ENT>0.4</ENT>
+                        <ENT>0.5</ENT>
+                        <ENT>NA</ENT>
+                        <ENT>1.6</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC3: PM
+                            <E T="0732">2.5</E>
+                             CADR ≥ 150
+                        </ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.1</ENT>
+                        <ENT>0.3</ENT>
+                        <ENT>0.3</ENT>
+                    </ROW>
+                    <ROW RUL="s">
+                        <ENT I="01">Shipment-Weighted Average *</ENT>
+                        <ENT>0.4</ENT>
+                        <ENT>0.5</ENT>
+                        <ENT>0.4</ENT>
+                        <ENT>0.5</ENT>
+                        <ENT>NA</ENT>
+                        <ENT>NA</ENT>
+                    </ROW>
+                    <ROW EXPSTB="06" RUL="s">
+                        <ENT I="21">
+                            <E T="02">Percent of Consumers That Experience a Net Cost</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">
+                            PC1: 10 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 100
+                        </ENT>
+                        <ENT>0%</ENT>
+                        <ENT>6%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>6%</ENT>
+                        <ENT>88%</ENT>
+                        <ENT>94%</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC2: 100 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 150
+                        </ENT>
+                        <ENT>0%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>75%</ENT>
+                        <ENT>54%</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC3: PM
+                            <E T="0732">2.5</E>
+                             CADR ≥ 150
+                        </ENT>
+                        <ENT>0%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>50%</ENT>
+                        <ENT>56%</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Shipment-Weighted Average *</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>1%</ENT>
+                        <ENT>0%</ENT>
+                        <ENT>1%</ENT>
+                        <ENT>66%</ENT>
+                        <ENT>65%</ENT>
+                    </ROW>
+                    <TNOTE>Parentheses indicate negative (−) values. The entry “NA” means not applicable because there is no change in the standard at certain TSLs.</TNOTE>
+                    <TNOTE>* Weighted by shares of each product class in total projected shipments in 2028.</TNOTE>
+                </GPOTABLE>
+                <P>DOE first considered TSL 5, which represents the max-tech efficiency levels for all the three product classes. Specifically, for all three product classes, DOE's expected design path for TSL 5 (which represents EL 4 for all product classes) incorporates cylindrical shaped filters and brushless direct current (“BLDC”) motors with an optimized motor-filter relationship. In particular, the cylindrical filter, which reduces the pressure drop across the filter because it allows for a larger surface area for the same volume of filter material, optimized with the size of the BLDC motor provides the improvement in efficiency at TSL 5 compared to TSL 4. TSL 5 would save an estimated 4.59 quads of energy, an amount DOE considers significant. Under TSL 5, the net present value (“NPV”) of consumer benefit would be −$1.9 billion using a discount rate of 7 percent, and −$4.5 billion using a discount rate of 3 percent.</P>
+                <P>
+                    The cumulative emissions reductions at TSL 5 are 145.7 million metric tons (“Mt”) of carbon dioxide (“CO
+                    <E T="52">2</E>
+                    ”), 60.4 thousand tons of sulfur dioxide (“SO
+                    <E T="52">2</E>
+                    ”), 231.0 thousand tons of nitrogen oxides(“NO
+                    <E T="52">X</E>
+                    ”), 0.4 tons of mercury (“Hg”), 1,046.1 thousand tons of methane (“CH
+                    <E T="52">4</E>
+                    ”), and 1.4 thousand tons of nitrous oxide(“N
+                    <E T="52">2</E>
+                    O”). The estimated monetary value of the climate benefits from reduced greenhouse gas (“GHG”) emissions (associated with the average social cost of GHG (“SC-GHG”) at a 3-percent discount rate) at TSL 5 is $6.9 billion. The estimated monetary value of the health benefits from reduced SO
+                    <E T="52">2</E>
+                     and NO
+                    <E T="52">X</E>
+                     emissions at TSL 5 is $4.2 billion using a 7-percent discount rate and $11.6 billion using a 3-percent discount rate.
+                </P>
+                <P>
+                    Using a 7-percent discount rate for consumer benefits and costs, health benefits from reduced SO
+                    <E T="52">2</E>
+                     and NO
+                    <E T="52">X</E>
+                     emissions, and the 3-percent discount rate case for climate benefits from reduced GHG emissions, the estimated total NPV at TSL 5 is $9.2 billion. Using a 3-percent discount rate for all benefits and costs, the estimated total NPV at TSL 5 is $14.0 billion. The estimated total NPV is provided for additional information, however, DOE primarily relies upon the NPV of consumer benefits when determining whether a standard level is economically justified.
+                </P>
+                <P>
+                    At TSL 5, the average life-cycle cost (“LCC”) impact is a loss of $87 for Product Class 1 (10 ≤ PM
+                    <E T="52">2.5</E>
+                     CADR &lt; 100), an average LCC savings of $11 for Product Class 2 (100 ≤ PM
+                    <E T="52">2.5</E>
+                     CADR &lt; 150), and an average LCC savings of $20 for Product Class 3 (PM
+                    <E T="52">2.5</E>
+                     CADR ≥ 150). The simple payback period cannot be calculated for Product Class 1 due to the max-tech EL not being cost effective compared to the baseline EL, and is 1.6 years for Product Class 2 and 0.3 years for Product Class 3. The fraction of consumers experiencing a net LCC cost is 94 percent for Product Class 1, 54 percent for Product Class 2 and 56 percent for Product Class 3.
+                </P>
+                <P>For the low-income consumer group, the average LCC impact is a loss of $97 for Product Class 1, an average LCC loss of $9 for Product Class 2, and an average LCC loss of $7 for Product Class 3. The simple payback period cannot be calculated for Product Class 1 due to a higher annual operating cost for the selected EL than the cost for baseline units, and is 2.7 years and 0.5 years for Product Class 2 and Product Class 3, respectively. The fraction of low-income consumers experiencing a net LCC cost is 95 percent for Product Class 1, 64 percent for Product Class 2 and 67 percent for Product Class 3.</P>
+                <P>At TSL 5, the projected change in industry net present value (“INPV”) ranges from a decrease of $171.5 million to an increase of $8.1 million, which corresponds to a decrease of 11.0 percent and an increase of 0.5 percent, respectively. DOE estimates that industry may need to invest $145.2 million to comply with standards set at TSL 5.</P>
+                <P>At TSL 5, compliant models are typically designed to house a cylindrical filter, and the cabinets of these units are also typically cylindrical in shape. The move to cylindrical designs would require investment in new designs and new production tooling for most of the industry, as only 3 percent of units shipped meet TSL 5 today. Manufacturers would need to invest in both updated designs and updated cabinet tooling. The vast majority of product is made from injection molded plastic and DOE expects the need for new injection molding dies to drive conversion cost for the industry.</P>
+                <P>
+                    The Secretary concludes that at TSL 5 for air cleaners, the benefits of energy savings, emission reductions, and the estimated monetary value of the
+                    <PRTPAGE P="21519"/>
+                    emissions reductions would be outweighed by the economic burden on many consumers (negative LCC savings of Product Class 1, a majority of consumers with net costs for all three product classes, and negative NPV of consumer benefits), and the capital conversion costs and profit margin impacts that could result in reductions in INPV for manufacturers.
+                </P>
+                <P>DOE next considered TSL 4, which represents the second highest efficiency levels. TSL 4 comprises EL 3 for all three product classes. Specifically, DOE's expected design path for TSL 4 incorporates many of the same technologies and design strategies as described for TSL 5. At TSL 4, all three product classes would incorporate cylindrical shaped filters and BLDC motors without an optimized motor-filter relationship. The cylindrical filter, which reduces the pressure drop across the filter because it allows for a larger surface area for the same volume of filter material, provides the improvement in efficiency at TSL 4 compared to TSL 3 which utilizes rectangular shaped filters and less efficient motor designs. TSL 4 would save an estimated 4.05 quads of energy, an amount DOE considers significant. Under TSL 4, the NPV of consumer benefit would be −$3.4 billion using a discount rate of 7 percent, and −$8.4 billion using a discount rate of 3 percent.</P>
+                <P>
+                    The cumulative emissions reductions at TSL 4 are 128.5 Mt of CO
+                    <E T="52">2</E>
+                    , 53.2 thousand tons of SO
+                    <E T="52">2</E>
+                    , 203.7 thousand tons of NO
+                    <E T="52">X</E>
+                    , 0.3 tons of Hg, 922.8 thousand tons of CH
+                    <E T="52">4</E>
+                    , and 1.2 thousand tons of N
+                    <E T="52">2</E>
+                    O. The estimated monetary value of the climate benefits from reduced GHG emissions (associated with the average SC-GHG at a 3-percent discount rate) at TSL 4 is $6.1 billion. The estimated monetary value of the health benefits from reduced SO
+                    <E T="52">2</E>
+                     and NO
+                    <E T="52">X</E>
+                     emissions at TSL 4 is $3.7 billion using a 7-percent discount rate and $10.2 billion using a 3-percent discount rate.
+                </P>
+                <P>
+                    Using a 7-percent discount rate for consumer benefits and costs, health benefits from reduced SO
+                    <E T="52">2</E>
+                     and NO
+                    <E T="52">X</E>
+                     emissions, and the 3-percent discount rate case for climate benefits from reduced GHG emissions, the estimated total NPV at TSL 4 is $6.4 billion. Using a 3-percent discount rate for all benefits and costs, the estimated total NPV at TSL 4 is $7.9 billion. The estimated total NPV is provided for additional information, however DOE primarily relies upon the NPV of consumer benefits when determining whether a standard level is economically justified.
+                </P>
+                <P>At TSL 4, the average LCC impact is a loss of $87 for Product Class 1, an average LCC loss of $60 for Product Class 2 and an average savings of $29 for Product Class 3. The simple payback period cannot be calculated for Product Class 1 and Product Class 2 due to the higher annual operating cost compared to the baseline units, and is 0.3 years for Product Class 3. The fraction of consumers experiencing a net LCC cost is 88 percent for Product Class 1, 75 percent for Product Class 2 and 50 percent for Product Class 3.</P>
+                <P>For the low-income consumer group, the average LCC impact is an average loss of $95 for Product Class 1, an average LCC loss of $78 for Product Class 2 and an average savings of $2 for Product Class 3. The simple payback period cannot be calculated for Product Class 1 and Product Class 2 due to a higher annual operating cost for the selected EL than the cost for baseline units, and is 0.4 years for Product Class 3. The fraction of low-income consumers experiencing a net LCC cost is 89 percent for Product Class 1, 82 percent for Product Class 2 and 61 percent for Product Class 3.</P>
+                <P>At TSL 4, the projected change in INPV ranges from a decrease of $143.7 million to a decrease of $30.2 million, which correspond to decreases of 9.2 percent and 1.9 percent, respectively. Industry conversion costs could reach $136.6 million at this TSL.</P>
+                <P>At TSL 4, compliant models are typically designed to house a cylindrical filter, and the cabinets of these units are also typically cylindrical in shape—much like TSL 5. Again, the major driver of impacts to manufacturers is the move to cylindrical designs, requiring redesign of products and investment in new production tooling for most of the industry, as only 7 percent of sales meet TSL 4 today.</P>
+                <P>Based upon the above considerations, the Secretary concludes that at TSL 4 for air cleaners, the benefits of energy savings, emission reductions, and the estimated monetary value of the health benefits and climate benefits from emissions reductions would be outweighed by negative LCC savings for Product Class 1 and Product Class 2, the high percentage of consumers with net costs for all product classes, negative NPV of consumer benefits, and the capital conversion costs and profit margin impacts that could result in reductions in INPV for manufacturers. Consequently, the Secretary has tentatively concluded that TSL 4 is not economically justified.</P>
+                <P>DOE then considered the recommended TSL (TSL3), which represents the Joint Proposal with EL 1 (Tier 1) going into effect in 2024 (compliance date December 31, 2023) and EL 2 (Tier 2) going into effect in 2026 (compliance date December 31, 2025). EL 1 comprises the lowest EL considered which aligns with the standards established by the States of Maryland, Nevada, and New Jersey, and the District of Columbia. EL 2 comprises the current ENERGY STAR V. 2.0 level and the standard adopted by the State of Washington. DOE's design path for TSL 3, which includes both EL 1 and EL 2 for all three product classes, includes rectangular shaped filters and either shaded-pole motors (“SPM”) or permanent split capacitor motors (“PSC”). Specifically, for Product Class 1, the Tier 1 standard, which is represented by EL 1, includes a rectangular filter and SPM motor with an optimized motor-filter relationship while the Tier 2 standard, which is represented by EL 2, includes a rectangular filter and PSC motor, which is generally more efficient than an SPM motor. For Product Class 2 and Product Class 3, the Tier 1 standard, which is represented by EL 1, includes a rectangular filter and PSC motor while the Tier 2 standard, which is represented by EL 2, also includes a rectangular filter and PSC motor but with an optimized motor-filter relationship, which improves the efficiency of EL 2 over EL 1. TSL 3 would save an estimated 1.80 quads of energy, an amount DOE considers significant. Under TSL 3, the NPV of consumer benefit would be $13.7 billion using a discount rate of 7 percent, and $5.8 billion using a discount rate of 3 percent.</P>
+                <P>
+                    The cumulative emissions reductions at the recommended TSL are 57.7 Mt of CO
+                    <E T="52">2</E>
+                    , 24.2 thousand tons of SO
+                    <E T="52">2</E>
+                    , 91.2 thousand tons of NO
+                    <E T="52">X</E>
+                    , 0.2 tons of Hg, 411.4 thousand tons of CH
+                    <E T="52">4</E>
+                    , and 0.6 thousand tons of N
+                    <E T="52">2</E>
+                    O. The estimated monetary value of the climate benefits from reduced GHG emissions (associated with the average SC-GHG at a 3-percent discount rate) at the recommended TSL is $2.8 billion. The estimated monetary value of the health benefits from reduced SO
+                    <E T="52">2</E>
+                     and NO
+                    <E T="52">X</E>
+                     emissions at the recommended TSL is $1.8 billion using a 7-percent discount rate and $4.7 billion using a 3-percent discount rate.
+                </P>
+                <P>
+                    Using a 7-percent discount rate for consumer benefits and costs, health benefits from reduced SO
+                    <E T="52">2</E>
+                     and NO
+                    <E T="52">X</E>
+                     emissions, and the 3-percent discount rate case for climate benefits from reduced GHG emissions, the estimated total NPV at the recommended TSL is $10.3 billion. Using a 3-percent discount rate for all benefits and costs,
+                    <PRTPAGE P="21520"/>
+                    the estimated total NPV at TSL 3 is $21.1 billion. The estimated total NPV is provided for additional information, however DOE primarily relies upon the NPV of consumer benefits when determining whether a standard level is economically justified.
+                </P>
+                <P>At the recommended TSL with the two-tier approach, the average LCC impacts are average savings of $18 and $12 for Product Class 1, $38 and $50 for Product Class 2, and $105 and $94 for Product Class 3, for Tier 1 and Tier 2 respectively. The simple payback periods are below 1.4 years for the two tiers of Product Class 1, below 0.5 years for the two tiers of Product Class 2, and 0.1 for the two tiers of Product Class 3. The fraction of consumers experiencing a net LCC cost is below 6 percent for the two tiers of all three product classes.</P>
+                <P>For the low-income consumer group, the average LCC impact is a savings of $17 and $10 for the two tiers of Product Class 1, $34 and $44 for the two tiers of Product Class 2, and $85 and $76 for the two tiers of Product Class 3. The simple payback periods for the two-tier approach are 1.2 years for Tier 1 and 1.9 years for Tier 2 for Product Class 1, are 0.6 years and 0.7 years for Tier 1 and Tier 2 respectively for Product Class 2, and is 0.2 years for both tiers of Product Class 3. The fraction of low-income consumers experiencing a net LCC cost is 10 percent for Tier 2 of Product Class 1, and 0 percent for Tier 1 of Product Class 1 and all other tiers of the other product classes.</P>
+                <P>At the recommended TSL, the projected change in INPV ranges from a decrease of $66.7 million to a decrease of $40.7 million, which correspond to decreases of 4.3 percent and 2.6 percent, respectively. Industry conversion costs could reach $57.3 million at this TSL.</P>
+                <P>A sizeable portion of the market, approximately 40 percent, can currently meet the Tier 2 level. Additionally, a substantial portion of existing models can be updated to meet Tier 2 through optimization and improved components rather than a full product redesign. In particular, manufacturers may be able to leverage their existing cabinet designs, reducing the level of investment necessitated by the standard.</P>
+                <P>An even larger portion of the market, approximately 76 percent, can meet the Tier 1 level today. Efficiency improvements to meet Tier 1 are achievable by improving the motor or by optimizing the motor-filter relationship, typically by reducing the restriction of airflow (and therefore, the pressure drop across the filter) by increasing the surface area of the filter, reducing filter thickness, and/or increasing air inlet/outlet size. Manufacturers may be able to leverage their existing cabinet designs, reducing the level of investment necessitated by the standard.</P>
+                <P>After considering the analysis and weighing the benefits and burdens, the Secretary has concluded that at a standard set at the recommended TSL for air cleaners would be economically justified. At this TSL, the average LCC savings for all three product classes are positive. Only an estimated 6 percent of Product Class 1 consumers experience a net cost. No Product Class 2 and Product Class 3 consumers would experience net cost based on the estimates. The FFC national energy savings are significant and the NPV of consumer benefits is positive using both a 3-percent and 7-percent discount rate. At the recommended TSL, the NPV of consumer benefits, even measured at the more conservative discount rate of 7 percent, is over 84 times higher than the maximum estimated manufacturers' loss in INPV. The standard levels at the recommended TSL are economically justified even without weighing the estimated monetary value of emissions reductions. When those emissions reductions are included—representing $2.8 billion in climate benefits (associated with the average SC-GHG at a 3-percent discount rate), and $4.7 billion (using a 3-percent discount rate) or $1.8 billion (using a 7-percent discount rate) in health benefits—the rationale becomes stronger still.</P>
+                <P>As stated, DOE conducts the walk-down analysis to determine the TSL that represents the maximum improvement in energy efficiency that is technologically feasible and economically justified as required under EPCA. Although DOE has not conducted a comparative analysis to select the new energy conservation standards, DOE notes that as compared to TSL 4 and TSL 5, TSL 3 has positive LCC savings for all selected standards levels, a shorter payback period, smaller percentages of consumers experiencing a net cost, a lower maximum decrease in INPV, and lower manufacturer conversion costs.</P>
+                <P>Although DOE considered new standard levels for air cleaners by grouping the efficiency levels for each product class into TSLs, DOE analyzes and evaluates all possible ELs for each product class in its analysis. For all three product classes, the adopted standard levels represent units with rectangular filter shape with a PSC motor at EL 1 and an optimized motor-filter relationship at EL 2. Additionally, for all three product classes the adopted standard levels represent the maximum energy savings that does not result in a large percentage of consumers experiencing a net LCC cost. TSL 3 would also realize an additional 0.07 quads FFC energy savings compared to TSL 2, which selects the same standard levels but with a later compliance date. The efficiency levels at the specified standard levels result in positive LCC savings for all three product classes, significantly reduce the number of consumers experiencing a net cost, and reduce the decrease in INPV and conversion costs to the point where DOE has concluded these levels are economically justified, as discussed for TSL 3 in the preceding paragraphs.</P>
+                <P>
+                    Therefore, based on the previous considerations, DOE adopts the energy conservation standards for air cleaners at the recommended TSL. The new energy conservation standards for air cleaners, which are expressed in IEF using PM
+                    <E T="52">2.5</E>
+                     CADR/W, are shown in Table II.3.
+                </P>
+                <GPOTABLE COLS="3" OPTS="L2,i1" CDEF="s100,12,12">
+                    <TTITLE>Table II.3—New Energy Conservation Standards for Air Cleaners</TTITLE>
+                    <BOXHD>
+                        <CHED H="1">Product class</CHED>
+                        <CHED H="1">
+                            IEF (PM
+                            <E T="0732">2.5</E>
+                             CADR/W)
+                        </CHED>
+                        <CHED H="2">Tier 1</CHED>
+                        <CHED H="2">Tier 2</CHED>
+                    </BOXHD>
+                    <ROW>
+                        <ENT I="01">
+                            PC1: 10 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 100
+                        </ENT>
+                        <ENT>1.7</ENT>
+                        <ENT>1.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC2: 100 ≤ PM
+                            <E T="0732">2.5</E>
+                             CADR &lt; 150
+                        </ENT>
+                        <ENT>1.9</ENT>
+                        <ENT>2.4</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">
+                            PC3: PM
+                            <E T="0732">2.5</E>
+                             CADR ≥ 150
+                        </ENT>
+                        <ENT>2.0</ENT>
+                        <ENT>2.9</ENT>
+                    </ROW>
+                </GPOTABLE>
+                <PRTPAGE P="21521"/>
+                <HD SOURCE="HD2">B. Annualized Benefits and Costs of the Adopted Standards</HD>
+                <P>The benefits and costs of the adopted standards can also be expressed in terms of annualized values. The annualized net benefit is (1) the annualized national economic value (expressed in 2021$) of the benefits from operating products that meet the adopted standards (consisting primarily of operating cost savings from using less energy), minus increases in product purchase costs, and (2) the annualized monetary value of the climate and health benefits.</P>
+                <P>Table II.4 shows the annualized values for air cleaners under the recommended TSL, expressed in 2021$. The results under the primary estimate are as follows.</P>
+                <P>
+                    Using a 7-percent discount rate for consumer benefits and costs and NO
+                    <E T="52">X</E>
+                     and SO
+                    <E T="52">2</E>
+                     reduction benefits, and a 3-percent discount rate case for GHG social costs, the estimated cost of the standards adopted in this rule is $19.8 million per year in increased product costs, while the estimated annual benefits are $499 million in reduced product operating costs, $136 million in climate benefits, and $149 million in health benefits. In this case, the net benefit amounts to $764 million per year.
+                </P>
+                <P>Using a 3-percent discount rate for all benefits and costs, the estimated cost of the standards is $23.4 million per year in increased equipment costs, while the estimated annual benefits are $690 million in reduced operating costs, $136 million in climate benefits, and $228 million in health benefits. In this case, the net benefit amounts to $1,030 million per year.</P>
+                <GPOTABLE COLS="4" OPTS="L2,i1" CDEF="s100,12,12,12">
+                    <TTITLE>Table II.4—Annualized Benefits and Costs of Adopted Standards (Recommended TSL) for Air Cleaners</TTITLE>
+                    <BOXHD>
+                        <CHED H="1"> </CHED>
+                        <CHED H="1">Million 2021$/year</CHED>
+                        <CHED H="2">
+                            Primary
+                            <LI>estimate</LI>
+                        </CHED>
+                        <CHED H="2">
+                            Low-net-
+                            <LI>benefits</LI>
+                            <LI>estimate</LI>
+                        </CHED>
+                        <CHED H="2">
+                            High-net-
+                            <LI>benefits</LI>
+                            <LI>estimate</LI>
+                        </CHED>
+                    </BOXHD>
+                    <ROW EXPSTB="03" RUL="s">
+                        <ENT I="21">
+                            <E T="02">3% discount rate</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">Consumer Operating Cost Savings</ENT>
+                        <ENT>689.7</ENT>
+                        <ENT>623.7</ENT>
+                        <ENT>773.4</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Climate Benefits *</ENT>
+                        <ENT>135.6</ENT>
+                        <ENT>124.2</ENT>
+                        <ENT>149.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Health Benefits **</ENT>
+                        <ENT>228.4</ENT>
+                        <ENT>210.1</ENT>
+                        <ENT>251.0</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Total Benefits †</ENT>
+                        <ENT>1,053.6</ENT>
+                        <ENT>958.1</ENT>
+                        <ENT>1,174.2</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Consumer Incremental Product Costs ‡</ENT>
+                        <ENT>23.4</ENT>
+                        <ENT>22.8</ENT>
+                        <ENT>24.7</ENT>
+                    </ROW>
+                    <ROW RUL="s">
+                        <ENT I="01">Net Benefits</ENT>
+                        <ENT>1,030.2</ENT>
+                        <ENT>935.3</ENT>
+                        <ENT>1,149.5</ENT>
+                    </ROW>
+                    <ROW EXPSTB="03" RUL="s">
+                        <ENT I="21">
+                            <E T="02">7% discount rate</E>
+                        </ENT>
+                    </ROW>
+                    <ROW EXPSTB="00">
+                        <ENT I="01">Consumer Operating Cost Savings</ENT>
+                        <ENT>498.8</ENT>
+                        <ENT>459.8</ENT>
+                        <ENT>546.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Climate Benefits * (3% discount rate)</ENT>
+                        <ENT>135.6</ENT>
+                        <ENT>124.2</ENT>
+                        <ENT>149.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Health Benefits **</ENT>
+                        <ENT>149.3</ENT>
+                        <ENT>139.7</ENT>
+                        <ENT>160.9</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Total Benefits †</ENT>
+                        <ENT>783.7</ENT>
+                        <ENT>723.7</ENT>
+                        <ENT>857.7</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Consumer Incremental Product Costs ‡</ENT>
+                        <ENT>19.8</ENT>
+                        <ENT>19.3</ENT>
+                        <ENT>20.7</ENT>
+                    </ROW>
+                    <ROW>
+                        <ENT I="01">Net Benefits</ENT>
+                        <ENT>763.9</ENT>
+                        <ENT>704.4</ENT>
+                        <ENT>837.0</ENT>
+                    </ROW>
+                    <TNOTE>
+                        <E T="02">Note:</E>
+                         This table presents the costs and benefits associated with air cleaners shipped in 2024-2057. These results include benefits to consumers which accrue after 2057 from the products shipped in 2024-2057. The Primary, Low Net Benefits, and High Net Benefits Estimates utilize projections of energy prices from the
+                        <E T="03">AEO2022</E>
+                         Reference case, Low Economic Growth case, and High Economic Growth case, respectively. In addition, incremental equipment costs reflect a medium decline rate in the Primary Estimate, a low decline rate in the Low Net Benefits Estimate, and a high decline rate in the High Net Benefits Estimate. The methods used to derive projected price trends are explained in section IV.F.1of this document. Note that the Benefits and Costs may not sum to the Net Benefits due to rounding.
+                    </TNOTE>
+                    <TNOTE>
+                        * Climate benefits are calculated using four different estimates of the global SC-GHG (see section IV.L of this proposed rule). For presentational purposes of this table, the climate benefits associated with the average SC-GHG at a 3 percent discount rate are shown, but the Department does not have a single central SC-GHG point estimate, and it emphasizes the importance and value of considering the benefits calculated using all four sets of SC-GHG estimates. To monetize the benefits of reducing greenhouse gas emissions this analysis uses the interim estimates presented in the
+                        <E T="03">Technical Support Document: Social Cost of Carbon, Methane, and Nitrous Oxide Interim Estimates Under Executive Order 13990</E>
+                         published in February 2021 by the Interagency Working Group on the Social Cost of Greenhouse Gases (IWG).
+                    </TNOTE>
+                    <TNOTE>
+                        ** Health benefits are calculated using benefit-per-ton values for NO
+                        <E T="0732">X</E>
+                         and SO
+                        <E T="0732">2</E>
+                        . DOE is currently only monetizing (for SO
+                        <E T="0732">2</E>
+                         and NO
+                        <E T="0732">X</E>
+                        ) PM
+                        <E T="0732">2.5</E>
+                         precursor health benefits and (for NO
+                        <E T="0732">X</E>
+                        ) ozone precursor health benefits, but will continue to assess the ability to monetize other effects such as health benefits from reductions in direct PM
+                        <E T="0732">2.5</E>
+                         emissions.
+                        <E T="03">See</E>
+                         section IV.L of this document for more details.
+                    </TNOTE>
+                    <TNOTE>† Total benefits for both the 3-percent and 7-percent cases are presented using the average SC-GHG with 3-percent discount rate, but the Department does not have a single central SC-GHG point estimate.</TNOTE>
+                    <TNOTE>‡ Costs include incremental equipment costs as well as filter costs.</TNOTE>
+                </GPOTABLE>
+                <HD SOURCE="HD1">III. Public Participation</HD>
+                <HD SOURCE="HD2">A. Submission of Comments</HD>
+                <P>
+                    DOE will accept comments, data, and information regarding this proposed rule unit the date provided in the
+                    <E T="02">DATES</E>
+                     section at the beginning of this proposed rule. Interested parties may submit comments, data, and other information using any of the methods described in the
+                    <E T="02">ADDRESSES</E>
+                     section at the beginning of this document.
+                </P>
+                <P>
+                    Although DOE welcomes comments on any aspect of the proposal in this notice and the analysis as described in the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    , DOE is particularly interested in receiving comments and views of interested parties concerning the following issues:
+                </P>
+                <P>
+                    1. The product classes established for air cleaners. See section IV.A.1 of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    2. The technology options identified to improve the efficiency of air cleaners and whether there are additional technologies available that may improve air cleaner performance. See section IV.A.2 of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    3. The baseline efficiency levels DOE identified for each product class. See section IV.C.1.a of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    4. The max-tech efficiency levels DOE identified for each product class and the technology options available at max-tech. See section IV.C.1.b of the direct
+                    <PRTPAGE P="21522"/>
+                    final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    5. The incremental manufacturer production costs DOE estimated at each efficiency level for each product class. See section IV.C.3 of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    6. The filter costs DOE estimated at each efficiency level for each product class. See section IV.C.3 of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    7. Consumer usage data to indicate annual energy use by household or commercial building including: average number of air cleaners per household or average number of air cleaners per commercial building square footage; average number of usage hours per day; average number months of operation per year; average number of filter changes per year; and most common fan setting. See section IV.E of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    8. Historical shipments data and shipments growth rate by efficiency level and product class for both the residential and commercial markets. See section IV.G of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    9. Product conversion costs, which are investments in research and development, product testing, marketing, and other non-capitalized costs necessary to update product designs to comply with energy conservation standards. See section IV.J.2.c of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    10. Capital conversion costs, which are investments in property, plant, and equipment necessary to adapt or change existing manufacturing facilities such that compliant product designs can be fabricated and assembled. See section IV.J.2.c of the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <P>
+                    <E T="03">Submitting comments</E>
+                     via
+                    <E T="03">www.regulations.gov.</E>
+                     The
+                    <E T="03">www.regulations.gov</E>
+                     web page will require you to provide your name and contact information. Your contact information will be viewable to DOE Building Technologies staff only. Your contact information will not be publicly viewable except for your first and last names, organization name (if any), and submitter representative name (if any). If your comment is not processed properly because of technical difficulties, DOE will use this information to contact you. If DOE cannot read your comment due to technical difficulties and cannot contact you for clarification, DOE may not be able to consider your comment.
+                </P>
+                <P>However, your contact information will be publicly viewable if you include it in the comment itself or in any documents attached to your comment. Any information that you do not want to be publicly viewable should not be included in your comment, nor in any document attached to your comment. Otherwise, persons viewing comments will see only first and last names, organization names, correspondence containing comments, and any documents submitted with the comments.</P>
+                <P>
+                    Do not submit to
+                    <E T="03">www.regulations.gov</E>
+                     information for which disclosure is restricted by statute, such as trade secrets and commercial or financial information (hereinafter referred to as Confidential Business Information (“CBI”)). Comments submitted through
+                    <E T="03">www.regulations.gov</E>
+                     cannot be claimed as CBI. Comments received through the website will waive any CBI claims for the information submitted. For information on submitting CBI, see the Confidential Business Information section.
+                </P>
+                <P>
+                    DOE processes submissions made through
+                    <E T="03">www.regulations.gov</E>
+                     before posting. Normally, comments will be posted within a few days of being submitted. However, if large volumes of comments are being processed simultaneously, your comment may not be viewable for up to several weeks. Please keep the comment tracking number that
+                    <E T="03">www.regulations.gov</E>
+                     provides after you have successfully uploaded your comment.
+                </P>
+                <P>
+                    <E T="03">Submitting comments via email, hand delivery/courier, or postal mail.</E>
+                     Comments and documents submitted via email, hand delivery/courier, or postal mail also will be posted to
+                    <E T="03">www.regulations.gov.</E>
+                     If you do not want your personal contact information to be publicly viewable, do not include it in your comment or any accompanying documents. Instead, provide your contact information in a cover letter. Include your first and last names, email address, telephone number, and optional mailing address. The cover letter will not be publicly viewable as long as it does not include any comments.
+                </P>
+                <P>Include contact information each time you submit comments, data, documents, and other information to DOE. If you submit via postal mail or hand delivery/courier, please provide all items on a CD, if feasible, in which case it is not necessary to submit printed copies. No telefacsimiles (“faxes”) will be accepted.</P>
+                <P>Comments, data, and other information submitted to DOE electronically should be provided in PDF (preferred), Microsoft Word or Excel, WordPerfect, or text (ASCII) file format. Provide documents that are not secured, that are written in English, and that are free of any defects or viruses. Documents should not contain special characters or any form of encryption and, if possible, they should carry the electronic signature of the author.</P>
+                <P>
+                    <E T="03">Campaign form letters.</E>
+                     Please submit campaign form letters by the originating organization in batches of between 50 to 500 form letters per PDF or as one form letter with a list of supporters' names compiled into one or more PDFs. This reduces comment processing and posting time.
+                </P>
+                <P>
+                    <E T="03">Confidential Business Information.</E>
+                     Pursuant to 10 CFR 1004.11, any person submitting information that he or she believes to be confidential and exempt by law from public disclosure should submit via email two well-marked copies: one copy of the document marked “confidential” including all the information believed to be confidential, and one copy of the document marked “non-confidential” with the information believed to be confidential deleted. DOE will make its own determination about the confidential status of the information and treat it according to its determination.
+                </P>
+                <P>It is DOE's policy that all comments may be included in the public docket, without change and as received, including any personal information provided in the comments (except information deemed to be exempt from public disclosure).</P>
+                <HD SOURCE="HD2">B. Public Meeting</HD>
+                <P>
+                    As stated previously, if DOE withdraws the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                     pursuant to 42 U.S.C. 6295(p)(4)(C), DOE will hold a public meeting to allow for additional comment on this proposed rule. DOE will publish notice of any meeting in the
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <HD SOURCE="HD1">IV. Procedural Issues and Regulatory Review</HD>
+                <P>
+                    The regulatory reviews conducted for this proposed rule are identical to those conducted for the direct final rule published elsewhere in this
+                    <E T="04">Federal Register</E>
+                    . Please see the direct final rule for further details.
+                </P>
+                <HD SOURCE="HD2">A. Review Under the Regulatory Flexibility Act</HD>
+                <P>
+                    The Regulatory Flexibility Act (5 U.S.C. 601
+                    <E T="03">et seq.</E>
+                    ) requires preparation of an initial regulatory flexibility analysis (“IRFA”) and a final regulatory flexibility analysis (“FRFA”) for any rule that by law must be proposed for
+                    <PRTPAGE P="21523"/>
+                    public comment, unless the agency certifies that the rule, if promulgated, will not have a significant economic impact on a substantial number of small entities. As required by E.O. 13272, “Proper Consideration of Small Entities in Agency Rulemaking,” 67 FR 53461 (Aug. 16, 2002), DOE published procedures and policies on February 19, 2003, to ensure that the potential impacts of its rules on small entities are properly considered during the rulemaking process. 68 FR 7990. DOE has made its procedures and policies available on the Office of the General Counsel's website (
+                    <E T="03">www.energy.gov/gc/office-general-counsel</E>
+                    ). DOE has prepared the following FRFA for the products that are the subject of this proposed rulemaking.
+                </P>
+                <P>
+                    For manufacturers of air cleaners, the SBA has set a size threshold, which defines those entities classified as “small businesses” for the purposes of the statute. DOE used the SBA's small business size standards to determine whether any small entities would be subject to the requirements of the rule. (
+                    <E T="03">See</E>
+                     13 CFR part 121.) The size standards are listed by North American Industry Classification System (“NAICS”) code and industry description and are available at
+                    <E T="03">www.sba.gov/document/support-table-size-standards.</E>
+                     Manufacturing of air cleaners is classified under NAICS 335210, “Small Electrical Appliance Manufacturing.” The SBA sets a threshold of 1,500 employees or fewer for an entity to be considered as a small business for this category.
+                </P>
+                <HD SOURCE="HD3">1. Description of Reasons Why Action Is Being Considered</HD>
+                <P>
+                    On July 15, 2022, DOE published a final determination (“July 2022 Final Determination”) in which it determined that air cleaners qualify as a “covered product” under EPCA.
+                    <SU>8</SU>
+                    <FTREF/>
+                     87 FR 42297. DOE determined in the July 2022 Final Determination that coverage of air cleaners is necessary or appropriate to carry out the purposes of EPCA, and that the average U.S. household energy use for air cleaners is likely to exceed 100 kWh/yr.
+                    <E T="03">Id.</E>
+                     Currently, no energy conservation standards are prescribed by DOE for air cleaners.
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>8</SU>
+                         All references to EPCA in this document refer to the statute as amended through the Energy Act of 2020, Public Law 116-260 (Dec. 27, 2020), which reflect the last statutory amendments that impact Parts A and A-1 of EPCA.
+                    </P>
+                </FTNT>
+                <P>Pursuant to EPCA, any new or amended energy conservation standard must be designed to achieve the maximum improvement in energy efficiency that DOE determines is technologically feasible and economically justified. (42 U.S.C. 6295(o)(2)(A)) Furthermore, the new or amended standard must result in significant conservation of energy. (42 U.S.C. 6295(o)(3)(B))</P>
+                <P>As previously mentioned, and the requirements under 42 U.S.C. 6295(p)(4)(A)-(B), DOE is issuing this NOPR proposing energy conservation standards for air cleaners. These standard levels were submitted jointly to DOE on August 23, 2022, by groups representing manufacturers, energy and environmental advocates, and consumer groups, hereinafter referred to as “the Joint Stakeholders”. This collective set of comments, titled “Joint Statement of Joint Stakeholder Proposal On Recommended Energy Conservation Standards And Test Procedure For Consumer Room Air Cleaners” (the “Joint Proposal”), recommends specific energy conservation standards for air cleaners that, in the commenters' view, would satisfy the EPCA requirements in 42 U.S.C. 6295(o).</P>
+                <HD SOURCE="HD3">2. Objectives of, and Legal Basis for, Rule</HD>
+                <P>
+                    EPCA authorizes DOE to regulate the energy efficiency of a number of consumer products and certain industrial equipment. Title III, Part B of EPCA established the Energy Conservation Program for Consumer Products Other Than Automobiles. DOE has determined the coverage of air cleaners is necessary or appropriate to carry out the purposes of EPCA. 87 FR 42297. Furthermore, once a product is determined to be a covered product, the Secretary may establish standards for such product, subject to the provisions in 42 U.S.C. 6295(o) and (p), provided that DOE determines that the additional criteria at 42 U.S.C. 6295(
+                    <E T="03">l</E>
+                    ) and 42 U.S.C. 6295(p) have been met.
+                </P>
+                <HD SOURCE="HD3">3. Description on Estimated Number of Small Entities Regulated</HD>
+                <P>
+                    DOE reviewed this proposed rule under the provisions of the Regulatory Flexibility Act and the procedures and policies published on February 19, 2003. 68 FR 7990. DOE conducted a market survey to identify potential small manufacturers of air cleaners. DOE began its assessment by reviewing Association of Home Appliance Manufacturers' (AHAM's) database 
+                    <SU>9</SU>
+                    <FTREF/>
+                     of air cleaners, models in ENERGY STAR V.2.0,
+                    <SU>10</SU>
+                    <FTREF/>
+                     California Air Resources Board,
+                    <SU>11</SU>
+                    <FTREF/>
+                     and individual company websites. DOE then consulted publicly available data, such as manufacturer websites, manufacturer specifications and product literature, and import/export logs (
+                    <E T="03">e.g.,</E>
+                     bills of lading from Panjiva 
+                    <SU>12</SU>
+                    <FTREF/>
+                    ), to identify original equipment manufacturers (“OEMs”) of air cleaners. DOE further relied on public data and subscription-based market research tools (
+                    <E T="03">e.g.,</E>
+                     Dun &amp; Bradstreet reports 
+                    <SU>13</SU>
+                    <FTREF/>
+                    ) to determine company, location, headcount, and annual revenue. DOE screened out companies that do not offer products covered by this rulemaking, do not meet the SBA's definition of a “small business,” or are foreign-owned and operated.
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>9</SU>
+                         Association of Home Appliance Manufacturers. “Find a Certified Room Air Cleaner.” Available at:
+                        <E T="03">https://ahamverifide.org/directory-of-air-cleaners/</E>
+                         Last accessed January 24, 2022.
+                    </P>
+                </FTNT>
+                <FTNT>
+                    <P>
+                        <SU>10</SU>
+                         Available at:
+                        <E T="03">https://data.energystar.gov/Active-Specifications/ENERGY-STAR-Certified-Room-Air-Cleaners/jmck-i55n/data.</E>
+                         Last accessed May 31, 2022.
+                    </P>
+                </FTNT>
+                <FTNT>
+                    <P>
+                        <SU>11</SU>
+                         The California Air Resources Board. “List of CARB-Certified Air Cleaning Devices.” Available at:
+                        <E T="03">https://ww2.arb.ca.gov/list-carb-certified-air-cleaning-devices</E>
+                         Last accessed May 31, 2022.
+                    </P>
+                </FTNT>
+                <FTNT>
+                    <P>
+                        <SU>12</SU>
+                         S&amp;P Global. Panjiva Market Intelligence is available at:
+                        <E T="03">panjiva.com/import-export/United-States</E>
+                         (Last accessed May 5, 2022).
+                    </P>
+                </FTNT>
+                <FTNT>
+                    <P>
+                        <SU>13</SU>
+                         The Dun &amp; Bradstreet Hoovers login is available at
+                        <E T="03">app.dnbhoovers.com.</E>
+                    </P>
+                </FTNT>
+                <P>DOE initially identified 43 OEMs that sell air cleaners in the United States. Of the 43 OEMs identified, DOE tentatively determined four companies qualify as small businesses and are not foreign-owned and operated.</P>
+                <HD SOURCE="HD3">4. Description and Estimate of Compliance Requirements Including Differences in Cost, if Any, for Different Groups of Small Entities</HD>
+                <P>
+                    DOE identified four small, domestic OEMs based on models in the “List of CARB-Certified Air Cleaning Devices” 
+                    <SU>14</SU>
+                    <FTREF/>
+                     and through individual company website searches. The four companies had limited technical specifications available in their public documents. However, in some cases, DOE was able to determine likely product performance based on the available specifications, component information, and filter design.
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>14</SU>
+                         The California Air Resources Board. “List of CARB-Certified Air Cleaning Devices.” Available at:
+                        <E T="03">https://ww2.arb.ca.gov/list-carb-certified-air-cleaning-devices</E>
+                         Last accessed May 31, 2022
+                    </P>
+                </FTNT>
+                .
+                <P>
+                    For the first small business, DOE believes the company's range of products are likely within the scope of the test procedure and subject to the energy conservation standard. These products would meet Tier 2 levels based on the available design information. The second small business has two models that are likely within the scope of the test procedure and subject to the energy conservation standard. Again, DOE has reviewed the publicly available
+                    <PRTPAGE P="21524"/>
+                    information and determined that both models would likely meet Tier 2 levels.
+                </P>
+                <P>DOE determined that the third small business has two models that are within the scope of the test procedure and subject to the energy conservation standard. DOE suspects these two models would likely meet Tier 1, but not Tier 2 standards. DOE determined the fourth small business likely has five models that are within the scope of the test procedure and subject to the energy conservation standard. Based on the product specifications, three of those models may need redesign to meet Tier 2 standards.</P>
+                <P>
+                    To meet the required efficiencies, DOE estimated conversion costs for the third small business by using model counts to scale the industry conversion costs. The third small business accounts for 0.1 percent of models on the market that DOE identified. Based on a review of publicly available information, DOE believes the first small business utilizes soft tooling and flexible manufacturing techniques for production. Therefore, DOE anticipates this small manufacturer would have limited capital expenditures. To be conservative, DOE assumes this small manufacturer accounts to 0.1 percent of industry capital conversion costs at TSL 3, totaling $10,350. Product conversion costs may be necessary for developing, qualifying, sourcing, and testing new components. To be conservative, DOE assumed the manufacturer would incur 1 percent of industry product conversion costs. DOE estimates that the third small business may incur $10,350 in capital conversion costs and $18,000 in product conversion costs to meet Tier 2 standards for those two models. Based on subscription-based market research reports,
+                    <SU>15</SU>
+                    <FTREF/>
+                     the first small business has an annual revenue of approximately $1.31 million. The total conversion costs of $28,350 are approximately 0.7 percent of the third small business's revenue over the 3-year conversion period.
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>15</SU>
+                         D&amp;B Hoovers | Company Information | Industry Information | Lists,
+                        <E T="03">app.dnbhoovers.com/</E>
+                         (Last accessed November 29, 2022).
+                    </P>
+                </FTNT>
+                <P>
+                    Based on a review of publicly available information, DOE estimated conversion costs for the fourth small business by using model counts to scale the industry conversion costs. The third small business accounts for 0.4 percent of models on the market that DOE identified. To be conservative, DOE assumed 1 percent of industry capital conversion costs and 1 percent of industry product conversion costs for the relevant product classes at TSL 3 would be attributable to this small business. The conversion costs total $121,500. Based on subscription-based market research reports,
+                    <SU>16</SU>
+                    <FTREF/>
+                     the fourth small business has an annual revenue of approximately $272.64 million. The total conversion costs of $121,500 are approximately 0.01 percent of the first small business's revenue over the 3-year conversion period.
+                </P>
+                <FTNT>
+                    <P>
+                        <SU>16</SU>
+                         D&amp;B Hoovers | Company Information | Industry Information | Lists,
+                        <E T="03">app.dnbhoovers.com/</E>
+                         (Last accessed November 29, 2022).
+                    </P>
+                </FTNT>
+                <HD SOURCE="HD3">5. Duplication, Overlap, and Conflict With Other Rules and Regulations</HD>
+                <P>DOE is not aware of any rules or regulations that duplicate, overlap, or conflict with the rule being considered.</P>
+                <HD SOURCE="HD3">6. Significant Alternatives to the Rule</HD>
+                <P>The discussion in the previous section analyzes impacts on small businesses that would result from the adopted standards, represented by TSL 3. In reviewing alternatives to the adopted standards, DOE examined energy conservation standards set at lower efficiency levels. While TSL 1 and TSL 2 would reduce the impacts on small business manufacturers, it would come at the expense of a reduction in energy savings. TSL 1 achieves 29 percent lower energy savings compared to the energy savings at TSL 3. TSL 2 achieves 18 percent lower energy savings compared to the energy savings at TSL 3.</P>
+                <P>Establishing standards at TSL 3 balances the benefits of the energy savings at TSL 3 with the potential burdens placed on air cleaner manufacturers, including small business manufacturers. Accordingly, DOE is not adopting one of the other TSLs considered in the analysis, or the other policy alternatives examined as part of the regulatory impact analysis and included in chapter 17 of the direct final rule TSD.</P>
+                <P>Additional compliance flexibilities may be available through other means. EPCA provides that a manufacturer whose annual gross revenue from all of its operations does not exceed $8 million may apply for an exemption from all or part of an energy conservation standard for a period not longer than 24 months after the effective date of a final rule establishing the standard. (42 U.S.C. 6295(t)) Additionally, manufacturers subject to DOE's energy efficiency standards may apply to DOE's Office of Hearings and Appeals for exception relief under certain circumstances. Manufacturers should refer to 10 CFR part 430, subpart E, and 10 CFR part 1003 for additional details.</P>
+                <HD SOURCE="HD1">V. Approval of the Office of the Secretary</HD>
+                <P>The Secretary of Energy has approved publication of this notice of proposed rulemaking.</P>
+                <LSTSUB>
+                    <HD SOURCE="HED">List of Subjects in 10 CFR Part 430</HD>
+                    <P>Administrative practice and procedure, Confidential business information, Energy conservation, Household appliances, Imports, Incorporation by reference, Intergovernmental relations, Small businesses.</P>
+                </LSTSUB>
+                <HD SOURCE="HD1">Signing Authority</HD>
+                <P>
+                    This document of the Department of Energy was signed on March 22, 2023, by Francisco Alejandro Moreno, Acting Assistant Secretary for Energy Efficiency and Renewable Energy, pursuant to delegated authority from the Secretary of Energy. That document with the original signature and date is maintained by DOE. For administrative purposes only, and in compliance with requirements of the Office of the Federal Register, the undersigned DOE Federal Register Liaison Officer has been authorized to sign and submit the document in electronic format for publication, as an official document of the Department of Energy. This administrative process in no way alters the legal effect of this document upon publication in the
+                    <E T="04">Federal Register</E>
+                    .
+                </P>
+                <SIG>
+                    <DATED>Signed in Washington, DC, on March 24, 2023.</DATED>
+                    <NAME>Treena V. Garrett,</NAME>
+                    <TITLE>Federal Register Liaison Officer, U.S. Department of Energy.</TITLE>
+                </SIG>
+                <P>For the reasons stated in the preamble, DOE proposes to amend part 430 of chapter II, subchapter D, of title 10 of the Code of Federal Regulations, as set forth below:</P>
+                <PART>
+                    <HD SOURCE="HED">PART 430—ENERGY CONSERVATION PROGRAM FOR CONSUMER PRODUCTS</HD>
+                </PART>
+                <AMDPAR>1. The authority citation for part 430 continues to read as follows:</AMDPAR>
+                <AUTH>
+                    <HD SOURCE="HED">Authority:</HD>
+                    <P> 42 U.S.C. 6291-6309; 28 U.S.C. 2461 note.</P>
+                </AUTH>
+                <AMDPAR>2. Section 5.1.2 of appendix FF to subpart B of part 430 is revised to read as follows:</AMDPAR>
+                <HD SOURCE="HD1">Appendix FF to Subpart B of Part 430-Uniform Test Method for Measuring the Energy Consumption of Air Cleaners</HD>
+                <STARS/>
+                <P>5. Active Mode CADR and Power Measurement</P>
+                <STARS/>
+                <P>
+                    5.1.2. For determining compliance only with the standards specified in 10
+                    <PRTPAGE P="21525"/>
+                    CFR 430.32(ee)(1), PM
+                    <E T="52">2.5</E>
+                     CADR may alternately be calculated using the smoke CADR and dust CADR values determined according to Sections 5 and 6, respectively, of AHAM AC-1-2020, according to the following equation:
+                </P>
+                <GPH SPAN="3" DEEP="15">
+                    <GID>EP11AP23.000</GID>
+                </GPH>
+                <STARS/>
+                <AMDPAR>3. Amend § 430.32 by adding paragraph (ee) to read as follows:</AMDPAR>
+                <SECTION>
+                    <SECTNO>§ 430.32</SECTNO>
+                    <SUBJECT> Energy and water conservation standards and their compliance dates.</SUBJECT>
+                    <STARS/>
+                    <P>
+                        (ee)
+                        <E T="03">Air Cleaners.</E>
+                    </P>
+                    <P>
+                        (1) Conventional room air cleaners as defined in § 430.2 with a PM
+                        <E T="52">2.5</E>
+                         clean air delivery rate (CADR) between 10 and 600 (both inclusive) cubic feet per minute (cfm) and manufactured on or after December 31, 2023 and before December 31, 2025, shall have an integrated energy factor (IEF) in PM
+                        <E T="52">2.5</E>
+                         CADR/W, as determined in § 430.23(hh)(4) that meets or exceeds the following values:
+                    </P>
+                    <GPOTABLE COLS="2" OPTS="L2,tp0,i1" CDEF="s50,12">
+                        <TTITLE> </TTITLE>
+                        <BOXHD>
+                            <CHED H="1">Product capacity</CHED>
+                            <CHED H="1">
+                                IEF (PM
+                                <E T="0732">2.5</E>
+                                <LI>CADR/W)</LI>
+                            </CHED>
+                        </BOXHD>
+                        <ROW>
+                            <ENT I="01">
+                                (i) 10 ≤ PM
+                                <E T="0732">2.5</E>
+                                 CADR &lt; 100
+                            </ENT>
+                            <ENT>1.7</ENT>
+                        </ROW>
+                        <ROW>
+                            <ENT I="01">
+                                (ii) 100 ≤ PM
+                                <E T="0732">2.5</E>
+                                 CADR &lt; 150
+                            </ENT>
+                            <ENT>1.9</ENT>
+                        </ROW>
+                        <ROW>
+                            <ENT I="01">
+                                (iii) PM
+                                <E T="0732">2.5</E>
+                                 CADR ≥ 150
+                            </ENT>
+                            <ENT>2.0</ENT>
+                        </ROW>
+                    </GPOTABLE>
+                    <P>
+                        (2) Conventional room air cleaners as defined in § 430.2 with a PM
+                        <E T="52">2.5</E>
+                         clean air delivery rate (CADR) between 10 and 600 (both inclusive) cubic feet per minute (cfm) and manufactured on or after December 31, 2025, shall have an integrated energy factor (IEF) in PM
+                        <E T="52">2.5</E>
+                         CADR/W, as determined in § 430.23(hh)(4) that meets or exceeds the following values:
+                    </P>
+                    <GPOTABLE COLS="2" OPTS="L2,tp0,i1" CDEF="s50,12">
+                        <TTITLE> </TTITLE>
+                        <BOXHD>
+                            <CHED H="1">Product capacity</CHED>
+                            <CHED H="1">
+                                IEF (PM
+                                <E T="0732">2.5</E>
+                                <LI>CADR/W)</LI>
+                            </CHED>
+                        </BOXHD>
+                        <ROW>
+                            <ENT I="01">
+                                (i) 10 ≤ PM
+                                <E T="0732">2.5</E>
+                                 CADR &lt; 100
+                            </ENT>
+                            <ENT>1.9</ENT>
+                        </ROW>
+                        <ROW>
+                            <ENT I="01">
+                                (ii) 100 ≤ PM
+                                <E T="0732">2.5</E>
+                                 CADR &lt; 150
+                            </ENT>
+                            <ENT>2.4</ENT>
+                        </ROW>
+                        <ROW>
+                            <ENT I="01">
+                                (iii) PM
+                                <E T="0732">2.5</E>
+                                 CADR ≥ 150
+                            </ENT>
+                            <ENT>2.9</ENT>
+                        </ROW>
+                    </GPOTABLE>
+                </SECTION>
+            </SUPLINF>
+            <FRDOC>[FR Doc. 2023-06498 Filed 4-10-23; 8:45 am]</FRDOC>
+            <BILCOD>BILLING CODE 6450-01-P</BILCOD>
+        </PRORULE>

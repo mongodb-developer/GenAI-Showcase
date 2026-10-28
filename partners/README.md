@@ -12,7 +12,10 @@ Each partner brings their unique expertise and technology stack to create compre
 | **Galileo** | AI Hallucination Detection and Reduction | AI Safety - Techniques for detecting and reducing hallucinations in AI systems to improve reliability and accuracy | [View Notebook](galileo/ai_hallucination_detection_and_reduction.ipynb) |
 | **Gravity9** | Agentic System Enhanced Contract and Supply Chain Management for International Shipping | Supply Chain Management - Agentic RAG solution for contract and supply chain management in international shipping | [View Notebook](gravity9/Agentic_System_Enhanced_Contract_and_Supply_Chain_Management_for_International_Shipping.ipynb) |
 | **LangChain** | Agentic Knowledge Discovery | Knowledge Discovery - Advanced agentic systems for intelligent knowledge discovery and information retrieval | [View Notebook](langchain/agentic_knowledge_discovery_notebook.ipynb) |
+| **LangChain** | Advanced RAG (3 notebooks) | Movie Discovery - Vector, full-text, hybrid `$rankFusion`, reranking, `$graphLookup`, and auto-embedding retrieval with LangChain on a free M0 cluster | [View Notebooks](langchain/advanced-rag/) |
+| **LangChain** | MongoDB MCP Server + AI Agents | Database Agents - A LangGraph agent that answers questions about a cluster by calling MongoDB MCP Server tools | [View Notebook](langchain/claude-code-mcp/01_mongodb_mcp_and_agent.ipynb) |
 | **LlamaIndex** | Cemex + MongoDB + LlamaCloud Demo | Enterprise Integration - Demonstration of MongoDB integration with LlamaCloud using real-world enterprise data from Cemex | [View Notebook](llamaindex/Cemex+MongoDB+LlamaCloud_demo.ipynb) |
+| **Mastra** | Movie-Discovery Agent with Mastra (4 notebooks, TypeScript) | Agents - Vector, hybrid, and reranked retrieval, bring-your-own collections, tools, and persistent memory with Mastra's MongoDB integration | [View Notebooks](mastra/) |
 
 ## About Our Partners
 
@@ -30,6 +33,9 @@ Each partner brings their unique expertise and technology stack to create compre
 
 ### LlamaIndex
 [LlamaIndex](https://www.llamaindex.ai/) is a data framework for building LLM applications, providing tools for data ingestion, indexing, and querying to connect custom data sources with large language models.
+
+### Mastra
+[Mastra](https://mastra.ai/) is a TypeScript framework for building AI agents and workflows, with built-in memory, tools, and retrieval backed by stores such as MongoDB.
 
 ---
 
