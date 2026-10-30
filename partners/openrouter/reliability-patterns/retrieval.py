@@ -1,21 +1,31 @@
 """Find candidate chunks with vector search, falling back to keyword search."""
 
+import asyncio
 import logging
 
 import pymongo
 from config import (
     COLLECTION_NAME,
+    EMBED_TIMEOUT_S,
     FTS_INDEX,
     QUERY_MODELS,
     RERANK_CANDIDATES,
     SEARCH_TIMEOUT_S,
     VECTOR_INDEX,
     db,
+    openrouter_client,
 )
-from pymongo.errors import PyMongoError
 
 collection = db[COLLECTION_NAME]
 PROJECTION = {"$project": {"_id": 0, "title": 1, "url": 1, "text": 1}}
+
+
+async def embed_query(question: str, model: str) -> list[float]:
+    async with asyncio.timeout(EMBED_TIMEOUT_S):
+        response = await openrouter_client.embeddings.generate_async(
+            model=model, input=[question], input_type="query"
+        )
+    return response.data[0].embedding
 
 
 async def vector_search(question: str, model: str) -> list[dict]:
@@ -23,10 +33,8 @@ async def vector_search(question: str, model: str) -> list[dict]:
         {
             "$vectorSearch": {
                 "index": VECTOR_INDEX,
-                "path": "text",
-                # Atlas embeds the query text with this model.
-                "query": question,
-                "model": model,
+                "path": "embedding",
+                "queryVector": await embed_query(question, model),
                 # Approximate search considers 10x more neighbors than it returns.
                 "numCandidates": RERANK_CANDIDATES * 10,
                 "limit": RERANK_CANDIDATES,
@@ -60,9 +68,15 @@ async def run_pipeline(pipeline: list[dict]) -> list[dict]:
 
 async def search(question: str) -> tuple[list[dict], str]:
     """Return candidate chunks and how they were found."""
+    # OpenRouter's `models` fallback doesn't apply to embeddings, so the app falls back itself.
     for model in QUERY_MODELS:
         try:
             return await vector_search(question, model), f"vector search ({model})"
-        except PyMongoError as error:
-            logging.warning("Vector search with %s failed: %s", model, error)
+        except Exception as error:
+            logging.warning(
+                "Vector search with %s failed: %s: %s",
+                model,
+                type(error).__name__,
+                error,
+            )
     return await keyword_search(question), "keyword search"

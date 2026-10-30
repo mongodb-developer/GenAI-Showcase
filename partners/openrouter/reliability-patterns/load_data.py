@@ -16,7 +16,8 @@ DB_NAME = "docs_qa"
 COLLECTION_NAME = "mongodb_docs"
 VECTOR_INDEX = "vector_index"
 FTS_INDEX = "fts_index"
-EMBEDDING_MODEL = "voyage-4-large"
+
+logger = logging.getLogger(__name__)
 
 
 def create_indexes(collection) -> None:
@@ -26,10 +27,10 @@ def create_indexes(collection) -> None:
         definition={
             "fields": [
                 {
-                    "type": "autoEmbed",
-                    "modality": "text",
-                    "path": "text",
-                    "model": EMBEDDING_MODEL,
+                    "type": "vector",
+                    "path": "embedding",
+                    "numDimensions": 1024,
+                    "similarity": "cosine",
                 },
                 {"type": "filter", "path": "source_name"},
             ]
@@ -52,9 +53,9 @@ def create_indexes(collection) -> None:
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    # The Hugging Face client logs every download request at INFO level.
-    logging.getLogger("httpx").setLevel(logging.WARNING)
+    # Libraries log at WARNING and above; this script also logs INFO messages.
+    logging.basicConfig(format="%(levelname)s: %(message)s")
+    logger.setLevel(logging.INFO)
     load_dotenv()
     client = MongoClient(
         os.environ["MONGODB_URI"], appname="devrel.showcase.openrouter"
@@ -64,7 +65,7 @@ def main() -> None:
     chunks = load_dataset(HF_DATASET, split="train").to_list()
     collection.drop()
     collection.insert_many(chunks)
-    logging.info("Inserted %d chunks into %s.%s", len(chunks), DB_NAME, COLLECTION_NAME)
+    logger.info("Inserted %d chunks into %s.%s", len(chunks), DB_NAME, COLLECTION_NAME)
     create_indexes(collection)
 
 

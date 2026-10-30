@@ -42,9 +42,10 @@ async def rerank(question: str, chunks: list[dict]) -> tuple[list[dict], str]:
     """Return the top chunks (reranked if possible) and a status message."""
     try:
         response = await call_reranker(question, [chunk["text"] for chunk in chunks])
+        reranked = [chunks[result.index] for result in response.results]
     except CircuitBreakerError:
         return chunks[:TOP_N], "reranking skipped (circuit open)"
     except Exception as error:
-        logging.warning("Reranking failed: %s", error)
+        logging.warning("Reranking failed: %s: %s", type(error).__name__, error)
         return chunks[:TOP_N], "reranking skipped (error)"
-    return [chunks[result.index] for result in response.results], "reranked"
+    return reranked, "reranked"

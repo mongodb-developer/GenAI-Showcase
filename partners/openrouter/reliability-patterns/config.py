@@ -19,7 +19,9 @@ VECTOR_INDEX = "vector_index"
 FTS_INDEX = "fts_index"
 
 # Model config.
-QUERY_MODELS = ["voyage-4", "voyage-4-lite"]
+# The documents were embedded with voyage-4-large. All Voyage 4 models share an
+# embedding space, so queries can be embedded with any of them.
+QUERY_MODELS = ["voyageai/voyage-4", "voyageai/voyage-4-lite"]
 RERANK_MODEL = "voyageai/rerank-3"
 # Two vendors, each served by several cloud providers.
 LLM_MODELS = ["anthropic/claude-sonnet-5.5", "openai/gpt-6.1-sol"]
@@ -31,6 +33,7 @@ TOP_N = 5
 # Maximum length of the generated answer.
 MAX_TOKENS = 1024
 
+EMBED_TIMEOUT_S = 3
 SEARCH_TIMEOUT_S = 3
 RERANK_TIMEOUT_S = 3
 LLM_TIMEOUT_S = 20
