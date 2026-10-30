@@ -12,43 +12,45 @@ from rerank import rerank
 from retrieval import search
 
 
-def print_result(sources: list[dict], answer: str | None = None) -> None:
+def log_result(sources: list[dict], answer: str | None = None) -> None:
     if answer:
-        print(f"\n{answer}\n")
+        logging.info("\n%s\n", answer)
     for i, source in enumerate(sources, start=1):
-        print(f"[{i}] {source['title']} - {source['url']}")
+        logging.info("[%d] %s - %s", i, source["title"], source["url"])
 
 
 async def answer_question(question: str) -> None:
     try:
         chunks, retrieval_method = await search(question)
     except PyMongoError as error:
-        print(f"Search is unavailable right now: {error}")
+        logging.error("Search is unavailable right now: %s", error)
         return
     if not chunks:
-        print("No matching docs found.")
+        logging.info("No matching docs found.")
         return
-    print(f"Retrieved with {retrieval_method}")
+    logging.info("Retrieved with %s", retrieval_method)
 
     top_chunks, rerank_status = await rerank(question, chunks)
     sources = [{"title": chunk["title"], "url": chunk["url"]} for chunk in top_chunks]
-    print(rerank_status.capitalize())
+    logging.info(rerank_status.capitalize())
 
     try:
         answer, model = await generate(question, top_chunks)
     except Exception as error:
         logging.warning("Answer generation failed: %s", error)
-        print("No answer available. These docs look most relevant:")
-        print_result(sources)
+        logging.warning("No answer available. These docs look most relevant:")
+        log_result(sources)
         return
 
-    print(f"Answered by {model}")
-    print_result(sources, answer)
+    logging.info("Answered by %s", model)
+    log_result(sources, answer)
 
 
 async def main() -> None:
-    logging.basicConfig(format="  ! %(message)s")
-    print("Ask a question about MongoDB (Ctrl-C to quit).")
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    # The OpenRouter SDK's HTTP client logs every request at INFO level.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.info("Ask a question about MongoDB (Ctrl-C to quit).")
     while True:
         try:
             question = (await asyncio.to_thread(input, "\n> ")).strip()

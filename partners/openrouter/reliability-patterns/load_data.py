@@ -3,6 +3,7 @@
 Needs MONGODB_URI in .env. Run: python load_data.py
 """
 
+import logging
 import os
 
 from datasets import load_dataset
@@ -51,6 +52,9 @@ def create_indexes(collection) -> None:
 
 
 def main() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    # The Hugging Face client logs every download request at INFO level.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     load_dotenv()
     client = MongoClient(
         os.environ["MONGODB_URI"], appname="devrel.showcase.openrouter"
@@ -60,7 +64,7 @@ def main() -> None:
     chunks = load_dataset(HF_DATASET, split="train").to_list()
     collection.drop()
     collection.insert_many(chunks)
-    print(f"Inserted {len(chunks)} chunks into {DB_NAME}.{COLLECTION_NAME}")
+    logging.info("Inserted %d chunks into %s.%s", len(chunks), DB_NAME, COLLECTION_NAME)
     create_indexes(collection)
 
 
