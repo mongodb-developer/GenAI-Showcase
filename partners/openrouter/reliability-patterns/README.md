@@ -48,8 +48,12 @@ question
 
    Wait until both indexes show as ready in the Atlas UI, usually under a minute, before asking questions. Rerunning the script reloads the collection from scratch.
 
-4. Ask questions:
+4. Start the app, then type a question at the `>` prompt. Press Ctrl-C to quit.
 
    ```bash
    python ask.py
+   ```
+
+   ```
+   > How do I create a TTL index?
    ```
