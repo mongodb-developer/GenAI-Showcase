@@ -8,7 +8,8 @@ from config import LLM_MODELS, LLM_TIMEOUT_S, MAX_TOKENS, openrouter_client
 
 SYSTEM_PROMPT = (
     "Answer the question using only the numbered sources, "
-    "and list the number of every source you used in `citations`."
+    "and list the number of every source you used in `citations`. "
+    "Don't mention source numbers in the answer."
 )
 
 ANSWER_SCHEMA = {
@@ -70,7 +71,7 @@ async def call_llm(messages: list[dict]) -> tuple[dict, str]:
 
 
 async def generate(question: str, chunks: list[dict]) -> tuple[dict, str]:
-    """Return the answer with its citations and the model that wrote it, re-asking once if it's invalid."""
+    """Return the cited answer and its model, re-asking once if it's invalid."""
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": build_prompt(question, chunks)},
@@ -79,7 +80,7 @@ async def generate(question: str, chunks: list[dict]) -> tuple[dict, str]:
     try:
         check_answer(result, len(chunks))
     except ValueError as error:
-        # Retry if citations are missing or invalid
+        # No citations may mean the sources don't cover the question, so don't re-ask.
         if not result["citations"]:
             raise
         logging.warning("Re-asking because %s", error)
