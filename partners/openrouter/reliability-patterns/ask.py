@@ -17,8 +17,10 @@ logger = logging.getLogger(__name__)
 def log_result(sources: list[dict], answer: str | None = None) -> None:
     if answer:
         logger.info("\n%s\n", answer)
-    for i, source in enumerate(sources, start=1):
-        logger.info("[%d] %s - %s", i, source["title"], source["url"])
+    # Several chunks can come from the same page, so list each page once.
+    pages = {source["url"]: source["title"] for source in sources}
+    for url, title in pages.items():
+        logger.info("- %s - %s", title, url)
 
 
 async def answer_question(question: str) -> None:
@@ -37,7 +39,7 @@ async def answer_question(question: str) -> None:
     logger.info(rerank_status.capitalize())
 
     try:
-        answer, model = await generate(question, top_chunks)
+        result, model = await generate(question, top_chunks)
     except Exception as error:
         logger.warning("Answer generation failed: %s: %s", type(error).__name__, error)
         logger.warning("No answer available. These docs look most relevant:")
@@ -45,7 +47,8 @@ async def answer_question(question: str) -> None:
         return
 
     logger.info("Answered by %s", model)
-    log_result(sources, answer)
+    cited = [sources[i - 1] for i in result["citations"]]
+    log_result(cited, result["answer"])
 
 
 async def main() -> None:

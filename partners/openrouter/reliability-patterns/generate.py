@@ -2,13 +2,13 @@
 
 import asyncio
 import json
+import logging
 
 from config import LLM_MODELS, LLM_TIMEOUT_S, MAX_TOKENS, openrouter_client
 
 SYSTEM_PROMPT = (
-    "Answer the question using only the numbered sources. "
-    "Cite sources inline by number in square brackets, like [1], "
-    "and list every source number you cite in `citations`."
+    "Answer the question using only the numbered sources, "
+    "and list the number of every source you used in `citations`."
 )
 
 ANSWER_SCHEMA = {
@@ -43,16 +43,13 @@ def check_answer(result: dict, num_sources: int) -> None:
         )
 
 
-async def generate(question: str, chunks: list[dict]) -> tuple[str, str]:
-    """Return the answer and the model that wrote it."""
+async def call_llm(messages: list[dict]) -> tuple[dict, str]:
+    """Return the parsed answer and the model that wrote it."""
     async with asyncio.timeout(LLM_TIMEOUT_S):
         response = await openrouter_client.chat.send_async(
             # OpenRouter tries each model in order, and each model's providers in turn.
             models=LLM_MODELS,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": build_prompt(question, chunks)},
-            ],
+            messages=messages,
             max_tokens=MAX_TOKENS,
             response_format={
                 "type": "json_schema",
@@ -66,8 +63,34 @@ async def generate(question: str, chunks: list[dict]) -> tuple[str, str]:
             provider={"require_parameters": True},
         )
     choice = response.choices[0]
+    # A cut-off or filtered answer would end the same way if asked again.
     if choice.finish_reason != "stop":
         raise ValueError(f"generation ended with {choice.finish_reason!r}")
-    result = json.loads(choice.message.content)
-    check_answer(result, len(chunks))
-    return result["answer"], response.model
+    return json.loads(choice.message.content), response.model
+
+
+async def generate(question: str, chunks: list[dict]) -> tuple[dict, str]:
+    """Return the answer with its citations and the model that wrote it, re-asking once if it's invalid."""
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_prompt(question, chunks)},
+    ]
+    result, model = await call_llm(messages)
+    try:
+        check_answer(result, len(chunks))
+    except ValueError as error:
+        # Retry if citations are missing or invalid
+        if not result["citations"]:
+            raise
+        logging.warning("Re-asking because %s", error)
+        messages += [
+            {"role": "assistant", "content": json.dumps(result)},
+            {
+                "role": "user",
+                "content": f"That answer is invalid because {error}. "
+                f"Answer again, citing only sources 1 to {len(chunks)}.",
+            },
+        ]
+        result, model = await call_llm(messages)
+        check_answer(result, len(chunks))
+    return result, model
