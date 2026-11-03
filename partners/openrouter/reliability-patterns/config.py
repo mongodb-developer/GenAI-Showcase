@@ -37,6 +37,8 @@ EMBED_TIMEOUT_S = 3
 SEARCH_TIMEOUT_S = 3
 RERANK_TIMEOUT_S = 3
 LLM_TIMEOUT_S = 20
+# Total time to generate an answer, including a re-ask.
+ANSWER_TIMEOUT_S = 25
 
 # Retry 5XX and connection errors with exponential backoff and jitter, and stop retrying after 3 seconds.
 RETRY_CONFIG = RetryConfig(

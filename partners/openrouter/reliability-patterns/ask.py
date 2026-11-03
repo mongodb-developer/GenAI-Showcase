@@ -6,6 +6,7 @@ Needs MONGODB_URI and OPENROUTER_API_KEY in .env. Run: python ask.py
 import asyncio
 import logging
 
+from config import ANSWER_TIMEOUT_S
 from generate import generate
 from pymongo.errors import PyMongoError
 from rerank import rerank
@@ -39,7 +40,9 @@ async def answer_question(question: str) -> None:
     logger.info(rerank_status.capitalize())
 
     try:
-        result, model = await generate(question, top_chunks)
+        # If the deadline passes, the user still gets the docs below.
+        async with asyncio.timeout(ANSWER_TIMEOUT_S):
+            result, model = await generate(question, top_chunks)
     except Exception as error:
         logger.warning("Answer generation failed: %s: %s", type(error).__name__, error)
         logger.warning("No answer available. These docs look most relevant:")
