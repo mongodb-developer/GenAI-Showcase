@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_indexes(collection) -> None:
+    """Create the vector search and keyword search indexes."""
     vector_index = SearchIndexModel(
         name=VECTOR_INDEX,
         type="vectorSearch",
@@ -53,6 +54,7 @@ def create_indexes(collection) -> None:
 
 
 def main() -> None:
+    """Reload the dataset into Atlas and create its search indexes."""
     # Libraries log at WARNING and above; this script also logs INFO messages.
     logging.basicConfig(format="%(levelname)s: %(message)s")
     logger.setLevel(logging.INFO)

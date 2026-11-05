@@ -6,9 +6,8 @@ Needs MONGODB_URI and OPENROUTER_API_KEY in .env. Run: python ask.py
 import asyncio
 import logging
 
-from config import ANSWER_TIMEOUT_S
+from config import REQUEST_TIMEOUT_S, TOP_N
 from generate import generate
-from pymongo.errors import PyMongoError
 from rerank import rerank
 from retrieval import search
 
@@ -16,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 def log_result(sources: list[dict], answer: str | None = None) -> None:
+    """Log the answer, if there is one, and each source page once."""
     if answer:
         logger.info("\n%s\n", answer)
     # Several chunks can come from the same page, so list each page once.
@@ -24,28 +24,35 @@ def log_result(sources: list[dict], answer: str | None = None) -> None:
         logger.info("- %s - %s", title, url)
 
 
+def to_sources(chunks: list[dict]) -> list[dict]:
+    """Keep the title and URL of each chunk."""
+    return [{"title": chunk["title"], "url": chunk["url"]} for chunk in chunks]
+
+
 async def answer_question(question: str) -> None:
+    """Answer a question, falling back to the most relevant docs on failure."""
+    sources = []
     try:
-        chunks, retrieval_method = await search(question)
-    except PyMongoError as error:
-        logger.error("Search is unavailable right now: %s", error)
-        return
-    if not chunks:
-        logger.info("No matching docs found.")
-        return
-    logger.info("Retrieved with %s", retrieval_method)
+        # One deadline for the whole question. Docs found before it passes are still shown.
+        async with asyncio.timeout(REQUEST_TIMEOUT_S):
+            chunks, retrieval_method = await search(question)
+            if not chunks:
+                logger.info("No matching docs found.")
+                return
+            logger.info("Retrieved with %s", retrieval_method)
+            sources = to_sources(chunks[:TOP_N])
 
-    top_chunks, rerank_status = await rerank(question, chunks)
-    sources = [{"title": chunk["title"], "url": chunk["url"]} for chunk in top_chunks]
-    logger.info(rerank_status.capitalize())
+            top_chunks, rerank_status = await rerank(question, chunks)
+            sources = to_sources(top_chunks)
+            logger.info(rerank_status.capitalize())
 
-    try:
-        # If the deadline passes, the user still gets the docs below.
-        async with asyncio.timeout(ANSWER_TIMEOUT_S):
             result, model = await generate(question, top_chunks)
     except Exception as error:
-        logger.warning("Answer generation failed: %s: %s", type(error).__name__, error)
-        logger.warning("No answer available. These docs look most relevant:")
+        logger.warning("Couldn't answer: %s: %s", type(error).__name__, error)
+        if not sources:
+            logger.error("Search is unavailable right now.")
+            return
+        logger.warning("These docs look most relevant:")
         log_result(sources)
         return
 
@@ -55,6 +62,7 @@ async def answer_question(question: str) -> None:
 
 
 async def main() -> None:
+    """Answer questions from the command line until the user quits."""
     # Libraries log at WARNING and above; this script also logs INFO messages.
     logging.basicConfig(format="%(levelname)s: %(message)s")
     logger.setLevel(logging.INFO)

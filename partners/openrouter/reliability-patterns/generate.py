@@ -24,6 +24,7 @@ ANSWER_SCHEMA = {
 
 
 def build_prompt(question: str, chunks: list[dict]) -> str:
+    """Number the sources so the model can cite them."""
     sources = "\n\n".join(
         f"[{i}] {chunk['title']}\n{chunk['text']}"
         for i, chunk in enumerate(chunks, start=1)

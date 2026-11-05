@@ -32,6 +32,7 @@ def is_transient(error_type: type, error: Exception) -> bool:
     expected_exception=is_transient,
 )
 async def call_reranker(question: str, documents: list[str]):
+    """Rerank documents within a time limit, behind the circuit breaker."""
     async with asyncio.timeout(RERANK_TIMEOUT_S):
         return await openrouter_client.rerank.rerank_async(
             model=RERANK_MODEL, query=question, documents=documents, top_n=TOP_N

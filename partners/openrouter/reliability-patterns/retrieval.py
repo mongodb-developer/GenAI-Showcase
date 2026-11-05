@@ -20,21 +20,35 @@ collection = db[COLLECTION_NAME]
 PROJECTION = {"$project": {"_id": 0, "title": 1, "url": 1, "text": 1}}
 
 
-async def embed_query(question: str, model: str) -> list[float]:
+async def embed_query(question: str) -> tuple[list[float], str]:
+    """Return the query embedding and the model that generated it."""
+    # OpenRouter's `models` fallback doesn't apply to embeddings, so the app falls back
+    # itself. Like the gateway, it moves on after an error, within one shared time limit.
     async with asyncio.timeout(EMBED_TIMEOUT_S):
-        response = await openrouter_client.embeddings.generate_async(
-            model=model, input=[question], input_type="query"
-        )
-    return response.data[0].embedding
+        for model in QUERY_MODELS:
+            try:
+                response = await openrouter_client.embeddings.generate_async(
+                    model=model, input=[question], input_type="query"
+                )
+                return response.data[0].embedding, model
+            except Exception as error:
+                logging.warning(
+                    "Embedding with %s failed: %s: %s",
+                    model,
+                    type(error).__name__,
+                    error,
+                )
+    raise RuntimeError("every query model failed")
 
 
-async def vector_search(question: str, model: str) -> list[dict]:
+async def vector_search(query_vector: list[float]) -> list[dict]:
+    """Find the chunks closest to the query vector."""
     pipeline = [
         {
             "$vectorSearch": {
                 "index": VECTOR_INDEX,
                 "path": "embedding",
-                "queryVector": await embed_query(question, model),
+                "queryVector": query_vector,
                 # Approximate search considers 10x more neighbors than it returns.
                 "numCandidates": RERANK_CANDIDATES * 10,
                 "limit": RERANK_CANDIDATES,
@@ -46,6 +60,7 @@ async def vector_search(question: str, model: str) -> list[dict]:
 
 
 async def keyword_search(question: str) -> list[dict]:
+    """Find chunks that match the question's keywords."""
     pipeline = [
         {
             "$search": {
@@ -60,6 +75,7 @@ async def keyword_search(question: str) -> list[dict]:
 
 
 async def run_pipeline(pipeline: list[dict]) -> list[dict]:
+    """Run an aggregation pipeline against a MongoDB collection."""
     # The server stops the query once the timeout passes, not just the client.
     with pymongo.timeout(SEARCH_TIMEOUT_S):
         cursor = await collection.aggregate(pipeline)
@@ -67,16 +83,10 @@ async def run_pipeline(pipeline: list[dict]) -> list[dict]:
 
 
 async def search(question: str) -> tuple[list[dict], str]:
-    """Return candidate chunks and how they were found."""
-    # OpenRouter's `models` fallback doesn't apply to embeddings, so the app falls back itself.
-    for model in QUERY_MODELS:
-        try:
-            return await vector_search(question, model), f"vector search ({model})"
-        except Exception as error:
-            logging.warning(
-                "Vector search with %s failed: %s: %s",
-                model,
-                type(error).__name__,
-                error,
-            )
+    """Retrieve candidate chunks."""
+    try:
+        query_vector, model = await embed_query(question)
+        return await vector_search(query_vector), f"vector search ({model})"
+    except Exception as error:
+        logging.warning("Vector search failed: %s: %s", type(error).__name__, error)
     return await keyword_search(question), "keyword search"
