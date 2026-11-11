@@ -63,6 +63,8 @@ def process_query():
                         conversation_history=conversation_history,
                         k=st.session_state["retrieval_k"],
                         score_threshold=st.session_state["retrieval_threshold"],
+                        search_type=st.session_state.get("search_type", "similarity"),
+                        lambda_mult=st.session_state.get("lambda_mult", 0.5),
                     )
                 except ValueError as e:
                     agent_text = str(e)
@@ -140,6 +142,32 @@ def page():
 
     # Display messages and text input
     display_messages()
+
+    # Sidebar settings
+    with st.sidebar:
+        st.header("Retrieval Settings")
+        search_type = st.radio(
+            "Search Type",
+            options=["similarity", "mmr"],
+            format_func=lambda x: "Similarity"
+            if x == "similarity"
+            else "MMR (Diversity)",
+            index=0,
+        )
+
+        lambda_mult = 0.5
+        if search_type == "mmr":
+            lambda_mult = st.slider(
+                "Diversity (Lambda)",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.5,
+                step=0.1,
+                help="0.0 = Maximum Diversity, 1.0 = Maximum Relevance",
+            )
+
+        st.session_state["search_type"] = search_type
+        st.session_state["lambda_mult"] = lambda_mult
 
     # Accept user input using the new chat input
     prompt = st.chat_input("Type your message here...")

@@ -2,15 +2,15 @@ import logging
 from typing import Optional
 
 import yaml
-from langchain.schema.output_parser import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_core.globals import set_debug, set_verbose
+from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
 from langchain_mongodb.vectorstores import MongoDBAtlasVectorSearch
 from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pymongo import MongoClient
 
 # Enable verbose debugging
@@ -38,6 +38,18 @@ class ChatPDF:
         config = load_config(config_file)
 
         # Read values from config
+        required_keys = [
+            "llm_model",
+            "embedding_model",
+            "mongo_connection_str",
+            "database_name",
+            "collection_name",
+        ]
+        for key in required_keys:
+            if key not in config:
+                logger.error(f"Missing configuration key: {key}")
+                raise KeyError(f"Missing configuration key: {key}")
+
         llm_model = config["llm_model"]
         embedding_model = config["embedding_model"]
         mongo_connection_str = config["mongo_connection_str"]
@@ -96,23 +108,31 @@ class ChatPDF:
         """
         Upload and index a PDF file, chunk its contents, and store the embeddings in MongoDB Atlas.
         """
-        logger.info(f"Starting ingestion for file: {pdf_file_path}")
-        docs = PyPDFLoader(file_path=pdf_file_path).load()
+        try:
+            logger.info(f"Starting ingestion for file: {pdf_file_path}")
+            docs = PyMuPDFLoader(file_path=pdf_file_path).load()
 
-        logger.info(f"Loaded {len(docs)} pages from {pdf_file_path}")
+            if not docs:
+                logger.warning(f"No content found in file: {pdf_file_path}")
+                return
 
-        chunks = self.text_splitter.split_documents(docs)
-        logger.info(f"Split into {len(chunks)} document chunks")
+            logger.info(f"Loaded {len(docs)} pages from {pdf_file_path}")
 
-        # Optional: Log some sample chunks for verification
-        for i, chunk in enumerate(chunks[:3]):
-            logger.debug(f"Chunk {i+1} Content: {chunk.page_content[:200]}...")
+            chunks = self.text_splitter.split_documents(docs)
+            logger.info(f"Split into {len(chunks)} document chunks")
 
-        chunks = filter_complex_metadata(chunks)
+            # Optional: Log some sample chunks for verification
+            for i, chunk in enumerate(chunks[:3]):
+                logger.debug(f"Chunk {i+1} Content: {chunk.page_content[:200]}...")
 
-        # Add documents to vector store and check embeddings
-        self.vector_store.add_documents(documents=chunks)
-        logger.info("Document embeddings stored successfully in MongoDB Atlas.")
+            chunks = filter_complex_metadata(chunks)
+
+            # Add documents to vector store and check embeddings
+            self.vector_store.add_documents(documents=chunks)
+            logger.info("Document embeddings stored successfully in MongoDB Atlas.")
+        except Exception as e:
+            logger.error(f"Failed to ingest PDF file {pdf_file_path}: {e}")
+            raise
 
     def query_with_context(
         self,
@@ -120,6 +140,8 @@ class ChatPDF:
         conversation_history: Optional[list] = None,
         k: int = 5,
         score_threshold: float = 0.2,
+        search_type: str = "similarity",
+        lambda_mult: float = 0.5,
     ):
         """
         Answer a query using the RAG pipeline with verbose debugging and conversation history.
@@ -129,6 +151,8 @@ class ChatPDF:
         - conversation_history (list): List of previous messages in the conversation.
         - k (int): Number of retrieved documents.
         - score_threshold (float): Similarity score threshold for retrieval.
+        - search_type (str): Type of search ("similarity" or "mmr").
+        - lambda_mult (float): Diversity factor for MMR (0.0 to 1.0).
 
         Returns:
         - str: The assistant's response.
@@ -136,11 +160,26 @@ class ChatPDF:
         if not self.vector_store:
             raise ValueError("No vector store found. Please ingest a document first.")
 
-        if not self.retriever:
-            self.retriever = self.vector_store.as_retriever(
-                search_type="similarity_score_threshold",
-                search_kwargs={"k": k, "score_threshold": score_threshold},
-            )
+        # Reset retriever if search parameters change (simplified approach)
+        # In a more complex app, we might check if params changed.
+        # Here we just re-create it to be safe and simple.
+        search_kwargs = {"k": k}
+
+        if search_type == "similarity":
+            search_kwargs["score_threshold"] = score_threshold
+            search_type_arg = "similarity_score_threshold"
+        elif search_type == "mmr":
+            search_kwargs["lambda_mult"] = lambda_mult
+            search_type_arg = "mmr"
+        else:
+            # Fallback
+            search_kwargs["score_threshold"] = score_threshold
+            search_type_arg = "similarity_score_threshold"
+
+        self.retriever = self.vector_store.as_retriever(
+            search_type=search_type_arg,
+            search_kwargs=search_kwargs,
+        )
 
         # Generate and log query embeddings
         query_embedding = self.embeddings.embed_query(query)
