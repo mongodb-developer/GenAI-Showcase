@@ -1,0 +1,16 @@
+streamlit
+pypdf
+
+# MongoDB Atlas client + TLS CA bundle
+pymongo>=4.6.1
+certifi
+
+# LangChain stack (current split)
+langchain==0.2.16
+langchain-core==0.2.38
+langchain-community==0.2.11
+langchain-mistralai==0.1.10
+langchain-text-splitters==0.2.2
+
+# Embeddings — keep if you still use sentence-transformers elsewhere
+sentence-transformers
