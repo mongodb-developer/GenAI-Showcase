@@ -53,10 +53,6 @@ RETRY_CONFIG = RetryConfig(
     retry_connection_errors=True,
 )
 
-# Stop calling the reranker after 5 failures in a row, and try again after 60 seconds.
-BREAKER_FAILURE_THRESHOLD = 5
-BREAKER_COOLDOWN_S = 60
-
 # Initialize MongoDB client and select the database.
 mongo_client = AsyncMongoClient(MONGODB_URI, appname="devrel.showcase.openrouter")
 db = mongo_client[DB_NAME]

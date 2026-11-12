@@ -6,7 +6,8 @@ Needs MONGODB_URI and OPENROUTER_API_KEY in .env. Run: python ask.py
 import asyncio
 import logging
 
-from config import REQUEST_TIMEOUT_S, TOP_N
+import pymongo
+from config import REQUEST_TIMEOUT_S, SEARCH_TIMEOUT_S, TOP_N, mongo_client
 from generate import generate
 from rerank import rerank
 from retrieval import search
@@ -61,11 +62,28 @@ async def answer_question(question: str) -> None:
     log_result(cited, result["answer"])
 
 
+async def check_connection() -> bool:
+    """Check that Atlas is reachable, so a setup mistake isn't mistaken for an outage."""
+    try:
+        with pymongo.timeout(SEARCH_TIMEOUT_S):
+            await mongo_client.admin.command("ping")
+    except Exception as error:
+        logger.error(
+            "Couldn't connect to MongoDB Atlas (%s). Check MONGODB_URI, and that your "
+            "IP address is allowed under Network Access in Atlas.",
+            type(error).__name__,
+        )
+        return False
+    return True
+
+
 async def main() -> None:
     """Answer questions from the command line until the user quits."""
     # Libraries log at WARNING and above; this script also logs INFO messages.
     logging.basicConfig(format="%(levelname)s: %(message)s")
     logger.setLevel(logging.INFO)
+    if not await check_connection():
+        return
     logger.info("Ask a question about MongoDB (Ctrl-C to quit).")
     while True:
         try:
