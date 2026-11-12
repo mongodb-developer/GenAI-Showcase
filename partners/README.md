@@ -16,7 +16,7 @@ Each partner brings their unique expertise and technology stack to create compre
 | **LangChain** | MongoDB MCP Server + AI Agents | Database Agents - A LangGraph agent that answers questions about a cluster by calling MongoDB MCP Server tools | [View Notebook](langchain/claude-code-mcp/01_mongodb_mcp_and_agent.ipynb) |
 | **LlamaIndex** | Cemex + MongoDB + LlamaCloud Demo | Enterprise Integration - Demonstration of MongoDB integration with LlamaCloud using real-world enterprise data from Cemex | [View Notebook](llamaindex/Cemex+MongoDB+LlamaCloud_demo.ipynb) |
 | **Mastra** | Movie-Discovery Agent with Mastra (4 notebooks, TypeScript) | Agents - Vector, hybrid, and reranked retrieval, bring-your-own collections, tools, and persistent memory with Mastra's MongoDB integration | [View Notebooks](mastra/) |
-| **OpenRouter** | Reliability Patterns for AI Applications | Reliability - Timeouts and retries, model fallbacks and provider failover, graceful degradation, and output guardrails for a RAG app built with OpenRouter and MongoDB Atlas | [View App](openrouter/reliability-patterns/) |
+| **OpenRouter** | Reliability Patterns for AI Applications | Reliability - Timeouts and retries, model fallbacks and provider failover, graceful degradation, and guardrails for a RAG app built with OpenRouter and MongoDB Atlas | [View App](openrouter/reliability-patterns/) |
 
 ## About Our Partners
 

@@ -19,7 +19,7 @@ question
 | Timeouts and retries with exponential backoff | Bounded retries with jitter for 5XX and connection errors (OpenRouter SDK), a total time limit per call (`asyncio.timeout`), a deadline for the whole question, and server-side query timeouts (`pymongo.timeout`) | `config.py`, `retrieval.py`, `rerank.py`, `generate.py`, `ask.py` |
 | Model fallbacks and provider failover | OpenRouter's `models` list falls back from Claude to GPT and fails over between each model's providers. OpenRouter doesn't do this for embeddings, so the app falls back from `voyage-4` to `voyage-4-lite` itself, which works because they share an embedding space. | `generate.py`, `retrieval.py` |
 | Graceful degradation | The app skips a failing reranker, keyword search replaces failing vector search, and the app returns the most relevant docs if no answer can be generated | `rerank.py`, `retrieval.py`, `ask.py` |
-| Output guardrails | OpenRouter structured outputs enforce the answer format, and the app checks that every citation refers to a real source. If a citation doesn't, the app asks the model once more, telling it what was wrong | `generate.py` |
+| Guardrails | OpenRouter structured outputs enforce the answer format, and the app checks that every citation refers to a real source. If a citation doesn't, the app asks the model once more, telling it what was wrong | `generate.py` |
 
 ## What you need
 
