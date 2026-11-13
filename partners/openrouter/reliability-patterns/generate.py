@@ -9,6 +9,7 @@ from config import LLM_MODELS, LLM_TIMEOUT_S, MAX_TOKENS, openrouter_client
 SYSTEM_PROMPT = (
     "Answer the question using only the numbered sources, "
     "and list the number of every source you used in `citations`. "
+    "If the sources don't answer the question, say so and leave `citations` empty. "
     "Don't mention source numbers in the answer."
 )
 
@@ -33,11 +34,9 @@ def build_prompt(question: str, chunks: list[dict]) -> str:
 
 
 def check_answer(result: dict, num_sources: int) -> None:
-    """Raise ValueError unless the answer is non-empty and cites real sources."""
+    """Raise ValueError unless the answer is non-empty and cites only real sources."""
     if not result["answer"].strip():
         raise ValueError("the answer is empty")
-    if not result["citations"]:
-        raise ValueError("the answer cites no sources")
     unknown = set(result["citations"]) - set(range(1, num_sources + 1))
     if unknown:
         raise ValueError(
@@ -72,18 +71,18 @@ async def call_llm(messages: list[dict]) -> tuple[dict, str]:
 
 
 async def generate(question: str, chunks: list[dict]) -> tuple[dict, str]:
-    """Return the cited answer and its model, re-asking once if it's invalid."""
+    """Return the answer and its model, re-asking once if its citations are invalid."""
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": build_prompt(question, chunks)},
     ]
     result, model = await call_llm(messages)
+    # No citations means the sources don't cover the question, so there's nothing to check.
+    if not result["citations"]:
+        return result, model
     try:
         check_answer(result, len(chunks))
     except ValueError as error:
-        # No citations may mean the sources don't cover the question, so don't re-ask.
-        if not result["citations"]:
-            raise
         logging.warning("Re-asking because %s", error)
         messages += [
             {"role": "assistant", "content": json.dumps(result)},

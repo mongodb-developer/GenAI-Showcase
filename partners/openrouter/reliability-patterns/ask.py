@@ -57,6 +57,10 @@ async def answer_question(question: str) -> None:
         log_result(sources)
         return
 
+    if not result["citations"]:
+        logger.info("I couldn't find an answer to that in the docs.")
+        return
+
     logger.info("Answered by %s", model)
     cited = [sources[i - 1] for i in result["citations"]]
     log_result(cited, result["answer"])
