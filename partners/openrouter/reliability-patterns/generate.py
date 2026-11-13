@@ -34,7 +34,7 @@ def build_prompt(question: str, chunks: list[dict]) -> str:
 
 
 def check_answer(result: dict, num_sources: int) -> None:
-    """Raise ValueError if the answer is empty and cites incorrect sources."""
+    """Raise ValueError if the answer is empty or cites incorrect sources."""
     if not result["answer"].strip():
         raise ValueError("the answer is empty")
     unknown = set(result["citations"]) - set(range(1, num_sources + 1))
