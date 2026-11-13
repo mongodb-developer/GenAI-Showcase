@@ -22,22 +22,20 @@ PROJECTION = {"$project": {"_id": 0, "title": 1, "url": 1, "text": 1}}
 
 async def embed_query(question: str) -> tuple[list[float], str]:
     """Return the query embedding and the model that generated it."""
-    # OpenRouter's `models` fallback doesn't apply to embeddings, so the app falls back
-    # itself. Like the gateway, it moves on after an error, within one shared time limit.
-    async with asyncio.timeout(EMBED_TIMEOUT_S):
-        for model in QUERY_MODELS:
-            try:
+    for model in QUERY_MODELS:
+        try:
+            async with asyncio.timeout(EMBED_TIMEOUT_S):
                 response = await openrouter_client.embeddings.generate_async(
                     model=model, input=[question], input_type="query"
                 )
-                return response.data[0].embedding, model
-            except Exception as error:
-                logging.warning(
-                    "Embedding with %s failed: %s: %s",
-                    model,
-                    type(error).__name__,
-                    error,
-                )
+            return response.data[0].embedding, model
+        except Exception as error:
+            logging.warning(
+                "Embedding with %s failed: %s: %s",
+                model,
+                type(error).__name__,
+                error,
+            )
     raise RuntimeError("every query model failed")
 
 
