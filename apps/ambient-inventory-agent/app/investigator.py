@@ -294,6 +294,8 @@ class AlertInvestigator:
         A tool call rather than `response_format`: filing via a tool keeps the schema
         enforced by the same tool-calling loop the MCP queries already use.
         """
+        # See the note in agent.py: LangChain 1.x owns the prebuilt ReAct
+        # constructor now; the result is still a compiled LangGraph graph.
         from langchain.agents import create_agent
         from langchain_core.tools import StructuredTool
 
