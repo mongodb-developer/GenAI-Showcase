@@ -31,10 +31,10 @@ RERANK_CANDIDATES = 50
 # Chunks kept after reranking and passed to the LLM as numbered sources.
 TOP_N = 5
 # Maximum length of the generated answer.
-MAX_TOKENS = 1024
+MAX_TOKENS = 1500
 
 EMBED_TIMEOUT_S = 3
-SEARCH_TIMEOUT_S = 3
+SEARCH_TIMEOUT_S = 1
 RERANK_TIMEOUT_S = 3
 LLM_TIMEOUT_S = 15
 # Total time to answer a question, across every stage.
@@ -57,5 +57,9 @@ RETRY_CONFIG = RetryConfig(
 mongo_client = AsyncMongoClient(MONGODB_URI, appname="devrel.showcase.openrouter")
 db = mongo_client[DB_NAME]
 
-# Initialize OpenRouter client with retry configuration.
-openrouter_client = OpenRouter(api_key=OPENROUTER_API_KEY, retry_config=RETRY_CONFIG)
+# Initialize OpenRouter client with retry and timeout configuration.
+openrouter_client = OpenRouter(
+    api_key=OPENROUTER_API_KEY,
+    retry_config=RETRY_CONFIG,
+    timeout_ms=LLM_TIMEOUT_S * 1000,
+)
