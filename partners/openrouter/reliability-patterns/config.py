@@ -21,8 +21,8 @@ FTS_INDEX = "fts_index"
 # Model config.
 # The documents were embedded with voyage-4-large. All Voyage 4 models share an
 # embedding space, so queries can be embedded with any of them.
-QUERY_MODELS = ["voyageai/voyage-4", "voyageai/voyage-4-lite"]
-RERANK_MODEL = "voyageai/rerank-3"
+QUERY_MODELS = ["mongodb/voyage-4", "mongodb/voyage-4-lite"]
+RERANK_MODEL = "mongodb/rerank-3"
 # Two vendors, each served by several cloud providers.
 LLM_MODELS = ["anthropic/claude-sonnet-5.5", "openai/gpt-6.1-sol"]
 
