@@ -7,8 +7,8 @@ import logging
 from config import LLM_MODELS, LLM_TIMEOUT_S, MAX_TOKENS, openrouter_client
 
 SYSTEM_PROMPT = (
-    "Answer the question using only the numbered sources, "
-    "and list the number of every source you used in `citations`. "
+    "Answer the question concisely, in under 200 words, using only the numbered "
+    "sources, and list the number of every source you used in `citations`. "
     "If the sources don't answer the question, say so and leave `citations` empty. "
     "Don't mention source numbers in the answer."
 )
@@ -77,9 +77,6 @@ async def generate(question: str, chunks: list[dict]) -> tuple[dict, str]:
         {"role": "user", "content": build_prompt(question, chunks)},
     ]
     result, model = await call_llm(messages)
-    # No citations means the sources don't cover the question, so there's nothing to check.
-    if not result["citations"]:
-        return result, model
     try:
         check_answer(result, len(chunks))
     except ValueError as error:
