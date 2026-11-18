@@ -21,9 +21,12 @@ This repo mainly contains:
 
 You will need to connect to a MongoDB cluster to run any of the apps or examples in this repo. Follow these steps to get set up:
 
-* Register for a [free MongoDB Atlas account](https://www.mongodb.com/cloud/atlas/register)
-* [Create a new database cluster](https://www.mongodb.com/docs/guides/atlas/cluster/)
-* [Obtain the connection string](https://www.mongodb.com/docs/guides/atlas/connection-string/) for your database cluster
+* [Use a free Atlas account](https://www.mongodb.com/cloud/atlas/register) (recommended if you plan to keep your work)  
+    1. Register for a free MongoDB Atlas account  
+    2. [Create a new database cluster](https://www.mongodb.com/docs/atlas/create-connect-deployments/)
+    3. [Obtain the connection string](https://www.mongodb.com/docs/manual/reference/connection-string/?deployment-type=atlas&interface-atlas-only=atlas-ui) for your database cluster
+* Or try it now (no account required) with an Ephemeral Atlas Cluster  
+    1. Run one command that creates an [Atlas Ephemeral Cluster](https://www.mongodb.com/docs/atlas/tutorial/create-ephemeral-cluster/#create-the-ephemeral-cluster) to get a free cluster and connection string. It lasts 48 hours. Claim it by registering within 7 days to keep it.
 
 ## Contributing
 
