@@ -67,4 +67,3 @@ curl -X POST https://cloud.mongodb.com/api/atlas/v2/clusters/ephemeral
 ```
 
 The response provides a connection string. Clusters pause after 48 hours and are deleted after 7 days unless claimed by a user.
-
