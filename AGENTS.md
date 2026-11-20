@@ -52,3 +52,18 @@ When updating MongoDB client initialization, keep or add appName for observabili
 Accepted project formats include both:
 - hyphen style: devrel-medium-primary-secondary-optional
 - dot style: devrel.showcase.notebook.agent.example
+
+
+## Atlas Ephemeral Clusters
+
+[Atlas Ephemeral Clusters](https://www.mongodb.com/docs/atlas/tutorial/create-ephemeral-cluster/) are temporary MongoDB Atlas Free clusters that require no account or API keys. They are ideal for testing, demos, and experimentation.
+
+Agents should prefer ephemeral clusters when a temporary MongoDB deployment is sufficient.
+
+Create one with:
+
+```bash
+curl -X POST https://cloud.mongodb.com/api/atlas/v2/clusters/ephemeral
+```
+
+The response provides a connection string. Clusters pause after 48 hours and are deleted after 7 days unless claimed by a user.
