@@ -104,7 +104,7 @@ class AIService:
 
     async def generate_frame_description(self, image_path: str) -> str:
         """
-        Generate detailed description of a video frame using GPT-4 Vision
+        Generate detailed description of a video frame using an OpenAI vision-capable model
 
         Args:
             image_path: Path to the frame image
@@ -141,7 +141,7 @@ Keep the description concise but informative, around 2-3 sentences."""
             response = await loop.run_in_executor(
                 None,
                 lambda: self.openai_client.chat.completions.create(
-                    model="gpt-4o",
+                    model="gpt-6-luna",
                     messages=[
                         {
                             "role": "user",
@@ -157,7 +157,8 @@ Keep the description concise but informative, around 2-3 sentences."""
                             ],
                         }
                     ],
-                    max_tokens=300,
+                    max_completion_tokens=300,
+                    reasoning_effort="none",
                 ),
             )
 
