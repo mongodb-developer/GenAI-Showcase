@@ -2,6 +2,7 @@ Javascript and Python apps and demos showcasing how to use MongoDB in GenAI appl
 
 | Application | Stack | Description | Directory |
 |------------|-------|-------------|-----------|
+| AgentsKit Atlas Memory | MongoDB Atlas, AgentsKit, TypeScript | Minimal vector-memory lifecycle with replaceable embedding and model providers | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](agentskit-atlas-memory) |
 | Ambient Inventory Agent | MongoDB Atlas, MongoDB Remote MCP, Python, FastAPI, LangGraph, Claude on Amazon Bedrock | Coffee roaster inventory assistant: a deterministic LangGraph monitor raises low-stock alerts, and a streaming LangGraph ReAct agent answers the owner's questions using MongoDB Remote MCP tools | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](ambient-inventory-agent) |
 | Graph RAG Demo | MongoDB Atlas, Python, Node.js, OpenAI | Graph-based RAG implementation demonstrating MongoDB's graph capabilities with hybrid Python/Node.js approach | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](graph_rag_demo) |
 | Local RAG PDF | MongoDB Atlas, Python | Local RAG implementation for PDF processing and querying | [![View Code](https://img.shields.io/badge/view-code-blue?logo=github)](local-rag-pdf) |
